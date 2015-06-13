@@ -4,6 +4,11 @@
 Ext.define('erp.view.module.purchase.SupplierMngController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.suppliermng',
+
+    requires: [
+        'erp.view.module.purchase.AddPurchaseOrder'
+    ],
+
     //config: {
     //    control: {
     //        'useredit button[action=save]': {
@@ -21,6 +26,14 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
         form.down("textfield[name='bank_no']").setValue(record.get("bank_no"));
         form.down("textfield[name='tax_no']").setValue(record.get("tax_no"));
         form.down("textfield[name='address']").setValue(record.get("address"));
+    },
+    onPurchaseOrderGridDblClick:function(gp,record){
+        console.log(2222);
+        gp.up('tabpanel').setActiveTab({
+            xtype:'addpurchaseorder',
+            title:'xxxx',
+            closable:true
+        });
     }
 });
 

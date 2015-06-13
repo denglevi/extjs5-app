@@ -16,7 +16,6 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
         'Ext.layout.container.Anchor',
         'Ext.layout.container.HBox',
         'Ext.toolbar.Paging',
-        'Ext.toolbar.Toolbar',
         'erp.view.module.purchase.SupplierMngController',
         'erp.view.module.purchase.SupplierMngModel'
     ],
@@ -49,26 +48,22 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                     displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
                     displayInfo: true
                 }],
-                tbar: [{
-                    xtype: 'toolbar',
-                    //cls: 'bg_primary',
-                    items: [
-                        {
-                            xtype: 'textfield',
-                            fieldLabel: "供应商编号",
-                            name: 'supllier_no'
-                        }, '',
-                        {
-                            xtype: 'textfield',
-                            fieldLabel: "供应商名称",
-                            name: 'supllier_name'
-                        }, '->',
-                        {
-                            text: '搜索',
-                            glyph: 0xf002
-                        }
-                    ]
-                }],
+                tbar: [
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: "供应商编号",
+                        name: 'supllier_no'
+                    }, '',
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: "供应商名称",
+                        name: 'supllier_name'
+                    }, '->',
+                    {
+                        text: '搜索',
+                        glyph: 0xf002
+                    }
+                ],
                 columns: [
                     {text: '供应商编号', dataIndex: 'vendor_no'},
                     {text: '名称', dataIndex: 'name', flex: 1},
@@ -85,12 +80,12 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                 height: '100%',
                 url: 'http://localhost/coscia/index.php/Purchasing/Vendor/editVendor',
                 layout: 'anchor',
-                method:'POST',
+                method: 'POST',
                 bodyPadding: 10,
                 defaults: {
                     anchor: '100%',
                     margin: 10,
-                    bind:{
+                    bind: {
                         disabled: '{fieldDisabled}'
                     },
                     allowBlank: false
@@ -127,13 +122,13 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                         text: '新增',
                         handler: function (el) {
                             this.up('form').getForm().reset();
-                            me.getViewModel().set("fieldDisabled",false);
+                            me.getViewModel().set("fieldDisabled", false);
                         }
                     },
                     {
                         text: '编辑',
                         handler: function () {
-                            me.getViewModel().set("fieldDisabled",false);
+                            me.getViewModel().set("fieldDisabled", false);
                         }
                     }
                 ],
@@ -146,11 +141,11 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                     },
                     {
                         text: '提交',
-                        id:'submit',
+                        id: 'submit',
                         formBind: true,
                         disabled: true,
                         handler: function () {
-                            if(me.getViewModel().get("fieldDisabled")){
+                            if (me.getViewModel().get("fieldDisabled")) {
                                 Ext.Msg.alert('系统提示', "当前表单处于不可编辑状态，请激活!");
                                 return;
                             }

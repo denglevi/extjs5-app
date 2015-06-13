@@ -2,7 +2,7 @@
     /**
      * The application's namespace.
      */
-    "name": "app",
+    "name": "erp",
     
     /**
      * The version of the application.
