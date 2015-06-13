@@ -1,0 +1,12 @@
+.person-item{
+  padding: 5px;
+  margin: 5px;
+  border: 1px dotted gray;
+  background: #fcfcfc;
+  cursor: pointer;
+  width: 160px;
+  float: left;
+}
+.person-item .x-item-selected{
+  background: #E0E0E0;
+}
