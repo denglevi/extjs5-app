@@ -15,16 +15,20 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
     viewModel: {
         type: 'suppliermng'
     },
+    selModel: 'checkboxmodel',   //选择框
     title:'采购单列表',
     width:'100%',
     height:'100%',
     border:true,
     tbar: [
             {
-                text:'新增'
+                text:'新增',
+                glyph:0xf067,
+                handler:'addPurchaseOrder'
             },
             {
-                text:'删除'
+                text:'删除',
+                glyph:0xf1f8
             },'->',
             {
                 xtype: 'textfield',

@@ -6,7 +6,8 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
     alias: 'controller.suppliermng',
 
     requires: [
-        'erp.view.module.purchase.AddPurchaseOrder'
+        'erp.view.module.purchase.AddPurchaseOrder',
+        'erp.view.module.purchase.PurchaseOrderInfo'
     ],
 
     //config: {
@@ -27,11 +28,17 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
         form.down("textfield[name='tax_no']").setValue(record.get("tax_no"));
         form.down("textfield[name='address']").setValue(record.get("address"));
     },
-    onPurchaseOrderGridDblClick:function(gp,record){
-        console.log(2222);
-        gp.up('tabpanel').setActiveTab({
+    addPurchaseOrder:function(btn){
+        btn.up('grid').up('tabpanel').setActiveTab({
             xtype:'addpurchaseorder',
-            title:'xxxx',
+            title:'新建订单',
+            closable:true
+        });
+    },
+    onPurchaseOrderGridDblClick:function(gp){
+        gp.up('tabpanel').setActiveTab({
+            xtype:'purchaseorderinfo',
+            title:'订单详情',
             closable:true
         });
     }

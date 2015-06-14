@@ -7,7 +7,6 @@ Ext.define('erp.Application', {
     extend: 'Ext.app.Application',
     
     name: 'erp',
-
     stores: [
         // TODO: add global / shared stores here
     ],

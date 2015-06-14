@@ -120,6 +120,7 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                 tbar: ['->',
                     {
                         text: '新增',
+                        glyph:0xf067,
                         handler: function (el) {
                             this.up('form').getForm().reset();
                             me.getViewModel().set("fieldDisabled", false);
@@ -127,6 +128,7 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                     },
                     {
                         text: '编辑',
+                        glyph:0xf044,
                         handler: function () {
                             me.getViewModel().set("fieldDisabled", false);
                         }

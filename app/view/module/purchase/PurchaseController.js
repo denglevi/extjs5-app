@@ -1,7 +1,7 @@
 /**
  * Created by denglevi on 15-6-11.
  */
-Ext.define('app.view.module.purchase.PurchaseController', {
+Ext.define('erp.view.module.purchase.PurchaseController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.purchase',
 
@@ -9,9 +9,11 @@ Ext.define('app.view.module.purchase.PurchaseController', {
      * Called when the view is created
      */
     init: function() {
-
+        var view = this.getView();
+        view.html = 'xxxxxx';
+        console.log(123);
     },
-    onSupplierListDblClick:function(gp, record, tr, rowIndex, e, eOpts){
-        console.log(record.get("name"));
+    aaa:function(){
+        console.log(111);
     }
 });
