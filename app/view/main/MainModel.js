@@ -56,10 +56,10 @@ Ext.define('erp.view.main.MainModel', {
         if (text == "采购") {
             menu = [
                 {text: "供应商管理", leaf: true,iconCls:'user',view:'suppliermng'},
-                {text: "收货清单", leaf: true},
-                {text: "验货清单", leaf: true},
-                {text: "采购物流清单", leaf: true},
-                {text: "清关流程", leaf: true},
+                //{text: "收货清单", leaf: true},
+                {text: "验货清单", leaf: true,view:'checkproductlist'},
+                {text: "采购物流清单", leaf: true,view:'logisticslist'},
+                {text: "清关流程", leaf: true,view:'passcustomlist'},
                 {text: "采购清单", leaf: true,view:'purchaseorderlist'}
             ];
         } else if (text == "商品") {

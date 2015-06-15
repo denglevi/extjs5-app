@@ -10,3 +10,62 @@
 .person-form .x-panel-header-default-framed .x-panel-header-glyph {
     color:brown;
 }
+
+/*采购订单状态进度条样式*/
+.status {
+    /*margin-left: 20px;*/
+    /*margin-bottom: 150px;*/
+    /*margin-top: -20px;*/
+    /*width: 100%;*/
+}
+
+.status .dot_text {
+    text-align: center;
+    border: none;
+    text-align: center;
+}
+
+.status .text {
+    /* top: 15px; */
+    border: none;
+    text-align: center;
+    /* margin-left: -15px; */
+    position: relative;
+    left: -96px;
+    top: 15px;
+}
+
+.dot {
+    border-radius: 87px;
+    background: red;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    /*margin-left: -3px;*/
+    border: none;
+}
+
+.line {
+    display: inline-block;
+    height: 2px;
+    width: 75px;
+    /* z-index: 1; */
+    background: green;
+    position: relative;
+    /* left: 0px; */
+    top: -6px;
+}
+
+.red {
+    background: red;
+}
+
+.green {
+    background: green;
+}
+
+.blue{
+    background: #0088cc;
+}
+
+/*采购订单状态进度条样式*/
