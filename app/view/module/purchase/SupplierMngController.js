@@ -29,11 +29,13 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
             closable:true
         });
     },
-    onPurchaseOrderGridDblClick:function(gp){
+    onPurchaseOrderGridDblClick:function(gp,record){
+        var order_id = record.get("id");
         gp.up('tabpanel').setActiveTab({
             xtype:'purchaseorderinfo',
             title:'订单详情',
-            closable:true
+            closable:true,
+            order_id:order_id
         });
     }
 });

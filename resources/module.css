@@ -26,13 +26,13 @@
 }
 
 .status .text {
-    /* top: 15px; */
+
     border: none;
     text-align: center;
     /* margin-left: -15px; */
     position: relative;
-    left: -96px;
-    top: 15px;
+    left: -68px;
+    top: 3px;
 }
 
 .dot {
@@ -48,7 +48,7 @@
 .line {
     display: inline-block;
     height: 2px;
-    width: 75px;
+    width: 85px;
     /* z-index: 1; */
     background: green;
     position: relative;

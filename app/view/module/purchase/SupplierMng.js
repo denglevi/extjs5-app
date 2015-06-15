@@ -36,6 +36,9 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                 height: '100%',
                 columnLines: true,
                 rowLines: true,
+                sortableColumns:false,
+                selModel:'checkboxmodel',
+                store:'SupplierStore',
                 viewConfig: {
                     emptyText: '<b style="text-align: center;">暂无记录</b>',
                     scrollable: 'vertical',
@@ -44,11 +47,16 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                 bbar: ['->', {
                     xtype: 'pagingtoolbar',
                     store: null,
+                    store:'SupplierStore',
                     emptyMsg: '<b>暂无记录</b>',
                     displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
                     displayInfo: true
                 }],
                 tbar: [
+                    {
+                        text:'删除',
+                        glyph:0xf1f8
+                    },'->',
                     {
                         xtype: 'textfield',
                         fieldLabel: "供应商编号",
@@ -172,24 +180,11 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
 
         this.listeners = {
             afterrender: function (el) {
-                var store = Ext.create("Ext.data.Store",
-                    {
-                        fields: ['vendor_no', 'name', 'address'],
-                        proxy: {
-                            type: 'ajax',
-                            url: 'http://localhost/coscia/index.php/Purchasing/Vendor/vendorList.html',
-                            reader: {
-                                type: 'json',
-                                rootProperty: 'data'
-                            }
-                        }
-                    }
-                );
-                me.down("grid").down("pagingtoolbar").setStore(store);
-                me.down("grid").setStore(store);
-                store.load(function (data) {
-                    console.log(data);
-                });
+                //me.down("grid").down("pagingtoolbar").setStore(store);
+                me.down("grid").getStore().load();
+                //store.load(function (data) {
+                //    console.log(data);
+                //});
             }
         }
         me.callParent();

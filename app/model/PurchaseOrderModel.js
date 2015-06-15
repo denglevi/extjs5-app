@@ -1,11 +1,10 @@
 /**
  * Created by denglevi on 15-6-14.
  */
-Ext.define('erp.model.purchase.PurchaseOrderModel', {
+Ext.define('erp.model.PurchaseOrderModel', {
     extend: 'Ext.data.Model',
 
-    fields:["style_no","name",'color','size','num','batch_price','total_price','retail_price'],
-
+    fields: ["style_no", "name", 'color', 'size', 'num', 'batch_price', 'total_price', 'retail_price'],
     /*
     Uncomment to add validation rules
     validators: {

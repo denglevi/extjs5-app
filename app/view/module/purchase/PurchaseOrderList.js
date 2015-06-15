@@ -15,71 +15,61 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
     viewModel: {
         type: 'suppliermng'
     },
+    sortableColumns:false,
     selModel: 'checkboxmodel',   //选择框
-    title:'采购单列表',
-    width:'100%',
-    height:'100%',
-    border:true,
+    title: '采购单列表',
+    width: '100%',
+    height: '100%',
+    border: true,
     tbar: [
-            {
-                text:'新增',
-                glyph:0xf067,
-                handler:'addPurchaseOrder'
-            },
-            {
-                text:'删除',
-                glyph:0xf1f8
-            },'->',
-            {
-                xtype: 'textfield',
-                fieldLabel: "采购订单号",
-                name: 'purchase_order_no'
-            },
-            {
-                xtype: 'textfield',
-                fieldLabel: "供应商名称",
-                name: 'supllier_name'
-            },
-            {
-                text: '搜索',
-                glyph: 0xf002
-            }],
+        {
+            text: '新增',
+            glyph: 0xf067,
+            handler: 'addPurchaseOrder'
+        },
+        {
+            text: '删除',
+            glyph: 0xf1f8
+        }, '->',
+        {
+            xtype: 'textfield',
+            fieldLabel: "采购订单号",
+            name: 'purchase_order_no'
+        },
+        {
+            xtype: 'textfield',
+            fieldLabel: "供应商名称",
+            name: 'supllier_name'
+        },
+        {
+            text: '搜索',
+            glyph: 0xf002
+        }],
     bbar: ['->', {
         xtype: 'pagingtoolbar',
-        store: null,
+        store: 'PurchaseOrderListStore',
         emptyMsg: '<b>暂无记录</b>',
         displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
         displayInfo: true
     }],
     columns: [
-        {text: '订单号', dataIndex: 'no'},
-        {text: '供应商', dataIndex: 'supplier'},
-        {text: '订单类型', dataIndex: 'type'},
-        {text: '状态', dataIndex: 'status'},
-        {text: '提交日期', dataIndex: 'date',flex:1}
+        {text: '订单号', dataIndex: 'order_nos'},
+        {text: '供应商', dataIndex: 'name'},
+        {text: '买手', dataIndex: 'order_buyer'},
+        {text: '订单类型', dataIndex: 'order_type',renderer:function(value, cellmeta, record, rowIndex, columnIndex, store){
+            if(value == 'spot_purchase_order'){
+                return '现货';
+            }
+            return '期货';
+        }},
+        {text: '状态', dataIndex: 'status_name'},
+        {text: '提交日期', dataIndex: 'order_time', flex: 1}
     ],
-    store:Ext.create("Ext.data.Store",
-        {
-            fields: ['no', 'supplier', 'type','status','date'],
-            data:[
-                {no:'xxx',supplier:'xxx',type:'xxx',status:'xxx',date:'2015-06-14'},
-                {no:'xxx',supplier:'xxx',type:'xxx',status:'xxx',date:'2015-06-14'},
-                {no:'xxx',supplier:'xxx',type:'xxx',status:'xxx',date:'2015-06-14'},
-                {no:'xxx',supplier:'xxx',type:'xxx',status:'xxx',date:'2015-06-14'},
-                {no:'xxx',supplier:'xxx',type:'xxx',status:'xxx',date:'2015-06-14'},
-                {no:'xxx',supplier:'xxx',type:'xxx',status:'xxx',date:'2015-06-14'}
-            ]
-            //proxy: {
-            //    type: 'ajax',
-            //    url: 'http://localhost/coscia/index.php/Purchasing/Vendor/vendorList.html',
-            //    reader: {
-            //        type: 'json',
-            //        rootProperty: 'data'
-            //    }
-            //}
-        }
-    ),
-    listeners:{
-        rowdblclick:'onPurchaseOrderGridDblClick'
+    store: 'PurchaseOrderListStore',
+    listeners: {
+        afterrender: function () {
+            this.getStore().load();
+        },
+        rowdblclick: 'onPurchaseOrderGridDblClick'
     }
 });
