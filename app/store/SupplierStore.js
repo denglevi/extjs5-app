@@ -20,7 +20,7 @@ Ext.define('erp.store.SupplierStore', {
     autoLoad:false,
     proxy: {
         type: 'ajax',
-        url: 'http://localhost/coscia/index.php/Purchasing/Vendor/vendorList.html?api=1',
+        url: apiBaseUrl+'/index.php/Purchasing/Vendor/vendorList.html?api=1',
         reader: {
             type: 'json',
             rootProperty: 'data'

@@ -105,6 +105,10 @@ Ext.define('erp.view.main.MainModel', {
                 ]
                 }
             ];
+        } else if(text == "财务"){
+            menu = [
+                {text: "付款申请", leaf: true,view:'applypaylist'}
+            ];
         }
         return Ext.create('Ext.data.TreeStore', {
             root: {

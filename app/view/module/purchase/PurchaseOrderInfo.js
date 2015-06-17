@@ -7,11 +7,14 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
 
     requires: [
         'Ext.Ajax',
+        'Ext.button.Button',
         'Ext.container.Container',
         'Ext.data.Store',
         'Ext.grid.Panel',
+        'Ext.panel.Panel',
         'Ext.tab.Panel',
-        'Ext.toolbar.Paging'
+        'Ext.toolbar.Toolbar',
+        'erp.view.window.PurchasePayWin'
     ],
     initComponent: function () {
         var me = this,res;
@@ -19,7 +22,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         //myMask.show();
         Ext.Ajax.request({
             async:false,
-            url: 'http://localhost/coscia/index.php/Purchasing/Buyer/getPurchaseOrderInfo',
+            url: apiBaseUrl+'/index.php/Purchasing/Buyer/getPurchaseOrderInfo',
             params: {
                 id: me.order_id
             },
@@ -27,81 +30,131 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 //myMask.destroy( );
                 var text = Ext.decode(response.responseText);
                 res = text.data;
+                console.log(res);
             }
         });
 
-        console.log(res);
-        me.layout = 'anchor';
+        var product_info = res.product_info,
+            log = res.log,
+            order_info = res.order_info,
+            status = res.status,
+            batchs = res.batchs,
+            next_status = res.next_status;
+        var url = next_status.action==''?'/Purchasing/Buyer/purchasingAction':next_status.action;
+        me.layout = 'vbox';
         me.items = [
             {
                 xtype: 'container',
-                margin:'30 30 50 30',
-                data: res.status,
+                width:'100%',
+                margin:'30 30 40 30',
+                data: status,
                 tpl: new Ext.XTemplate(
                     '<div class="status">',
                     '<tpl for=".">',
-                    '<div style="float: left;margin-right: -28px;">',
-                    '<span class="dot blue red green"></span>',
-                    '<span class="line red green"></span><br>',
+                    '<div style="float: left;margin-top: 20px;">',
+                    '<span class="dot {[this.getDot(values.id)]}"></span>',
+                    '<span class="line {[this.getLine(values.id,xindex)]}"></span><br>',
                     '<span class="text">{name}</span>',
                     '</div>',
                     '</tpl>',
-                    '</div>'
+                    '</div>',
+                    {
+                        getDot:function(id){
+                            if(next_status === null) return 'green';
+                            if(id > next_status.id) return 'red';
+                            if(id == next_status.id) return 'blue';
+                            return 'green';
+                        },
+                        getLine:function(id,index){
+                            if(index == status.length) return 'hide';
+                            if(next_status === null) return 'green';
+                            if(id >= next_status.id) return 'red';
+                            return 'green';
+                        }
+                    }
                 )
             },
             {
-                xtype:'container',
-                data:res.order_info,
+                xtype:'panel',
+                data:order_info,
+                width:'100%',
+                margin:10,
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    items: [
+                        '->'
+                    ]
+                }],
                 tpl:new Ext.XTemplate(
                     '<div class="col-md-12">',
-                    '<div class="col-md-2"><div class="form-group"><label class="control-label col-md-7">日期：</label><div class="col-md-5">{order_time}</div> </div></div>',
-                    '<div class="col-md-2"><div class="form-group"><label class="control-label col-md-7">供应商：</label><div class="col-md-5">{vendor_name}</div> </div></div>',
-                    '<div class="col-md-2"><div class="form-group"><label class="control-label col-md-7">订单号：</label><div class="col-md-5">{order_nos}</div> </div></div>',
-                    '<div class="col-md-2"><div class="form-group"><label class="control-label col-md-7">买手：</label><div class="col-md-5">{username}</div> </div></div>',
-                    '<div class="col-md-2"><div class="form-group"><label class="control-label col-md-7">订单类型：</label><div class="col-md-5">{order_state}</div> </div></div>',
+                    '<div class="col-md-2">日期：{order_time}</div>',
+                    '<div class="col-md-2">供应商：{vendor_name}</div>',
+                    '<div class="col-md-2">订单号：{order_nos}</div>',
+                    '<div class="col-md-2">买手：{username}</div>',
+                    '<div class="col-md-4">订单类型：{order_state}</div>',
                     '</div>'
-                )
+                ),
+                listeners:{
+                    afterrender:function(){
+                        if(next_status.other_action == 1) return;
+                        this.down("toolbar").add({
+                            text:next_status.name,
+                            xtype:'',
+                            handler:function(){
+                                if('申请付款' == next_status.name){
+                                    var total=0;
+                                    Ext.each(product_info,function(product){
+                                        total += parseFloat(product.orderinfo_nprice);
+                                    });
+                                    Ext.create('erp.view.window.PurchasePayWin',{
+                                        title:next_status.name,
+                                        status_id:order_info.order_status,
+                                        order_no:order_info.order_nos,
+                                        batch_no:batchs[0].batch_no,
+                                        url:url,
+                                        total:total
+                                    }).show();
+                                }
+                            }
+                        });
+                    }
+                }
             },
             {
                 xtype: 'tabpanel',
                 width: '100%',
-                height: '100%',
+                flex:1,
                 items: [
                     {
                         title: '商品信息',
                         xtype: 'grid',
-                        height: '100%',
+                        scrollable:'y',
                         sortableColumns:false,
                         columns: [
-                            {text: '国际款号', dataIndex: 'style_no', flex: 1},
-                            {text: '商品名称', dataIndex: 'name'},
+                            {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
+                            {text: '商品名称', dataIndex: 'orderinfo_name'},
                             {text: '颜色', dataIndex: 'orderinfo_color'},
-                            {text: '尺码', dataIndex: 'size'},
-                            {text: '数量', dataIndex: 'num'},
-                            {text: '批发价', dataIndex: 'batch_price'},
-                            {text: '总价', dataIndex: 'total_price'},
-                            {text: '官方零售价', dataIndex: 'retail_price'}
+                            {text: '尺码', dataIndex: 'orderinfo_group'},
+                            {text: '数量', dataIndex: 'orderinfo_amount'},
+                            {text: '批发价(欧)', dataIndex: 'orderinfo_nprice'},
+                            {text: '总价(欧)', dataIndex: 'orderinfo_wholesale'},
+                            {text: '官方零售价(欧)', dataIndex: 'orderinfo_official',flex:1}
                         ],
-                        bbar: ['->', {
-                            xtype: 'pagingtoolbar',
-                            store: null,
-                            store:Ext.create('Ext.data.Store',{
-                                fields:[],
-                                data:res.product_info
-                            }),
-                            emptyMsg: '<b>暂无记录</b>',
-                            displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
-                            displayInfo: true
-                        }],
-                        store: Ext.create('Ext.data.Store',{
-                            fields:[],
-                            data:res.product_info
-                        })
+                        listeners:{
+                            afterrender:function(){
+                                var store = Ext.create('Ext.data.Store',{
+                                        fields:[],
+                                        data:product_info
+                                    });
+                                this.setStore(store);
+                            }
+                        }
                     },
                     {
                         title: '操作日志',
                         xtype: 'grid',
-                        height: '100%',
+                        height:400,
                         sortableColumns:false,
                         columns: [
                             {text: '日期', dataIndex: 'time'},
@@ -110,7 +163,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                         ],
                         store: Ext.create('Ext.data.Store',{
                             fields:[],
-                            data:res.log
+                            data:log
                         })
                     }
                 ],

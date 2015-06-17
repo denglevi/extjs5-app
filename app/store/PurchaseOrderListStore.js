@@ -15,7 +15,7 @@ Ext.define('erp.store.PurchaseOrderListStore', {
         autoLoad:false,
         proxy: {
             type: 'ajax',
-            url: 'http://localhost/coscia/index.php/Purchasing/Buyer/getPurchaseOrderList.html?api=1',
+            url: apiBaseUrl+'/index.php/Purchasing/Buyer/getPurchaseOrderList.html?api=1',
             reader: {
                 type: 'json',
                 rootProperty: 'data',

@@ -5,7 +5,6 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
     extend: "Ext.grid.Panel",
     alias: "widget.purchaseorderlist",
     requires: [
-        'Ext.data.Store',
         'Ext.form.field.Text',
         'Ext.toolbar.Paging',
         'erp.view.module.purchase.SupplierMngController',
@@ -29,7 +28,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
         },
         {
             text: '删除',
-            glyph: 0xf1f8
+            glyph: 0xf1f8,
+            handler:'deletePurchaseOrder'
         }, '->',
         {
             xtype: 'textfield',
@@ -53,7 +53,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
         displayInfo: true
     }],
     columns: [
-        {text: '订单号', dataIndex: 'order_nos'},
+        {text: '订单号', dataIndex: 'order_nos',flex:1},
         {text: '供应商', dataIndex: 'name'},
         {text: '买手', dataIndex: 'order_buyer'},
         {text: '订单类型', dataIndex: 'order_type',renderer:function(value, cellmeta, record, rowIndex, columnIndex, store){
@@ -63,7 +63,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
             return '期货';
         }},
         {text: '状态', dataIndex: 'status_name'},
-        {text: '提交日期', dataIndex: 'order_time', flex: 1}
+        {text: '提交日期', dataIndex: 'order_time', flex: 2}
     ],
     store: 'PurchaseOrderListStore',
     listeners: {

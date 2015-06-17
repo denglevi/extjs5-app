@@ -16,6 +16,7 @@ Ext.define('erp.view.main.MainController', {
         'Ext.layout.container.Accordion',
         'Ext.tree.Panel',
         'erp.view.module.purchase.PurchaseOrderList',
+        'erp.view.module.financial.ApplyPayList',
         'erp.view.module.purchase.SupplierMng'
     ],
     onMainMenu: function (el) {

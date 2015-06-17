@@ -5,9 +5,7 @@
  */
 Ext.application({
     name: 'erp',
-
     extend: 'erp.Application',
-    
     autoCreateViewport: 'erp.view.main.Main'
 	
     //-------------------------------------------------------------------------
