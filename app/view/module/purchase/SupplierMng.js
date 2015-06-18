@@ -6,9 +6,6 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
     alias: "widget.suppliermng",
 
     requires: [
-        'Ext.data.Store',
-        'Ext.data.proxy.Ajax',
-        'Ext.data.reader.Json',
         'Ext.form.Panel',
         'Ext.form.field.Hidden',
         'Ext.form.field.Text',

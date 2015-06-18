@@ -6,32 +6,41 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
     xtype: 'applypaylist',
 
     requires: [
+        'Ext.Ajax',
+        'Ext.Array',
         'Ext.data.Store',
         'Ext.data.proxy.Ajax',
         'Ext.data.reader.Json',
-        'Ext.form.Panel',
-        'Ext.form.field.File',
+        'Ext.form.field.Date',
         'Ext.form.field.Text',
-        'Ext.form.field.TextArea',
-        'Ext.window.Window'
+        'Ext.toolbar.Paging',
+        'erp.view.window.PayFormWin'
     ],
 
     initComponent: function () {
         var me = this;
 
         me.columns = [
-            {text: '付款类型', dataIndex: 'pay_type',renderer:function(){return "采购付款";}},
-            {text: '收款公司', dataIndex: 'receive_money_company',flex:1},
-            {text: '公司账号', dataIndex: 'company_bank_no',flex:1},
-            {text: '开户行', dataIndex: 'company_open_bank',flex:1},
+            {
+                text: '付款类型', dataIndex: 'pay_type', renderer: function () {
+                return "采购付款";
+            }
+            },
+            {text: '收款公司', dataIndex: 'receive_money_company', flex: 1},
+            {text: '公司账号', dataIndex: 'company_bank_no', flex: 1},
+            {text: '开户行', dataIndex: 'company_open_bank', flex: 1},
             {text: '付款金额', dataIndex: 'money'},
-            {text: '用途', dataIndex: 'pay_function',flex:2},
+            {text: '用途', dataIndex: 'pay_function', flex: 2},
             {text: '最后付款日期', dataIndex: 'last_pay_day'},
-            {text: '操作', dataIndex: 'pay_function',flex:1}
+            {text: '付款日期', dataIndex: 'pay_day'},
+            {text: '状态', dataIndex: 'status', flex: 1,renderer:function(val){
+                if(val == 1) return "已付款";
+                return "待付款";
+            }}
         ];
         me.store = Ext.create('Ext.data.Store', {
             autoLoad: true,
-            fields: ['receive_money_company', 'company_bank_no', 'company_open_bank', 'money', 'pay_function', 'pay_function', "pay_type","status"],
+            fields: ['receive_money_company', 'company_bank_no', 'company_open_bank', 'money', 'pay_function', 'pay_function', "pay_type", "status"],
             proxy: {
                 type: 'ajax',
                 url: apiBaseUrl + '/Financial/Index/getApplyPayList',
@@ -45,133 +54,80 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
         me.selModel = 'checkboxmodel';
         me.sortableColumns = false;
         me.listeners = {
-            rowdblclick:function(gp,record){
-                console.log(record);
+            rowdblclick: function (gp, record) {
                 var status = record.get("status");
-                if(status == 0){
-                    Ext.create('Ext.window.Window',{
-                        layout:'fit',
-                        bodyPadding:10,
-                        title:"付款单",
-                        items:[
-                            {
-                                xtype:'form',
-                                url:apiBaseUrl+'/Financial/Index/pay',
-                                method:'POST',
-                                defaults:{
-                                    anchor: '100%',
-                                    xtype: 'textfield',
-                                    allowBlank: false,
-                                    disabled:true,
-                                    margin: 10
-                                },
-                                items:[
-                                    {
-                                        fieldLabel: '收款公司',
-                                        name: 'receive_money_company',
-                                        value:record.get("receive_money_company")
-                                    },
-                                    {
-                                        fieldLabel: '公司账号',
-                                        name: 'company_bank_no',
-                                        value:record.get("company_bank_no")
-                                    },
-                                    {
-                                        fieldLabel: '开户行',
-                                        name: 'company_open_bank',
-                                        value:record.get("company_open_bank")
-                                    },
-                                    {
-                                        fieldLabel: '付款金额',
-                                        name: 'money',
-                                        value:record.get("money")
-                                    },
-                                    {
-                                        fieldLabel: '最后付款日期',
-                                        name: 'last_pay_day',
-                                        value:record.get("last_pay_day")
-
-                                    },
-                                    {
-                                        fieldLabel: '用途',
-                                        name: 'pay_function',
-                                        value:record.get("pay_function")
-                                    },
-                                    {
-                                        fieldLabel: '欧元金额',
-                                        name: 'EUR',
-                                        allowBlank:false,
-                                        disabled:false
-                                    },
-                                    {
-                                        fieldLabel: '汇率',
-                                        name: 'rate',
-                                        allowBlank:false,
-                                        disabled:false
-                                    },
-                                    {
-                                        fieldLabel: '人民币',
-                                        name: 'RMB',
-                                        allowBlank:false,
-                                        disabled:false
-                                    },
-                                    {
-                                        fieldLabel: '付款凭证',
-                                        name: 'fileinfo',
-                                        xtype:'filefield',
-                                        buttonText: '上传',
-                                        allowBlank:false,
-                                        disabled:false
-                                    },
-                                    {
-                                        fieldLabel: '备注',
-                                        name: 'mark',
-                                        xtype:'textarea',
-                                        allowBlank:false,
-                                        disabled:false
-                                    }
-                                ],
-                                buttons: [
-                                    {
-                                        text: '重置',
-                                        handler: function () {
-                                            this.up('form').getForm().reset();
-                                        }
-                                    },
-                                    {
-                                        text: '提交',
-                                        formBind: true,
-                                        disabled: true,
-                                        handler: function () {
-                                            var form = this.up('form').getForm();
-                                            if (form.isValid()) {
-                                                form.submit({
-                                                    params:{
-                                                        id:record.get("id"),
-                                                        order_no:record.get("order_no"),
-                                                        batch_no:record.get("batch_no")
-                                                    },
-                                                    waitMsg:'正在提交付款...',
-                                                    success: function (form, action) {
-                                                        console.log(action.result);
-                                                    },
-                                                    failure: function (form, action) {
-                                                        console.log(action);
-                                                        Ext.Msg.alert('失败', action.result.msg);
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
-                    }).show()
-                    return;
-                }
-
+                Ext.create('erp.view.window.PayFormWin',{status:status,record:record}).show();
             }
         }
+        me.tbar = [
+            {
+                text: '删除',
+                glyph: 0xf1f8,
+                handler:function(){
+                    var sel = me.getSelection(),
+                        ids = [];
+                    if(sel.length == 0){
+                        Ext.Msg.alert('系统提示', '请选择要删除的付款单');
+                        return;
+                    }
+                    Ext.Array.each(sel,function(item){
+                       ids.push(item.get("id"));
+                    });
+                    Ext.Msg.show({
+                        title:'系统消息',
+                        message: '你确定要删除所选付款单吗？',
+                        buttons: Ext.Msg.YESNO,
+                        icon: Ext.Msg.QUESTION,
+                        fn: function(btn) {
+                            if (btn === 'yes') {
+                                Ext.Ajax.request({
+                                    url:apiBaseUrl+'/index.php/Financial/Index/deletePayOrder',
+                                    waitMsg:'正在删除...',
+                                    method:'POST',
+                                    params:{
+                                        ids:ids.join(',')
+                                    },
+                                    success:function(data){
+                                        var res = Ext.decode(data.responseText);
+                                        if(res.success){
+                                            me.getStore().load();
+                                            return
+                                        }
+
+                                        Ext.Msg.alert('系统提示', res.msg);
+                                    },
+                                    failure:function(data){
+                                        Ext.Msg.alert('系统提示', "操作失败请重试!错误代码:"+data.status);
+                                    }
+                                })
+                            }
+                        }
+                    });
+
+                }
+            }, '->',
+            {
+                xtype: 'textfield',
+                fieldLabel: "收款公司",
+                name: 'receive_money_company'
+            },
+            {
+                xtype: 'datefield',
+                fieldLabel: "付款日期",
+                editable:false,
+                name: 'date'
+            },
+            {
+                text: '搜索',
+                glyph: 0xf002
+            }];
+        me.bbar = ['->', {
+            xtype: 'pagingtoolbar',
+            store: me.store,
+            emptyMsg: '<b>暂无记录</b>',
+            displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
+            displayInfo: true
+        }];
         me.callParent();
     }
 });

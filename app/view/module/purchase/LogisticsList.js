@@ -20,6 +20,7 @@ Ext.define('erp.view.module.purchase.LogisticsList', {
     width:'100%',
     height:'100%',
     border:true,
+    store:'LogisticsListStore',
     sortableColumns:false,
     tbar: [
         {
@@ -47,17 +48,22 @@ Ext.define('erp.view.module.purchase.LogisticsList', {
         }],
     bbar: ['->', {
         xtype: 'pagingtoolbar',
-        store: null,
+        store: 'LogisticsListStore',
         emptyMsg: '<b>暂无记录</b>',
         displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
         displayInfo: true
     }],
     columns:[
-        {text:'物流单号',dataIndex:'purchase_no',flex:1},
+        {text:'物流单号',dataIndex:'logistics_no',flex:1},
         {text:'供货单号',dataIndex:'batch_no',flex:1},
-        {text:'供应商',dataIndex:'supplier'},
+        {text:'供应商',dataIndex:'name',flex:1},
         {text:'物流类型',dataIndex:'type'},
-        {text:'联系人',dataIndex:'contact'},
-        {text:'提交日期',dataIndex:'date'}
-    ]
+        {text:'联系人',dataIndex:'contact',flex:1},
+        {text:'提交日期',dataIndex:'create_time'}
+    ],
+    listeners:{
+        afterrender:function(){
+            this.getStore().load();
+        }
+    }
 });

@@ -10,17 +10,17 @@ Ext.define('erp.view.module.purchase.CheckProductList', {
         'erp.view.module.purchase.SupplierMngController',
         'erp.view.module.purchase.SupplierMngModel'
     ],
-
     viewModel: {
         type: 'suppliermng'
     },
     controller: 'suppliermng',
     selModel: 'checkboxmodel',   //选择框
-    title:'采购单列表',
+    title:'验货单列表',
     width:'100%',
     height:'100%',
     border:true,
     sortableColumns:false,
+    store:'CheckProductListStore',
     tbar: [
         {
             text:'新增',
@@ -47,25 +47,21 @@ Ext.define('erp.view.module.purchase.CheckProductList', {
         }],
     bbar: ['->', {
         xtype: 'pagingtoolbar',
-        store: null,
+        store: 'CheckProductListStore',
         emptyMsg: '<b>暂无记录</b>',
         displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
         displayInfo: true
     }],
     columns:[
-        {text:'采购订单号',dataIndex:'purchase_no',flex:1},
+        {text:'采购订单号',dataIndex:'order_no',flex:1},
         {text:'供货单号',dataIndex:'batch_no',flex:1},
-        {text:'供应商',dataIndex:'supplier'},
-        {text:'买手',dataIndex:'buyer'},
+        {text:'供应商',dataIndex:'supplier_id'},
+        {text:'买手',dataIndex:'buyer_id'},
         {text:'提交日期',dataIndex:'date'}
-    ]
-    //initComponent:function(){
-    //
-    //    var me = this;
-    //    Ext.applyIf(me,{
-    //
-    //    });
-    //
-    //    me.callParent();
-    //}
+    ],
+    listeners:{
+        afterrender:function(){
+            this.getStore().load();
+        }
+    }
 });

@@ -7,13 +7,15 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
 
     requires: [
         'Ext.Ajax',
-        'Ext.button.Button',
         'Ext.container.Container',
         'Ext.data.Store',
         'Ext.grid.Panel',
         'Ext.panel.Panel',
         'Ext.tab.Panel',
         'Ext.toolbar.Toolbar',
+        'erp.view.module.purchase.AddCheckProductOrder',
+        'erp.view.window.AddLogisticsFormWin',
+        'erp.view.window.AddPassCustomWin',
         'erp.view.window.PurchasePayWin'
     ],
     initComponent: function () {
@@ -114,6 +116,29 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         batch_no:batchs[0].batch_no,
                                         url:url,
                                         total:total
+                                    }).show();
+                                }else if("验货" == next_status.name){
+                                    var tab = {
+                                        title:next_status.name,
+                                        order_no:order_info.order_nos,
+                                        batch_no:batchs[0].batch_no,
+                                        xtype:"addcheckproductorder" ,
+                                        closable:true
+                                    };
+                                    me.up("tabpanel").setActiveTab(tab);
+                                }else if("提货" == next_status.name){
+                                    Ext.create('erp.view.window.AddLogisticsFormWin',{
+                                        title:next_status.name,
+                                        order_no:order_info.order_nos,
+                                        batch_no:batchs[0].batch_no,
+                                        url:url
+                                    }).show();
+                                }else if("申请报关" == next_status.name){
+                                    Ext.create('erp.view.window.AddPassCustomWin',{
+                                        title:next_status.name,
+                                        order_no:order_info.order_nos,
+                                        batch_no:batchs[0].batch_no,
+                                        url:url
                                     }).show();
                                 }
                             }
