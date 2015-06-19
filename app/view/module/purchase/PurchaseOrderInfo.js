@@ -32,7 +32,6 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 //myMask.destroy( );
                 var text = Ext.decode(response.responseText);
                 res = text.data;
-                console.log(res);
             }
         });
 
@@ -140,6 +139,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         batch_no:batchs[0].batch_no,
                                         url:url
                                     }).show();
+                                }else if("完成报关" == next_status.name){
+                                    me.handlerPurchaseOrder(order_info.order_nos,batchs[0].batch_no);
                                 }
                             }
                         });
@@ -199,5 +200,23 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         ];
 
         me.callParent();
+    },
+    handlerPurchaseOrder:function(order_no,batch_no){
+        Ext.Ajax.request({
+            async:false,
+            url: apiBaseUrl+'/index.php/Purchasing/Buyer/handlerPurchaseOrder',
+            params: {
+                batch_no:batch_no,
+                order_no:order_no
+            },
+            success: function(response){
+                //myMask.destroy( );
+                var text = Ext.decode(response.responseText);
+                if(!text.success){
+                    Ext.Msg.alert("系统提示",text.msg);
+                    return;
+                }
+            }
+        });
     }
 });

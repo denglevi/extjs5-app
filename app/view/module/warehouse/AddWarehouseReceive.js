@@ -1,11 +1,7 @@
-/**
- * Created by Administrator on 2015-06-18.
- */
-Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
+Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
     extend: 'Ext.container.Container',
-    alias: 'widget.addcheckproductorder',
+    alias: 'widget.addwarehousereceive',
     requires: [
-        'Ext.Ajax',
         'Ext.data.Store',
         'Ext.form.Panel',
         'Ext.form.action.Action',
@@ -17,32 +13,9 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
         'Ext.layout.container.Anchor',
         'Ext.tab.Panel'
     ],
-
     initComponent: function () {
-        var me = this, res;
+        var me = this;
         this.layout = 'hbox';
-        this.listeners = {
-            afterrender: function () {
-                //getSupplierAndBuyer
-                Ext.Ajax.request({
-                    async: true,
-                    url: apiBaseUrl + '/index.php/Purchasing/Buyer/getSupplierAndBuyer',
-                    success: function (response) {
-                        var text = Ext.decode(response.responseText);
-                        res = text.data;
-                        var form = me.down("form");
-                        form.down("combo[name=buyer]").setStore(Ext.create('Ext.data.Store', {
-                            fields: ['id', 'username'],
-                            data:res.buyer
-                        }));
-                        form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
-                            fields: ['id_no', 'name'],
-                            data:res.supplier
-                        }));
-                    }
-                });
-            }
-        }
         this.items = [
             {
                 xtype: 'form',
@@ -52,7 +25,7 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                 layout: 'anchor',
                 bodyPadding: 5,
                 method: 'POST',
-                url: apiBaseUrl + '/index.php/Purchasing/CheckProduct/addCheckProductOrder',
+                url: apiBaseUrl + '/index.php/Warehouse/Index/addWarehouseReceive',
                 defaults: {
                     anchor: '100%',
                     xtype: 'textfield',
@@ -61,53 +34,48 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                 },
                 items: [
                     {
+                        fieldLabel: '收货日期',
+                        name: 'date',
+                        xtype: 'datefield',
+                        format: 'Y-m-d',
+                        value:new Date()
+                    },
+                    {
                         fieldLabel:"采购订单号",
                         name:'order_no',
                         editable:false,
-                        value:me.order_no
+                        value:this.record.get("order_no")
                     },
                     {
                         fieldLabel:"供应订单号",
                         name:'batch_no',
                         editable:false,
-                        value:me.batch_no
+                        value:this.record.get("batch_no")
                     },
                     {
-                        fieldLabel: '制单日期',
-                        name: 'date',
-                        xtype: 'datefield',
-                        editable: false,
-                        format: 'Y-m-d',
-                        value:new Date()
+                        fieldLabel:"物流单号",
+                        name:'logistics_no',
+                        editable:false,
+                        value:this.record.get("logistics_no")
                     },
                     {
                         fieldLabel: '供应商',
                         name: 'supplier',
-                        xtype: 'combo',
                         editable: false,
-                        displayField: 'name',
-                        valueField: 'id_no'
-                    },
-                    {
-                        fieldLabel: '买手',
-                        name: 'buyer',
-                        xtype: 'combo',
-                        editable: false,
-                        displayField: 'username',
-                        valueField: 'id',
+                        value:this.record.get("name")
                     },
                     {
                         xtype: 'filefield',
                         name: 'excel_file',
-                        buttonText: '导入装箱单',
+                        buttonText: '导入收货单',
                         allowBlank: true,
                         listeners: {
                             change: function () {
                                 var val = this.getValue();
                                 this.up("form").getForm().submit({
                                     clientValidation: false,
-                                    waitMsg:'正在导入装箱单信息...',
-                                    url: apiBaseUrl + '/index.php/Purchasing/CheckProduct/importCheckProduct',
+                                    waitMsg:'正在导入收货单信息...',
+                                    url: apiBaseUrl + '/index.php/Warehouse/Index/importReceiveProduct',
                                     success: function (form, action) {
                                         var data = action.result.data;
                                         console.log(data);
@@ -207,12 +175,12 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                 ]
             },
             {
-              xtype:'tabpanel',
+                xtype:'tabpanel',
                 flex:1,
                 height:'100%',
                 items:[
                     {
-                        title: '导入装箱单信息',
+                        title: '导入收货单信息',
                         flex: 1,
                         xtype: 'grid',
                         height: '100%',
@@ -232,7 +200,6 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                 ]
             }
         ]
-
         this.callParent(arguments);
     }
 });

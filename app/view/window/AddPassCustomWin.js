@@ -21,12 +21,12 @@ Ext.define('erp.view.window.AddPassCustomWin', {
     layout: 'fit',
     bodyPadding: 10,
     initComponent: function () {
-        var me = this;
+        var me = this,res;
         Ext.apply(me, {
             items: [
                 {
                     xtype: 'form',
-                    url: apiBaseUrl + '/Purchasing/Logistics/addLogisticsOrder',
+                    url: apiBaseUrl + '/Purchasing/Customs/addPassCustomOrder',
                     method: 'POST',
                     width: 650,
                     layout: 'column',
@@ -53,7 +53,7 @@ Ext.define('erp.view.window.AddPassCustomWin', {
                             res = text.data;
                             console.log(res, this);
                             var form = me.down("form");
-                            form.down("combo[name=cu_company_id]").setStore(Ext.create('Ext.data.Store', {
+                            form.down("combo[name=cu_name]").setStore(Ext.create('Ext.data.Store', {
                                 fields: ['id', 'name'],
                                 data: res.custom_company
                             }));
@@ -66,19 +66,20 @@ Ext.define('erp.view.window.AddPassCustomWin', {
     },
     getFieldItems: function (batch_no,order_no) {
         var fields = [
-            {fieldLabel: '供货单号', name: 'batch_no',value:batch_no,editable:false},
+            {fieldLabel: '供货单号', name: 'supply_no',value:batch_no,editable:false},
             {fieldLabel: '采购单号', name: 'order_no',value:order_no,editable:false},
             {fieldLabel: '物流单号', name: 'logistics_no'},
-            {fieldLabel: '报关公司', name: 'cu_company_id',editable:false, xtype: 'combo',displayField: 'name',valueField: 'id',
+            {fieldLabel: '报关公司', name: 'cu_name',editable:false, xtype: 'combo',displayField: 'name',valueField: 'name',
                 listeners:{
                     change:function(obj){
                         var items = obj.getStore().getData().items,company_id = obj.getValue();
                         Ext.Array.each(items,function(item){
-                            var id = item.get("id");
+                            var id = item.get("name");
                             if(id == company_id){
-                                obj.up("form").down("textfield[name=cu_contaits]").setValue(item.get("contact"));
-                                obj.up("form").down("textfield[name=cu_tel]").setValue(item.get("phone"));
-                                obj.up("form").down("textarea[name=cu_address]").setValue(item.get("address"));
+                                var form = obj.up("form");
+                                form.down("textfield[name=cu_contaits]").setValue(item.get("contact"));
+                                form.down("textfield[name=cu_tel]").setValue(item.get("phone"));
+                                form.down("textarea[name=cu_address]").setValue(item.get("address"));
                                 return;
                             }
                         });

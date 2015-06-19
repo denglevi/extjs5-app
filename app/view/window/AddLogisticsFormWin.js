@@ -37,7 +37,7 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
                         columnWidth: 0.5
                     },
                     items: this.getFieldItems(me.batch_no,me.order_no),
-                    buttons: this.getBtns()
+                    buttons: this.getBtns(me.need_notice)
                 }
             ],
             listeners: {
@@ -50,7 +50,7 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
                             res = text.data;
                             console.log(res, this);
                             var form = me.down("form");
-                            form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
+                            form.down("combo[name=supplier_id]").setStore(Ext.create('Ext.data.Store', {
                                 fields: ['id_no', 'name'],
                                 data: res.supplier
                             }));
@@ -92,7 +92,7 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
 
         return fields;
     },
-    getBtns: function () {
+    getBtns: function (need_notice) {
         return [
             {
                 text: '重置',
@@ -108,6 +108,12 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
                     var form = this.up('form').getForm();
                     if (form.isValid()) {
                         form.submit({
+                            params:{
+                              need_notice:need_notice,
+                                batch_no:'',
+                                order_no:'',
+                                supplier_id:''
+                            },
                             waitMsg: '正在保存物流单...',
                             success: function (form, action) {
                                 console.log(action.result);

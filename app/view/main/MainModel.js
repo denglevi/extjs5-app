@@ -88,7 +88,7 @@ Ext.define('erp.view.main.MainModel', {
                     {text: "库位", leaf: true}
                 ]
                 },
-                {text: "仓库收货", leaf: true},
+                {text: "仓库收货", leaf: true,view:'warehousereceive'},
                 {text: "商品上架", leaf: true},
                 {
                     text: "仓库管理", expanded: false, children: [

@@ -17,7 +17,8 @@ Ext.define('erp.view.main.MainController', {
         'Ext.tree.Panel',
         'erp.view.module.purchase.PurchaseOrderList',
         'erp.view.module.financial.ApplyPayList',
-        'erp.view.module.purchase.SupplierMng'
+        'erp.view.module.purchase.SupplierMng',
+        'erp.view.module.warehouse.WarehouseReceive'
     ],
     onMainMenu: function (el) {
         //点击不同菜单之后，左边栏显示不同的菜单
