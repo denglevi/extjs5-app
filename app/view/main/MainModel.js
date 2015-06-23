@@ -75,7 +75,7 @@ Ext.define('erp.view.main.MainModel', {
                 ]
                 },
                 {text: "进货单", leaf: true},
-                {text: "商品目录", leaf: true},
+                {text: "商品目录", leaf: true,view:'goodsmenu'},
                 {text: "商品列表", leaf: true},
                 {text: "配送通知单", leaf: true},
                 {text: "商品配货单", leaf: true}

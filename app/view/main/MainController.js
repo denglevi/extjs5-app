@@ -18,6 +18,7 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.purchase.PurchaseOrderList',
         'erp.view.module.financial.ApplyPayList',
         'erp.view.module.purchase.SupplierMng',
+        'erp.view.module.goods.GoodsMenu',
         'erp.view.module.warehouse.WarehouseReceive'
     ],
     onMainMenu: function (el) {

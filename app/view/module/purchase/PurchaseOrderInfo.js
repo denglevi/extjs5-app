@@ -9,10 +9,14 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         'Ext.Ajax',
         'Ext.container.Container',
         'Ext.data.Store',
+        'Ext.form.Panel',
+        'Ext.form.action.Action',
+        'Ext.form.field.File',
         'Ext.grid.Panel',
         'Ext.panel.Panel',
         'Ext.tab.Panel',
         'Ext.toolbar.Toolbar',
+        'Ext.window.Window',
         'erp.view.module.purchase.AddCheckProductOrder',
         'erp.view.window.AddLogisticsFormWin',
         'erp.view.window.AddPassCustomWin',
@@ -41,7 +45,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             status = res.status,
             batchs = res.batchs,
             next_status = res.next_status;
-        var url = next_status.action==''?'/Purchasing/Buyer/purchasingAction':next_status.action;
+        //var url = next_status.action==''?'/Purchasing/Buyer/purchasingAction':next_status.action;
         me.layout = 'vbox';
         me.items = [
             {
@@ -93,12 +97,21 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     '<div class="col-md-2">供应商：{vendor_name}</div>',
                     '<div class="col-md-2">订单号：{order_nos}</div>',
                     '<div class="col-md-2">买手：{username}</div>',
-                    '<div class="col-md-4">订单类型：{order_state}</div>',
-                    '</div>'
+                    '<div class="col-md-4">订单类型：{[this.getType(values.order_state)]}</div>',
+                    '</div>',
+                    {
+                        getType:function(type){
+                            if(type == 'spot_purchase_order') return '现货';
+                            if(type == 'future_purchase_order') return '期货';
+
+                            return '未定义';
+                        }
+                    }
+
                 ),
                 listeners:{
                     afterrender:function(){
-                        if(next_status.other_action == 1) return;
+                        if(next_status == null || next_status.other_action == 1) return;
                         this.down("toolbar").add({
                             text:next_status.name,
                             xtype:'',
@@ -113,7 +126,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         status_id:order_info.order_status,
                                         order_no:order_info.order_nos,
                                         batch_no:batchs[0].batch_no,
-                                        url:url,
+                                        //url:url,
                                         total:total
                                     }).show();
                                 }else if("验货" == next_status.name){
@@ -130,17 +143,19 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         title:next_status.name,
                                         order_no:order_info.order_nos,
                                         batch_no:batchs[0].batch_no,
-                                        url:url
+                                        //url:url
                                     }).show();
                                 }else if("申请报关" == next_status.name){
                                     Ext.create('erp.view.window.AddPassCustomWin',{
                                         title:next_status.name,
                                         order_no:order_info.order_nos,
                                         batch_no:batchs[0].batch_no,
-                                        url:url
+                                        //url:url
                                     }).show();
-                                }else if("完成报关" == next_status.name){
+                                }else if("完成报关" == next_status.name || "收货确认" == next_status.name || "完成付款" == next_status.name){
                                     me.handlerPurchaseOrder(order_info.order_nos,batchs[0].batch_no);
+                                }else if("关单" == next_status.name){
+                                    me.uploadCloseFile(order_info.order_nos);
                                 }
                             }
                         });
@@ -218,5 +233,57 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 }
             }
         });
+    },
+    uploadCloseFile:function(order_no){
+        Ext.create('Ext.window.Window',{
+            title:"上传清关文件",
+            bodyPadding: 40,
+            items:[
+                {
+                    xtype:'form',
+                    method:'POST',
+                    url:apiBaseUrl+'/index.php/Purchasing/Customs/closeOrder',
+                    items:[
+                        {
+                            xtype: 'filefield',
+                            name: 'excel_file',
+                            buttonText: '上传文件',
+                            allowBlank: true,
+                            listeners: {
+                                change: function () {
+                                    var val = this.getValue();
+                                    console.log(val);
+                                    this.up("form").getForm().submit({
+                                        waitMsg:'正在上传文件...',
+                                        params:{
+                                            order_no:order_no
+                                        },
+                                        success: function (form, action) {
+                                            var data = action.result.data;
+
+                                        },
+                                        failure: function (form, action) {
+                                            switch (action.failureType) {
+                                                case Ext.form.action.Action.CLIENT_INVALID:
+                                                    Ext.Msg.alert('系统提示', '表单验证错误');
+                                                    break;
+                                                case Ext.form.action.Action.CONNECT_FAILURE:
+                                                    Ext.Msg.alert('系统提示', '远程连接错误，请稍后重试');
+                                                    break;
+                                                case Ext.form.action.Action.SERVER_INVALID:
+                                                    Ext.Msg.alert('系统提示', action.result.msg);
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+            //order_no:order_info.order_nos,
+            //batch_no:batchs[0].batch_no,
+            //url:url
+        }).show();
     }
 });

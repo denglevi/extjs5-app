@@ -2,14 +2,17 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
     extend: 'Ext.container.Container',
     alias: 'widget.addwarehousereceive',
     requires: [
+        'Ext.Array',
         'Ext.data.Store',
+        'Ext.data.proxy.Ajax',
+        'Ext.data.reader.Json',
         'Ext.form.Panel',
         'Ext.form.action.Action',
-        'Ext.form.field.ComboBox',
         'Ext.form.field.Date',
-        'Ext.form.field.File',
+        'Ext.form.field.Number',
         'Ext.form.field.Text',
         'Ext.grid.Panel',
+        'Ext.grid.plugin.RowEditing',
         'Ext.layout.container.Anchor',
         'Ext.tab.Panel'
     ],
@@ -30,176 +33,187 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                     anchor: '100%',
                     xtype: 'textfield',
                     allowBlank: false,
-                    margin: 10
+                    margin: 10,
+                    editable: false
                 },
-                items: [
-                    {
-                        fieldLabel: '收货日期',
-                        name: 'date',
-                        xtype: 'datefield',
-                        format: 'Y-m-d',
-                        value:new Date()
-                    },
-                    {
-                        fieldLabel:"采购订单号",
-                        name:'order_no',
-                        editable:false,
-                        value:this.record.get("order_no")
-                    },
-                    {
-                        fieldLabel:"供应订单号",
-                        name:'batch_no',
-                        editable:false,
-                        value:this.record.get("batch_no")
-                    },
-                    {
-                        fieldLabel:"物流单号",
-                        name:'logistics_no',
-                        editable:false,
-                        value:this.record.get("logistics_no")
-                    },
-                    {
-                        fieldLabel: '供应商',
-                        name: 'supplier',
-                        editable: false,
-                        value:this.record.get("name")
-                    },
-                    {
-                        xtype: 'filefield',
-                        name: 'excel_file',
-                        buttonText: '导入收货单',
-                        allowBlank: true,
-                        listeners: {
-                            change: function () {
-                                var val = this.getValue();
-                                this.up("form").getForm().submit({
-                                    clientValidation: false,
-                                    waitMsg:'正在导入收货单信息...',
-                                    url: apiBaseUrl + '/index.php/Warehouse/Index/importReceiveProduct',
-                                    success: function (form, action) {
-                                        var data = action.result.data;
-                                        console.log(data);
-                                        me.products = data.products;
-                                        me.difference = data.difference;
-                                        var store = Ext.create('Ext.data.Store', {
-                                            fields: [],
-                                            data: data.products
-                                        });
-                                        me.down("tabpanel").down("grid").setStore(store);
-                                        var grid = {
-                                            xtype:'grid',
-                                            title:'货品差异',
-                                            flex: 1,
-                                            height: '100%',
-                                            sortableColumns: false,
-                                            columns:[
-                                                {text:'款号',dataIndex:'no',flex:1},
-                                                {text:'差异数',dataIndex:'num',flex:1}
-                                            ],
-                                            store:Ext.create('Ext.data.Store', {
-                                                fields: [],
-                                                data: data.difference
-                                            })
-                                        }
-                                        me.down("tabpanel").setActiveTab(grid);
-                                    },
-                                    failure: function (form, action) {
-                                        switch (action.failureType) {
-                                            case Ext.form.action.Action.CLIENT_INVALID:
-                                                Ext.Msg.alert('系统提示', '表单验证错误');
-                                                break;
-                                            case Ext.form.action.Action.CONNECT_FAILURE:
-                                                Ext.Msg.alert('系统提示', '远程连接错误，请稍后重试');
-                                                break;
-                                            case Ext.form.action.Action.SERVER_INVALID:
-                                                Ext.Msg.alert('系统提示', action.result.msg);
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }
-                ],
-                buttons: [
-                    {
-                        text: '重置',
-                        handler: function () {
-                            this.up('form').getForm().reset();
-                        }
-                    },
-                    {
-                        text: '保存',
-                        formBind: true,
-                        disabled: true,
-                        handler: function () {
-                            var grid = me.down("grid");
-                            console.log(me.products);
-                            if (grid.getStore() == null || grid.getStore().getData().length == 0) {
-                                Ext.Msg.alert('系统提示', "请导入商品资料");
-                                return;
-                            }
-                            console.log(grid.getStore());
-                            var data = grid.getStore().data;
-                            console.log(data);
-                            var form = this.up('form').getForm();
-                            if (form.isValid()) {
-                                form.submit({
-                                    waitMsg:'正在新增...',
-                                    //headers: {'Content-Type': 'application/json'},
-                                    params:{
-                                        products:Ext.encode(me.products),
-                                        difference:Ext.encode(me.difference)
-                                    },
-                                    success: function (form, action) {
-                                        //me.down("grid").getStore().load();
-                                        console.log(action.result);
-                                        //Ext.Msg.alert('系统提示', '新增订单成功');
-                                    },
-                                    failure: function (form, action) {
-                                        console.log(action);
-                                        switch (action.failureType) {
-                                            case Ext.form.action.Action.CLIENT_INVALID:
-                                                Ext.Msg.alert('系统提示', '表单验证错误');
-                                                break;
-                                            case Ext.form.action.Action.CONNECT_FAILURE:
-                                                Ext.Msg.alert('系统提示', '远程连接错误，请稍后重试');
-                                                break;
-                                            case Ext.form.action.Action.SERVER_INVALID:
-                                                Ext.Msg.alert('系统提示', action.result.msg||"服务端错误");
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }
-                ]
+                items: this.getFormItems(),
+                buttons:this.getBtns()
             },
             {
-                xtype:'tabpanel',
-                flex:1,
-                height:'100%',
-                items:[
+                xtype: 'tabpanel',
+                flex: 1,
+                height: '100%',
+                items: [
                     {
-                        title: '导入收货单信息',
+                        title: '收货信息',
                         flex: 1,
                         xtype: 'grid',
                         height: '100%',
                         sortableColumns: false,
                         columns: [
+                            //{text: '装箱单号', dataIndex: 'packing_no', flex: 1},
+                            //{text: '国际款号', dataIndex: 'style_no',flex:1},
+                            //{text: '名称', dataIndex: 'product_name'},
+                            //{text: '性别', dataIndex: 'sex'},
+                            //{text: '产地', dataIndex: 'origin'},
+                            //{text: '材质', dataIndex: 'material'},
+                            //{text: '品牌', dataIndex: 'brand'},
                             {text: '装箱单号', dataIndex: 'packing_no', flex: 1},
-                            {text: '国际款号', dataIndex: 'style_no',flex:1},
-                            {text: '名称', dataIndex: 'product_name'},
-                            {text: '性别', dataIndex: 'sex'},
-                            {text: '产地', dataIndex: 'origin'},
-                            {text: '材质', dataIndex: 'material'},
-                            {text: '数量', dataIndex: 'num'},
-                            {text: '品牌', dataIndex: 'brand'},
-                            {text: '箱号', dataIndex: 'box_no'}
-                        ]
+                            {text: '箱号', dataIndex: 'box_no', flex: 1},
+                            {text: '数量', dataIndex: 'num', flex: 1, editor: {xtype: 'numberfield', minValue: 0}},
+                            {
+                                text: '差异数', dataIndex: 'diff_num', flex: 1,
+                                renderer: function (val) {
+                                    if (val < 0) return '<b class="text-danger">' + val + '</b>';
+                                    if (val > 0) return '<b class="text-info">' + val + '</b>';
+                                    return val;
+                                }
+                            }
+                        ],
+                        store: Ext.create('Ext.data.Store', {
+                            fields: ['packing_no', 'box_no', 'num'],
+                            autoLoad: true,
+                            proxy: {
+                                type: 'ajax',
+                                extraParams: {
+                                    batch_no: me.record.get("batch_no"),
+                                    order_no: me.record.get("order_no"),
+                                    status:me.record.get("status"),
+                                    id:me.record.get("id")
+                                },
+                                url: apiBaseUrl + '/index.php/Warehouse/Index/getReceiveProduct',
+                                reader: {
+                                    type: 'json',
+                                    rootProperty: 'data',
+                                    totalProperty: 'total'
+                                }
+                            }
+                        }),
+                        plugins: this.getGridPlugins(),
+                        listeners: {
+                            edit: function (gp, e) {
+                                var record = e.record;
+                                record.set("diff_num", record.get("num") + record.get("diff_num"));
+                            }
+                        }
                     }
                 ]
             }
         ]
         this.callParent(arguments);
+    },
+    getBtns:function(){
+        console.log(this.record);
+        if(this.record.get("status") == 1) return null;
+        return [
+            {
+                text: '重置',
+                handler: function () {
+                    this.up('form').getForm().reset();
+                }
+            },
+            {
+                text: '提交收货单',
+                formBind: true,
+                disabled: true,
+                handler: function () {
+                    var grid = me.down("grid");
+                    var items = grid.getStore().data.items;
+                    console.log(data);
+                    var data = [];
+                    Ext.Array.each(items, function (item) {
+                        data.push({
+                            packing_no:item.get("packing_no"),
+                            box_no:item.get("box_no"),
+                            num:item.get("num"),
+                            diff_num:item.get("diff_num")
+                        });
+                    });
+
+                    var form = this.up('form').getForm();
+                    if (form.isValid()) {
+                        form.submit({
+                            waitMsg: '正在提交...',
+                            params: {
+                                id: me.record.get("id"),
+                                data: Ext.encode(data)
+                            },
+                            success: function (form, action) {
+                                //me.down("grid").getStore().load();
+                                console.log(action.result);
+                                //Ext.Msg.alert('系统提示', '新增订单成功');
+                            },
+                            failure: function (form, action) {
+                                console.log(action);
+                                switch (action.failureType) {
+                                    case Ext.form.action.Action.CLIENT_INVALID:
+                                        Ext.Msg.alert('系统提示', '表单验证错误');
+                                        break;
+                                    case Ext.form.action.Action.CONNECT_FAILURE:
+                                        Ext.Msg.alert('系统提示', '远程连接错误，请稍后重试');
+                                        break;
+                                    case Ext.form.action.Action.SERVER_INVALID:
+                                        Ext.Msg.alert('系统提示', action.result.msg || "服务端错误");
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        ]
+    },
+    getFormItems:function(){
+        var date;
+        if(this.record.get("status")==0){
+            date = {
+                fieldLabel: '收货日期',
+                name: 'date',
+                xtype: 'datefield',
+                format: 'Y-m-d',
+                editable: true,
+                value: new Date()
+            };
+        }else{
+            //var val =
+            date = {
+                fieldLabel: '收货日期',
+                name: 'date',
+                value: this.record.get("create_time")
+            };
+        }
+
+        return [
+            date
+            ,
+            {
+                fieldLabel: "采购订单号",
+                name: 'order_no',
+                value: this.record.get("order_no")
+            },
+            {
+                fieldLabel: "供应订单号",
+                name: 'batch_no',
+                value: this.record.get("batch_no")
+            },
+            {
+                fieldLabel: "物流单号",
+                name: 'logistics_no',
+                value: this.record.get("logistics_no")
+            },
+            {
+                fieldLabel: '供应商',
+                name: 'supplier',
+                value: this.record.get("name")
+            }
+        ];
+    },
+    getGridPlugins:function(){
+        if(1 == this.record.get("status")) return null;
+
+        return {
+            ptype: 'rowediting',
+                clicksToEdit: 1
+        }
     }
 });
+

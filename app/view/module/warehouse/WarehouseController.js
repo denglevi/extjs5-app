@@ -18,9 +18,15 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
     onWarehouseReceiveGridDblClick:function(gp,record){
         var batch_no = record.get("batch_no");
         console.log(record);
+        var title;
+        if(1 == record.get("status")){
+            title = "查看收货信息";
+        }else{
+            title = "导入收货信息";
+        }
         gp.up('tabpanel').setActiveTab({
             xtype:'addwarehousereceive',
-            title:'添加收货信息',
+            title:title,
             closable:true,
             record:record
         });
