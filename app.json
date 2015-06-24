@@ -110,6 +110,9 @@
             "path": "${framework.dir}/build/ext-all-rtl-debug.js"
         },
         {
+            "path": "${framework.dir}/packages/ext-locale/build/ext-locale-zh_CN-debug.js"
+        },
+        {
             "path": "app.js",
             "bundle": true
         }

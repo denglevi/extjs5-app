@@ -6,11 +6,13 @@ Ext.define('erp.view.module.goods.GoodsController', {
     alias: 'controller.goods',
 
     requires: [
+        'Ext.Ajax',
         'Ext.data.Store',
         'Ext.form.Panel',
         'Ext.form.action.Action',
         'Ext.form.field.File',
         'Ext.window.Window',
+        'erp.view.window.GoodsInfoWin',
         'erp.view.window.GoodsMenuInfoWin'
     ],
 
@@ -20,7 +22,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
     init: function() {
 
     },
-    importGoodsMenu:function(){
+    importGoodsMenu:function(import_btn){
         Ext.create('Ext.window.Window',{
             title:'导入商品资料',
             bodyPadding:20,
@@ -33,21 +35,17 @@ Ext.define('erp.view.module.goods.GoodsController', {
                         {
                             xtype:'filefield',
                             buttonText: '上传商品资料',
+                            name:'goods_menu',
                             allowBlank:false,
                             listeners:{
-                                change: function () {
+                                change: function (obj) {
                                     var val = this.getValue();
                                     this.up("form").getForm().submit({
                                         waitMsg:'正在导入商品信息...',
                                         success: function (form, action) {
-                                            var data = action.result.data;
-                                            me.products = data;
-                                            var store = Ext.create('Ext.data.Store', {
-                                                fields: ["style_no", "name", 'color', 'size', 'num', 'batch_price', 'total_price', 'retail_price'],
-                                                data: data
-                                            });
-                                            me.down("grid").setStore(store);
-                                            //Ext.Msg.alert('系统提示', "导入成功");
+                                            obj.up("form").up("window").destroy();
+                                            Ext.Msg.alert('系统提示', "导入成功");
+                                            import_btn.up("grid").getStore().load();
                                         },
                                         failure: function (form, action) {
                                             switch (action.failureType) {
@@ -74,11 +72,44 @@ Ext.define('erp.view.module.goods.GoodsController', {
 
     },
     onGoodsMenuGridDblClick:function(gp,record){
-        var menu_id = record.get("id");
+        var menu_id = record.get("id"),res;
         console.log(menu_id);
+        Ext.Ajax.request({
+            async:false,
+            method:'POST',
+            url: apiBaseUrl+'/index.php/Commodity/CommodityMenu/getGoodsMenuInfo',
+            params: {
+                id: menu_id
+            },
+            success: function(response){
+                res = Ext.decode(response.responseText);
+            }
+        });
+        if(!res.success) return;
+        console.log(res.data);
         Ext.create('erp.view.window.GoodsMenuInfoWin',{
             title: "款号详情",
-            menu_id:menu_id
+            info:res.data
         }).show();
     },
+    onGoodListGridDblClick:function(gp,record){
+        var id = record.get("id"),res;
+        Ext.Ajax.request({
+            async:false,
+            method:'POST',
+            url: apiBaseUrl+'/index.php/Commodity/CommodityMenu/getGoodsInfo',
+            params: {
+                id: id
+            },
+            success: function(response){
+                //myMask.destroy( );
+                res = Ext.decode(response.responseText);
+            }
+        });
+        if(!res.success) return;
+        Ext.create('erp.view.window.GoodsInfoWin',{
+            title: "商品详情",
+            info:res.data
+        }).show();
+    }
 });

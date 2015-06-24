@@ -6,6 +6,8 @@ Ext.define('erp.view.module.warehouse.WarehouseModel', {
     alias: 'viewmodel.warehouse',
 
     data: {
-        diff_num_cls:'text-danger'
+        diff_num_cls:'text-danger',
+        import_info:null,
+        goods_info_data:null
     }
 });

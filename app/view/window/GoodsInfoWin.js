@@ -1,16 +1,18 @@
 /**
- * Created by Administrator on 2015-06-23.
+ * Created by Administrator on 2015-06-24.
  */
-Ext.define('erp.view.window.GoodsMenuInfoWin', {
+Ext.define('erp.view.window.GoodsInfoWin', {
     extend: 'Ext.window.Window',
     requires: [
         'Ext.Ajax',
+        'Ext.Img',
         'Ext.container.Container',
         'Ext.form.field.Text',
+        'Ext.layout.container.HBox',
         'Ext.layout.container.VBox',
         'Ext.tab.Panel'
     ],
-    xtype: 'goodsmenuinfo',
+    xtype: 'goodsinfo',
     layout: {
         type:'vbox',
         stretch:true
@@ -21,39 +23,60 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
     initComponent: function () {
         var me = this;
 
-        var style = me.info.style,
-            size = me.info.size,
-            color = me.info.color;
+        var info = me.info;
         this.tbar = [
             '->',
             //{
+            //    text:'上传图片'
+            //},
+            //{
             //    text: '修改'
+            //},
+            //{
+            //    text:'打印吊牌'
             //}
         ];
         this.items = [
             {
                 xtype: 'container',
                 bodyPadding: '0 50',
-                layout: 'vbox',
-                defaults: {
-                    labelAlign: 'right',
-                    editable: false
-                },
+                layout: 'hbox',
                 items: [
                     {
-                        xtype: 'textfield',
-                        fieldLabel: '系统款号',
-                        value:style.system_style_no
+                        xtype:'image',
+                        src:info.image_src||'/resources/images/logo.png',
+                        width:200
                     },
                     {
-                        xtype: 'textfield',
-                        fieldLabel: '商品名称',
-                        value:style.name_zh
-                    },
-                    {
-                        xtype: 'textfield',
-                        fieldLabel: '供应商款号',
-                        value:style.supply_style_no
+                        xtype:'container',
+                        layout:'vbox',
+                        flex:1,
+                        defaults: {
+                            labelAlign: 'right',
+                            editable: false
+                        },
+                        items:[
+                            {
+                                xtype: 'textfield',
+                                fieldLabel: '唯一码',
+                                value:info.no
+                            },
+                            {
+                                xtype: 'textfield',
+                                fieldLabel: '系统款号',
+                                value:info.system_style_no
+                            },
+                            {
+                                xtype: 'textfield',
+                                fieldLabel: '商品名称',
+                                value:info.name_zh
+                            },
+                            {
+                                xtype: 'textfield',
+                                fieldLabel: '供应商款号',
+                                value:info.supply_style_no
+                            }
+                        ]
                     }
                 ]
             },
@@ -64,7 +87,7 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
                 items: [
                     {
                         title: '款号属性',
-                        data:style,
+                        data:info,
                         tpl: new Ext.XTemplate(
                             '<table class="table table-bordered">',
                             '<tr><td class="col-md-3 text-right">大类</td><td class="col-md-9">{large_class}</td></tr>',
@@ -80,7 +103,7 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
                     },
                     {
                         title: '颜色',
-                        data:color,
+                        data:info,
                         tpl: new Ext.XTemplate(
                             '<table class="table table-bordered">',
                             '<tr><td class="col-md-3 text-right">供应商颜色代码</td><td class="col-md-9">名称</td></tr>',
@@ -92,7 +115,7 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
                     },
                     {
                         title: '尺码',
-                        data:size,
+                        data:info,
                         tpl: new Ext.XTemplate(
                             '<table class="table table-bordered">',
                             '<tr><td class="col-md-3 text-right">代码</td><td class="col-md-9">名称</td></tr>',
@@ -108,3 +131,4 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
         this.callParent();
     }
 });
+

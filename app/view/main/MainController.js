@@ -19,7 +19,9 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.financial.ApplyPayList',
         'erp.view.module.purchase.SupplierMng',
         'erp.view.module.goods.GoodsMenu',
-        'erp.view.module.warehouse.WarehouseReceive'
+        'erp.view.module.goods.GoodsList',
+        'erp.view.module.warehouse.WarehouseReceive',
+        'erp.view.module.warehouse.WarehouseImportGoods'
     ],
     onMainMenu: function (el) {
         //点击不同菜单之后，左边栏显示不同的菜单
