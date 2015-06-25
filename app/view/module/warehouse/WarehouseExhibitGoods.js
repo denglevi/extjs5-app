@@ -1,9 +1,9 @@
 /**
- * Created by Administrator on 2015-06-24.
+ * Created by Administrator on 2015-06-25.
  */
-Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
+Ext.define('erp.view.module.warehouse.WarehouseExhibitGoods', {
     extend: 'Ext.Container',
-    xtype: 'warehouseimportgoods',
+    xtype: 'warehouseexhibitgoods',
     requires: [
         'Ext.data.Store',
         'Ext.data.proxy.Ajax',
@@ -30,18 +30,18 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
         var import_list = this.getImportList();
         var panel = this.getInfoPanel();
         this.items = [import_list,panel];
-        import_list.on("rowdblclick","onWarehouseImportListGridDblClick");
+        import_list.on("rowdblclick","onWarehouseExhibitListGridDblClick");
 
         me.callParent();
     },
     getImportList: function () {
         var store = Ext.create('Ext.data.Store', {
-            fields: ['notice_no', 'id'],
+            fields: ['no', 'id'],
             autoLoad: false,
-            storeId:'importGoodsStore',
+            storeId:'exhibitGoodsStore',
             proxy: {
                 type: 'ajax',
-                url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/getWarehouseImportList',
+                url: apiBaseUrl + '/index.php/Warehouse/ExhibitGoods/getWarehouseExhibitList',
                 reader: {
                     type: 'json',
                     rootProperty: 'data',
@@ -50,20 +50,20 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
             }
         });
         var import_list_grid = Ext.create('Ext.grid.Panel', {
-            title: '进货单列表',
+            title: '上架单列表',
             height: '100%',
             width: 200,
             border: true,
             sortableColumns:false,
             columns: [
-                {text: '进货单号', dataIndex: 'notice_no', flex: 1}
+                {text: '上架单号', dataIndex: 'no', flex: 1}
             ],
             store: store,
             tbar: [
                 {
                     text: '新增',
                     glyph: 0xf067,
-                    handler: 'addImportGoodsOrder'
+                    handler: 'addExhibitGoodsOrder'
                 },
                 {
                     text: '删除',
@@ -86,7 +86,7 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
     getInfoPanel: function () {
         var panel = Ext.create('Ext.panel.Panel',{
             name:"info",
-            title:'进货单详情',
+            title:'单详情',
             flex:1,
             layout:'vbox',
             height:'100%'
@@ -95,4 +95,3 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
         return panel;
     }
 });
-

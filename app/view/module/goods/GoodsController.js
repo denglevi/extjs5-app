@@ -7,7 +7,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
 
     requires: [
         'Ext.Ajax',
-        'Ext.data.Store',
+        'Ext.data.reader.Json',
         'Ext.form.Panel',
         'Ext.form.action.Action',
         'Ext.form.field.File',
@@ -111,5 +111,21 @@ Ext.define('erp.view.module.goods.GoodsController', {
             title: "商品详情",
             info:res.data
         }).show();
+    },
+    searchMenu: function () {
+        var me = this.getView();
+        var system_style_no = me.down("textfield[name=system_style_no]").getValue();
+        var supply_style_no = me.down("textfield[name=supply_style_no]").getValue();
+
+        me.getStore().setProxy({
+            type: 'ajax',
+            url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/getGoodsMenuList?system_style_no=' + system_style_no + '&supply_style_no=' + supply_style_no,
+            reader: {
+                type: 'json',
+                rootProperty: 'data',
+                totalProperty: 'total'
+            }
+        });
+        me.getStore().load();
     }
 });

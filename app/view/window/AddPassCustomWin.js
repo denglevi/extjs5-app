@@ -1,9 +1,6 @@
 /**
  * Created by Administrator on 2015-06-18.
  */
-/**
- * Created by Administrator on 2015-06-18.
- */
 Ext.define('erp.view.window.AddPassCustomWin', {
     extend: 'Ext.window.Window',
     xtype: 'addpasscustomwin',

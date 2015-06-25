@@ -24,7 +24,7 @@ Ext.define('erp.view.main.region.Bottom', {
             glyph: 0xf007
         }, '->',
         {
-            text: '寇莎国际品牌管理有限公司 版权所有'
+            text: '寇莎国际品牌管理有限公司 @版权所有'
         }, '',
         {
             text: 'version 0.1'

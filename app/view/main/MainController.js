@@ -21,7 +21,8 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.goods.GoodsMenu',
         'erp.view.module.goods.GoodsList',
         'erp.view.module.warehouse.WarehouseReceive',
-        'erp.view.module.warehouse.WarehouseImportGoods'
+        'erp.view.module.warehouse.WarehouseImportGoods',
+        'erp.view.module.warehouse.WarehouseExhibitGoods'
     ],
     onMainMenu: function (el) {
         //点击不同菜单之后，左边栏显示不同的菜单

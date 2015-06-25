@@ -5,6 +5,7 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
     extend: 'Ext.grid.Panel',
     xtype: 'goodsmenu',
     requires: [
+        'Ext.data.reader.Json',
         'Ext.form.field.Text',
         'Ext.toolbar.Paging',
         'erp.view.module.goods.GoodsController',
@@ -14,6 +15,14 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
         type: 'goods'
     },
     controller: 'goods',
+    //initComponent:function(){
+    //    var me = this;
+    //    Ext.apply(me,{
+    //
+    //    });
+    //
+    //    me.callParent();
+    //},
     selModel: 'checkboxmodel',   //选择框
     title: '商品目录',
     width: '100%',
@@ -37,15 +46,19 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
             name: 'system_style_no'
         },
         {
+            xtype: 'textfield',
+            fieldLabel: "供应商款号",
+            name: 'supply_style_no'
+        },
+        {
             text: '搜索',
-            glyph: 0xf002
+            glyph: 0xf002,
+            handler: "searchMenu"
         }],
     store: 'GoodsMenuStore',
     bbar: ['->', {
         xtype: 'pagingtoolbar',
         store: 'GoodsMenuStore',
-        emptyMsg: '<b>暂无记录</b>',
-        displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
         displayInfo: true
     }],
     columns: [
