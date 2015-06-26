@@ -8,6 +8,14 @@ Ext.define('erp.view.module.warehouse.WarehouseModel', {
     data: {
         diff_num_cls:'text-danger',
         import_info:null,
-        goods_info_data:null
+        goods_info_data:null,
+        goods_info:null,
+        goods_info_data:null,
+        goods_info_diff:null,
+        goods_info_log:null,
+        exhibit_info:null,
+        import_order:null,
+        exhibit_diff:null,
+        exhibit_order:null
     }
 });

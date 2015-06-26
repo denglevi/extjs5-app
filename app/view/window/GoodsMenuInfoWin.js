@@ -6,6 +6,7 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
     requires: [
         'Ext.Ajax',
         'Ext.container.Container',
+        'Ext.form.field.Display',
         'Ext.form.field.Text',
         'Ext.layout.container.VBox',
         'Ext.tab.Panel'
@@ -41,17 +42,17 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
                 },
                 items: [
                     {
-                        xtype: 'textfield',
+                        xtype: 'displayfield',
                         fieldLabel: '系统款号',
                         value:style.system_style_no
                     },
                     {
-                        xtype: 'textfield',
+                        xtype: 'displayfield',
                         fieldLabel: '商品名称',
                         value:style.name_zh
                     },
                     {
-                        xtype: 'textfield',
+                        xtype: 'displayfield',
                         fieldLabel: '供应商款号',
                         value:style.supply_style_no
                     }

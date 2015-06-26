@@ -7,6 +7,7 @@ Ext.define('erp.view.window.GoodsInfoWin', {
         'Ext.Ajax',
         'Ext.Img',
         'Ext.container.Container',
+        'Ext.form.field.Display',
         'Ext.form.field.Text',
         'Ext.layout.container.HBox',
         'Ext.layout.container.VBox',
@@ -57,22 +58,22 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                         },
                         items:[
                             {
-                                xtype: 'textfield',
+                                xtype: 'displayfield',
                                 fieldLabel: '唯一码',
                                 value:info.no
                             },
                             {
-                                xtype: 'textfield',
+                                xtype: 'displayfield',
                                 fieldLabel: '系统款号',
                                 value:info.system_style_no
                             },
                             {
-                                xtype: 'textfield',
+                                xtype: 'displayfield',
                                 fieldLabel: '商品名称',
                                 value:info.name_zh
                             },
                             {
-                                xtype: 'textfield',
+                                xtype: 'displayfield',
                                 fieldLabel: '供应商款号',
                                 value:info.supply_style_no
                             }

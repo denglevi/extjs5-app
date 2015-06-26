@@ -127,5 +127,25 @@ Ext.define('erp.view.module.goods.GoodsController', {
             }
         });
         me.getStore().load();
+    },
+    searchGoods:function(){
+        var model = this.getViewModel();
+
+        var system_style_no = model.get("system_style_no");
+        var no = model.get("no");
+        var status = model.get("status");
+        var id = model.get("import_id")
+        var store = this.lookupReference('goods_list_grid').getStore();
+
+        store.setProxy({
+            type: 'ajax',
+            url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/getGoodsInfoList?id='+id+'&system_style_no=' + system_style_no + '&no=' + no+'&status='+status,
+            reader: {
+                type: 'json',
+                rootProperty: 'data',
+                totalProperty: 'total'
+            }
+        });
+        store.load();
     }
 });

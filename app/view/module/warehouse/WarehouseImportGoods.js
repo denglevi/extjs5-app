@@ -65,16 +65,17 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
                     glyph: 0xf067,
                     handler: 'addImportGoodsOrder'
                 },
-                {
-                    text: '删除',
-                    glyph: 0xf1f8,
-                    handler:'deletePurchaseOrder'
-                }],
-            bbar: ['->', {
-                xtype: 'pagingtoolbar',
-                store: store,
-                displayInfo: true
-            }],
+                //{
+                //    text: '删除',
+                //    glyph: 0xf1f8,
+                //    handler:'deletePurchaseOrder'
+                //}
+            ],
+            //bbar: ['->', {
+            //    xtype: 'pagingtoolbar',
+            //    store: store,
+            //    displayInfo: true
+            //}],
             listeners: {
                 afterrender: function () {
                     store.load();

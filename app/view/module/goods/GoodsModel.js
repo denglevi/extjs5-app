@@ -18,6 +18,9 @@ Ext.define('erp.view.module.goods.GoodsModel', {
     },
 
     data: {
-        /* This object holds the arbitrary data that populates the ViewModel and is then available for binding. */
+        system_style_no:'',
+        no:'',
+        status:'',
+        import_id:null
     }
 });

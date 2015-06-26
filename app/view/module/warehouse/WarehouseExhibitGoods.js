@@ -65,16 +65,17 @@ Ext.define('erp.view.module.warehouse.WarehouseExhibitGoods', {
                     glyph: 0xf067,
                     handler: 'addExhibitGoodsOrder'
                 },
-                {
-                    text: '删除',
-                    glyph: 0xf1f8,
-                    handler:'deletePurchaseOrder'
-                }],
-            bbar: ['->', {
-                xtype: 'pagingtoolbar',
-                store: store,
-                displayInfo: true
-            }],
+                //{
+                //    text: '删除',
+                //    glyph: 0xf1f8,
+                //    handler:'deletePurchaseOrder'
+                //}
+            ],
+            //bbar: ['->', {
+            //    xtype: 'pagingtoolbar',
+            //    store: store,
+            //    displayInfo: true
+            //}],
             listeners: {
                 afterrender: function () {
                     store.load();
@@ -85,8 +86,8 @@ Ext.define('erp.view.module.warehouse.WarehouseExhibitGoods', {
     },
     getInfoPanel: function () {
         var panel = Ext.create('Ext.panel.Panel',{
-            name:"info",
-            title:'单详情',
+            name:"exhibit_info",
+            title:'上架单详情',
             flex:1,
             layout:'vbox',
             height:'100%'
