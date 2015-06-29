@@ -8,16 +8,22 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
     requires: [
         'Ext.Ajax',
         'Ext.Array',
+        'Ext.String',
         'Ext.XTemplate',
         'Ext.data.Store',
+        'Ext.data.proxy.Ajax',
+        'Ext.data.reader.Json',
+        'Ext.form.Panel',
         'Ext.form.field.Text',
         'Ext.grid.Panel',
         'Ext.layout.container.Anchor',
+        'Ext.layout.container.VBox',
         'Ext.panel.Panel',
         'Ext.tab.Panel',
         'Ext.window.Window',
         'erp.view.module.warehouse.AddImportGoodsOrder',
         'erp.view.module.warehouse.AddWarehouseReceive',
+        'erp.view.window.AddMoveLocationWin',
         'erp.view.window.AddWarehouseImportGoodsWin'
     ],
 
@@ -50,10 +56,18 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
 
         this.getImportGoodsData(id, batch_no, model);
 
-        if (panel.items.items.length > 0) return;
+        if (panel.items.items.length > 0) {
+            this.lookupReference("import_goods_info").setStore(model.get("goods_info"));
+            this.lookupReference("purchase_goods_info").setStore(model.get("goods_info_data"));
+            this.lookupReference("import_goods_diff").setStore(model.get("goods_info_diff"));
+            return;
+        }
 
         var items = this.getDetailItems(id, batch_no, model);
         panel.add(items);
+        this.lookupReference("import_goods_info").setStore(model.get("goods_info"));
+        this.lookupReference("purchase_goods_info").setStore(model.get("goods_info_data"));
+        this.lookupReference("import_goods_diff").setStore(model.get("goods_info_diff"));
     },
     onWarehouseExhibitListGridDblClick: function (gp, record) {
         var id = record.get("id"),
@@ -82,9 +96,6 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             closable: true
         });
     },
-    saveImportGoods: function () {
-        console.log(123);
-    },
     getImportGoodsData: function (id, batch_no, model) {
         Ext.Ajax.request({
             async: false,
@@ -104,7 +115,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             Ext.toast(res.msg, "系统提示", 't');
             return;
         }
-
+        console.log(res.data);
         var info = res.data.list;
         var order = res.data.order;
         var log = res.data.log;
@@ -273,7 +284,6 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             items: [
                 {
                     title: '入库信息',
-                    name: 'goods_info',
                     reference: 'import_goods_info',
                     columns: [
                         {text: '唯一码', dataIndex: 'no', flex: 1},
@@ -285,13 +295,13 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         {text: '尺码', dataIndex: 'size'},
                         {text: '单价', dataIndex: 'retail_price', flex: 1}
                     ],
-                    bind: {
-                        store: '{goods_info}'
-                    }
+                    //bind: {
+                    //    store: '{goods_info}'
+                    //}
                 },
                 {
                     title: '商品信息',
-                    name: 'goods_info_data',
+                    reference: 'purchase_goods_info',
                     columns: [
                         {text: '供应商款号', dataIndex: 'style_no', flex: 1},
                         {text: '名称', dataIndex: 'product_name', flex: 1},
@@ -300,13 +310,13 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         {text: '尺码', dataIndex: 'size'},
                         {text: '数量', dataIndex: 'num', flex: 1}
                     ],
-                    bind: {
-                        store: '{goods_info_data}'
-                    }
+                    //bind: {
+                    //    store: '{goods_info_data}'
+                    //}
                 },
                 {
                     title: '差异数',
-                    name: 'goods_info_diff',
+                    reference: 'import_goods_diff',
                     columns: [
                         {text: '供应商款号', dataIndex: 'style_no', flex: 1},
                         {text: '颜色', dataIndex: 'color'},
@@ -317,25 +327,21 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         }
                         }
                     ],
-                    bind: {
-                        store: '{goods_info_diff}'
-                    }
+                    //bind: {
+                    //    store: '{goods_info_diff}'
+                    //}
                 },
-                {
-                    title: '操作日志',
-                    xtype: 'grid',
-                    name: 'goods_info_log',
-                    sortableColumns: false,
-                    scrollable: 'y',
-                    columns: [
-                        {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
-                        {text: '操作', dataIndex: 'orderinfo_name'},
-                        {text: '操作人', dataIndex: 'orderinfo_color'}
-                    ],
-                    bind: {
-                        store: '{goods_info_log}'
-                    }
-                }
+                //{
+                //    title: '操作日志',
+                //    columns: [
+                //        {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
+                //        {text: '操作', dataIndex: 'orderinfo_name'},
+                //        {text: '操作人', dataIndex: 'orderinfo_color'}
+                //    ],
+                //    bind: {
+                //        store: '{goods_info_log}'
+                //    }
+                //}
             ]
         }]
     },
@@ -385,47 +391,25 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                             resizable: false,
                             layout: 'anchor',
                             bodyPadding: 20,
-                            buttons: [
-                                {
-                                    text: '保存',
-                                    handler: function () {
-                                        console.log(nos.length);
-                                        Ext.Ajax.request({
-                                            async: true,
-                                            url: apiBaseUrl + '/index.php/Warehouse/ExhibitGoods/warehouseExhibitGoods',
-                                            params: {
-                                                nos: nos.join(","),
-                                                id: id
-                                            },
-                                            success: function (response) {
-                                                var text = Ext.decode(response.responseText);
-                                                console.log(text);
-                                                if (!text.success) {
-                                                    Ext.toast(text.msg, "系统提示", 't');
-                                                    return;
-                                                }
-                                                nos = [];
-                                                win.destroy();
-                                                me.getExhibitOrderData(id, model, import_goods_order_no);
-                                            }
-                                        });
-                                    }
-                                }
-                            ],
                             items: [
                                 {
                                     xtype: 'textfield',
                                     fieldLabel: '唯一码',
                                     name: 'no',
                                     enableKeyEvents: true,
-                                    labelWidth: 50,
+                                    labelWidth: 70,
                                     labelAlign: 'right',
                                     anchor: '100%',
                                     listeners: {
-                                        keyup: function (obj, e) {
+                                        keyup: {
+                                            fn:function (obj, e) {
                                             //@todo  上线需要修改
                                             if (e.keyCode == 13) {
                                                 var no = obj.getValue();
+                                                if(Ext.String.trim(no) == ""){
+                                                    //Ext.toast("请输入唯一码", "系统提示", 't');
+                                                    return;
+                                                }
                                                 obj.setValue('');
                                                 var store = me.lookupReference("import_order_info").getStore();
                                                 var res = store.findRecord("no", no);
@@ -459,7 +443,59 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                     }
                                                 });
                                             }
-                                        }
+                                        },
+                                        scope: this
+                                    }
+                                    }
+                                },
+                                {
+                                    xtype: 'textfield',
+                                    fieldLabel: '上架库位',
+                                    name: 'location',
+                                    enableKeyEvents: true,
+                                    labelWidth: 70,
+                                    labelAlign: 'right',
+                                    anchor: '100%',
+                                    listeners: {
+                                        keyup: {
+                                            fn: function (obj, e) {
+                                                //@todo  上线需要修改
+                                                if (e.keyCode == 13) {
+                                                    var location = obj.getValue();
+                                                    if(Ext.String.trim(location) == ""){
+                                                        //Ext.toast("请输入上架库位", "系统提示", 't');
+                                                        return;
+                                                    }
+
+                                                    if(nos.length == 0){
+                                                        Ext.toast("请先扫入商品在上架", "系统提示", 't');
+                                                        return;
+                                                    }
+                                                    Ext.Ajax.request({
+                                                        async: true,
+                                                        url: apiBaseUrl + '/index.php/Warehouse/ExhibitGoods/warehouseExhibitGoods',
+                                                        params: {
+                                                            nos: nos.join(","),
+                                                            id: id,
+                                                            location: location
+                                                        },
+                                                        success: function (response) {
+                                                            var text = Ext.decode(response.responseText);
+                                                            console.log(text);
+                                                            if (!text.success) {
+                                                                Ext.toast(text.msg, "系统提示", 't');
+                                                                return;
+                                                            }
+                                                            nos = [];
+                                                            obj.setValue("");
+                                                            //win.destroy();
+                                                            me.getExhibitOrderData(id, model, import_goods_order_no);
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        },
+                                        scope:this
                                     }
                                 }
                             ]
@@ -481,7 +517,6 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             items: [
                 {
                     title: '上架信息',
-                    name: 'exhibit_order',
                     reference: 'exhibit_order_info',
                     columns: [
                         {text: '唯一码', dataIndex: 'no', flex: 1},
@@ -499,7 +534,6 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 },
                 {
                     title: '进货信息',
-                    name: 'import_order',
                     reference:'import_order_info',
                     columns: [
                         {text: '唯一码', dataIndex: 'no', flex: 1},
@@ -517,7 +551,6 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 },
                 {
                     title: '差异数',
-                    name: 'exhibit_diff',
                     columns: [
                         {text: '唯一码', dataIndex: 'no', flex: 1,tdCls:'text-danger'},
                         {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
@@ -597,5 +630,83 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         model.set("exhibit_order", exhibit_order);
         model.set("exhibit_diff", exhibit_diff);
         return true;
+    },
+    onWarehouseListGridDblClick:function(gp,record){
+        var grid = this.lookupReference('locationgrid'),id=record.get("id");
+        if(null != grid){
+            var store = grid.getStore()
+            store.getProxy().setExtraParam("id",id);
+            store.load();
+            return;
+        }
+        gp.up("warehousesetting").add(
+            {
+                title:'库位列表',
+                flex:1,
+                reference:'locationgrid',
+                xtype:'grid',
+                sortableColumns: false,
+                selModel:'checkboxmodel',
+                enableColumnHide:false,
+                tbar: [
+                    {
+                        text: '新增',
+                        glyph: 0xf067,
+                        handler: 'addPurchaseOrder'
+                    },
+                    {
+                        text: '删除',
+                        glyph: 0xf1f8
+                    },
+                    {
+                        text:'编辑',
+                        glyph: 0xf1f8
+                    }
+                ],
+                columns: [
+                    {text: '库位代码', dataIndex: 'no'},
+                    {text: '库位名称', dataIndex: 'library_name', flex: 1},
+                    {text: '库位描述', dataIndex: 'description', flex: 2}
+                ],
+                listeners: {
+                    afterrender: function () {
+                        var store = Ext.create('Ext.data.Store', {
+                            fields: ['id','storage_id','library_name','no'],
+                            autoLoad:true,
+                            proxy: {
+                                type: 'ajax',
+                                actionMethods:{
+                                    read:'post',
+                                },
+                                url: apiBaseUrl+'/index.php/Warehouse/Index/getLoction',
+                                extraParams:{
+                                    id:id
+                                },
+                                reader: {
+                                    type: 'json',
+                                    rootProperty: 'data',
+                                    totalProperty: 'total'
+                                }
+                            }
+                        });
+                        this.setStore(store);
+                    }
+                }
+            }
+        )
+    },
+    onMoveLocationGridDblClick:function(gp,record){
+        var panel = Ext.create('Ext.grid.Panel',{
+            title:'移位单详情',
+            flex:1,
+            layout:'vbox',
+            height:'100%'
+        });
+
+        return panel;
+    },
+    addMoveLocationOrder:function(){
+        var win = Ext.create('erp.view.window.AddMoveLocationWin');
+        win.show();
     }
 });

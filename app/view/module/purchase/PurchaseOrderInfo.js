@@ -45,7 +45,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             status = res.status,
             batchs = res.batchs,
             next_status = res.next_status;
-        //var url = next_status.action==''?'/Purchasing/Buyer/purchasingAction':next_status.action;
+        var url = next_status.action==''?'/Purchasing/Buyer/purchasingAction':next_status.action;
         me.layout = 'vbox';
         me.items = [
             {
@@ -126,7 +126,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         status_id:order_info.order_status,
                                         order_no:order_info.order_nos,
                                         batch_no:batchs[0].batch_no,
-                                        //url:url,
+                                        url:url,
                                         total:total
                                     }).show();
                                 }else if("验货" == next_status.name){
@@ -143,14 +143,14 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         title:next_status.name,
                                         order_no:order_info.order_nos,
                                         batch_no:batchs[0].batch_no,
-                                        //url:url
+                                        url:url
                                     }).show();
                                 }else if("申请报关" == next_status.name){
                                     Ext.create('erp.view.window.AddPassCustomWin',{
                                         title:next_status.name,
                                         order_no:order_info.order_nos,
                                         batch_no:batchs[0].batch_no,
-                                        //url:url
+                                        url:url
                                     }).show();
                                 }else if("完成报关" == next_status.name || "收货确认" == next_status.name || "完成付款" == next_status.name){
                                     me.handlerPurchaseOrder(order_info.order_nos,batchs[0].batch_no);
@@ -178,8 +178,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                             {text: '颜色', dataIndex: 'orderinfo_color'},
                             {text: '尺码', dataIndex: 'orderinfo_group'},
                             {text: '数量', dataIndex: 'orderinfo_amount'},
-                            {text: '批发价(欧)', dataIndex: 'orderinfo_nprice'},
-                            {text: '总价(欧)', dataIndex: 'orderinfo_wholesale'},
+                            {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
+                            {text: '总价(欧)', dataIndex: 'orderinfo_nprice'},
                             {text: '官方零售价(欧)', dataIndex: 'orderinfo_official',flex:1}
                         ],
                         listeners:{

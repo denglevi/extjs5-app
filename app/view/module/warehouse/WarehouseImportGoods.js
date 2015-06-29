@@ -11,7 +11,6 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
         'Ext.grid.Panel',
         'Ext.layout.container.VBox',
         'Ext.panel.Panel',
-        'Ext.toolbar.Paging',
         'erp.view.module.warehouse.WarehouseController',
         'erp.view.module.warehouse.WarehouseModel'
     ],

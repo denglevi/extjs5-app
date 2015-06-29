@@ -1,16 +1,14 @@
 /**
- * Created by Administrator on 2015-06-25.
+ * Created by Administrator on 2015-06-29.
  */
-Ext.define('erp.view.module.warehouse.WarehouseExhibitGoods', {
+Ext.define('erp.view.module.warehouse.WarehouseMoveLocation', {
     extend: 'Ext.Container',
-    xtype: 'warehouseexhibitgoods',
+    xtype: 'warehousemovelocation',
     requires: [
         'Ext.data.Store',
         'Ext.data.proxy.Ajax',
         'Ext.data.reader.Json',
         'Ext.grid.Panel',
-        'Ext.layout.container.VBox',
-        'Ext.panel.Panel',
         'erp.view.module.warehouse.WarehouseController',
         'erp.view.module.warehouse.WarehouseModel'
     ],
@@ -26,21 +24,20 @@ Ext.define('erp.view.module.warehouse.WarehouseExhibitGoods', {
             stretch: true
         };
 
-        var import_list = this.getImportList();
-        var panel = this.getInfoPanel();
-        this.items = [import_list,panel];
-        import_list.on("rowdblclick","onWarehouseExhibitListGridDblClick");
+        var import_list = this.getMoveLocationList();
+        this.items = [import_list];
+        import_list.on("rowdblclick","onMoveLocationGridDblClick");
 
         me.callParent();
     },
-    getImportList: function () {
+    getMoveLocationList: function () {
         var store = Ext.create('Ext.data.Store', {
-            fields: ['no', 'id'],
+            fields: ['move_no', 'id'],
             autoLoad: false,
-            storeId:'exhibitGoodsStore',
+            storeId:'moveLocationStore',
             proxy: {
                 type: 'ajax',
-                url: apiBaseUrl + '/index.php/Warehouse/ExhibitGoods/getWarehouseExhibitList',
+                url: apiBaseUrl + '/index.php/Warehouse/Manage/getWarehouseMoveLocationList',
                 reader: {
                     type: 'json',
                     rootProperty: 'data',
@@ -49,20 +46,21 @@ Ext.define('erp.view.module.warehouse.WarehouseExhibitGoods', {
             }
         });
         var import_list_grid = Ext.create('Ext.grid.Panel', {
-            title: '上架单列表',
+            title: '移位单列表',
             height: '100%',
             width: 200,
             border: true,
             sortableColumns:false,
+
             columns: [
-                {text: '上架单号', dataIndex: 'no', flex: 1}
+                {text: '移位单号', dataIndex: 'move_no', flex: 1}
             ],
             store: store,
             tbar: [
                 {
                     text: '新增',
                     glyph: 0xf067,
-                    handler: 'addExhibitGoodsOrder'
+                    handler: 'addMoveLocationOrder'
                 },
                 //{
                 //    text: '删除',
@@ -82,16 +80,6 @@ Ext.define('erp.view.module.warehouse.WarehouseExhibitGoods', {
             }
         });
         return import_list_grid;
-    },
-    getInfoPanel: function () {
-        var panel = Ext.create('Ext.panel.Panel',{
-            name:"exhibit_info",
-            title:'上架单详情',
-            flex:1,
-            layout:'vbox',
-            height:'100%'
-        });
-
-        return panel;
     }
 });
+

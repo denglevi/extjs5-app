@@ -188,8 +188,8 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                     {text: '颜色', dataIndex: 'orderinfo_color'},
                     {text: '尺码', dataIndex: 'orderinfo_group'},
                     {text: '数量', dataIndex: 'orderinfo_amount'},
-                    {text: '批发价(欧)', dataIndex: 'orderinfo_nprice'},
-                    {text: '总价(欧)', dataIndex: 'orderinfo_wholesale'},
+                    {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
+                    {text: '总价(欧)', dataIndex: 'orderinfo_nprice'},
                     {text: '官方零售价(欧)', dataIndex: 'orderinfo_official'}
                 ]
             }
