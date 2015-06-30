@@ -1,42 +1,40 @@
 /**
- * Created by Administrator on 2015-06-29.
+ * Created by Administrator on 2015-06-30.
  */
-Ext.define('erp.view.module.warehouse.WarehouseMoveLocation', {
+Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseNotice', {
     extend: 'Ext.Container',
-    xtype: 'warehousemovelocation',
+    xtype: 'warehousemovewarehousenotice',
     requires: [
-        'Ext.container.Container',
         'Ext.data.Store',
         'Ext.data.proxy.Ajax',
         'Ext.data.reader.Json',
         'Ext.grid.Panel',
-        'Ext.panel.Panel',
-        'erp.view.module.warehouse.WarehouseController',
-        'erp.view.module.warehouse.WarehouseModel'
+        'erp.view.module.warehouse.WarehouseModel',
+        'erp.view.module.warehouse.WarehouseMoveWarehouseController'
     ],
 
     viewModel: {
         type: 'warehouse'
     },
-    controller: 'warehouse',
+    controller: 'warehousemovewarehouse',
     initComponent: function () {
         var me = this;
         me.layout = 'hbox';
 
-        var import_list = this.getMoveLocationList();
+        var import_list = this.getMoveWarehouseNoticeList();
         this.items = [import_list];
         import_list.on("rowdblclick","onMoveLocationGridDblClick");
 
         me.callParent();
     },
-    getMoveLocationList: function () {
+    getMoveWarehouseNoticeList: function () {
         var store = Ext.create('Ext.data.Store', {
-            fields: ['move_no', 'id'],
+            fields: [],
             autoLoad: false,
             storeId:'moveLocationStore',
             proxy: {
                 type: 'ajax',
-                url: apiBaseUrl + '/index.php/Warehouse/Manage/getWarehouseMoveLocationList',
+                url: apiBaseUrl + '/index.php/Warehouse/Manage/getWarehouseMoveWarehouseNoticeList',
                 reader: {
                     type: 'json',
                     rootProperty: 'data',
@@ -45,28 +43,28 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveLocation', {
             }
         });
         var import_list_grid = Ext.create('Ext.grid.Panel', {
-            title: '移位单列表',
+            title: '移库通知单列表',
             height: '100%',
             width: 200,
-            reference:'move_location_grid',
+            reference:'move_warehouse_notice_grid',
             border: true,
             sortableColumns:false,
             selModel:'checkboxmodel',
             enableRemoveColumn:false,
             columns: [
-                {text: '移位单号', dataIndex: 'move_no', flex: 1}
+                {text: '通知单号', dataIndex: 'notice_no', flex: 1}
             ],
             store: store,
             tbar: [
                 {
                     text: '新增',
                     glyph: 0xf067,
-                    handler: 'addMoveLocationOrder'
+                    handler: 'addMoveWarehouseNotice'
                 },
                 {
                     text: '删除',
                     glyph: 0xf1f8,
-                    handler:'delMoveLocationOrder'
+                    handler:'delMoveWarehouseNotice'
                 }
             ],
             //bbar: ['->', {
@@ -83,4 +81,5 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveLocation', {
         return import_list_grid;
     }
 });
+
 

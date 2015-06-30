@@ -13,13 +13,14 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         'Ext.data.Store',
         'Ext.data.proxy.Ajax',
         'Ext.data.reader.Json',
-        'Ext.form.Panel',
+        'Ext.form.field.Display',
         'Ext.form.field.Text',
         'Ext.grid.Panel',
         'Ext.layout.container.Anchor',
-        'Ext.layout.container.VBox',
+        'Ext.layout.container.HBox',
         'Ext.panel.Panel',
         'Ext.tab.Panel',
+        'Ext.toolbar.Toolbar',
         'Ext.window.Window',
         'erp.view.module.warehouse.AddImportGoodsOrder',
         'erp.view.module.warehouse.AddWarehouseReceive',
@@ -380,8 +381,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                     glyph: 0xf067,
                     handler: function () {
                         var info = model.get("exhibit_info");
-                        if(info.has == info.exhibit_goods_num){
-                            Ext.Msg.alert("系统提示","该订单已经完成上架");
+                        if (info.has == info.exhibit_goods_num) {
+                            Ext.Msg.alert("系统提示", "该订单已经完成上架");
                             return;
                         }
                         var win = Ext.create('Ext.window.Window', {
@@ -402,50 +403,50 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                     anchor: '100%',
                                     listeners: {
                                         keyup: {
-                                            fn:function (obj, e) {
-                                            //@todo  上线需要修改
-                                            if (e.keyCode == 13) {
-                                                var no = obj.getValue();
-                                                if(Ext.String.trim(no) == ""){
-                                                    //Ext.toast("请输入唯一码", "系统提示", 't');
-                                                    return;
-                                                }
-                                                obj.setValue('');
-                                                var store = me.lookupReference("import_order_info").getStore();
-                                                var res = store.findRecord("no", no);
-                                                if (res === null) {
-                                                    Ext.toast(no + "这件商品未入库,或不在此进货单中", "系统提示", 't');
-                                                    return;
-                                                }
-                                                var store = me.lookupReference("exhibit_order_info").getStore();
-                                                var res = store.findRecord("no", no);
-                                                if (res !== null) {
-                                                    Ext.toast(no + "这件商品已上架,请重新扫描!", "系统提示", 't');
-                                                    return;
-                                                }
-
-                                                Ext.Ajax.request({
-                                                    async: true,
-                                                    url: apiBaseUrl + '/index.php/Warehouse/ExhibitGoods/scanGoods',
-                                                    params: {
-                                                        no: no
-                                                    },
-                                                    success: function (response) {
-                                                        var text = Ext.decode(response.responseText);
-                                                        console.log(text);
-                                                        if (!text.success) {
-                                                            Ext.toast(no + text.msg, "系统提示", 't');
-                                                            return;
-                                                        }
-                                                        nos.push(no);
-                                                        res = text.data;
-                                                        store.insert(0, res);
+                                            fn: function (obj, e) {
+                                                //@todo  上线需要修改
+                                                if (e.keyCode == 13) {
+                                                    var no = obj.getValue();
+                                                    if (Ext.String.trim(no) == "") {
+                                                        //Ext.toast("请输入唯一码", "系统提示", 't');
+                                                        return;
                                                     }
-                                                });
-                                            }
-                                        },
-                                        scope: this
-                                    }
+                                                    obj.setValue('');
+                                                    var store = me.lookupReference("import_order_info").getStore();
+                                                    var res = store.findRecord("no", no);
+                                                    if (res === null) {
+                                                        Ext.toast(no + "这件商品未入库,或不在此进货单中", "系统提示", 't');
+                                                        return;
+                                                    }
+                                                    var store = me.lookupReference("exhibit_order_info").getStore();
+                                                    var res = store.findRecord("no", no);
+                                                    if (res !== null) {
+                                                        Ext.toast(no + "这件商品已上架,请重新扫描!", "系统提示", 't');
+                                                        return;
+                                                    }
+
+                                                    Ext.Ajax.request({
+                                                        async: true,
+                                                        url: apiBaseUrl + '/index.php/Warehouse/ExhibitGoods/scanGoods',
+                                                        params: {
+                                                            no: no
+                                                        },
+                                                        success: function (response) {
+                                                            var text = Ext.decode(response.responseText);
+                                                            console.log(text);
+                                                            if (!text.success) {
+                                                                Ext.toast(no + text.msg, "系统提示", 't');
+                                                                return;
+                                                            }
+                                                            nos.push(no);
+                                                            res = text.data;
+                                                            store.insert(0, res);
+                                                        }
+                                                    });
+                                                }
+                                            },
+                                            scope: this
+                                        }
                                     }
                                 },
                                 {
@@ -462,12 +463,12 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                 //@todo  上线需要修改
                                                 if (e.keyCode == 13) {
                                                     var location = obj.getValue();
-                                                    if(Ext.String.trim(location) == ""){
+                                                    if (Ext.String.trim(location) == "") {
                                                         //Ext.toast("请输入上架库位", "系统提示", 't');
                                                         return;
                                                     }
 
-                                                    if(nos.length == 0){
+                                                    if (nos.length == 0) {
                                                         Ext.toast("请先扫入商品在上架", "系统提示", 't');
                                                         return;
                                                     }
@@ -495,7 +496,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                 }
                                             }
                                         },
-                                        scope:this
+                                        scope: this
                                     }
                                 }
                             ]
@@ -534,7 +535,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 },
                 {
                     title: '进货信息',
-                    reference:'import_order_info',
+                    reference: 'import_order_info',
                     columns: [
                         {text: '唯一码', dataIndex: 'no', flex: 1},
                         {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
@@ -552,7 +553,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 {
                     title: '差异数',
                     columns: [
-                        {text: '唯一码', dataIndex: 'no', flex: 1,tdCls:'text-danger'},
+                        {text: '唯一码', dataIndex: 'no', flex: 1, tdCls: 'text-danger'},
                         {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
                         {text: '名称', dataIndex: 'name_zh'},
                         {text: '系统颜色代码', dataIndex: 'color'},
@@ -631,23 +632,23 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         model.set("exhibit_diff", exhibit_diff);
         return true;
     },
-    onWarehouseListGridDblClick:function(gp,record){
-        var grid = this.lookupReference('locationgrid'),id=record.get("id");
-        if(null != grid){
+    onWarehouseListGridDblClick: function (gp, record) {
+        var grid = this.lookupReference('locationgrid'), id = record.get("id");
+        if (null != grid) {
             var store = grid.getStore()
-            store.getProxy().setExtraParam("id",id);
+            store.getProxy().setExtraParam("id", id);
             store.load();
             return;
         }
         gp.up("warehousesetting").add(
             {
-                title:'库位列表',
-                flex:1,
-                reference:'locationgrid',
-                xtype:'grid',
+                title: '库位列表',
+                flex: 1,
+                reference: 'locationgrid',
+                xtype: 'grid',
                 sortableColumns: false,
-                selModel:'checkboxmodel',
-                enableColumnHide:false,
+                selModel: 'checkboxmodel',
+                enableColumnHide: false,
                 tbar: [
                     {
                         text: '新增',
@@ -659,7 +660,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         glyph: 0xf1f8
                     },
                     {
-                        text:'编辑',
+                        text: '编辑',
                         glyph: 0xf1f8
                     }
                 ],
@@ -671,16 +672,16 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 listeners: {
                     afterrender: function () {
                         var store = Ext.create('Ext.data.Store', {
-                            fields: ['id','storage_id','library_name','no'],
-                            autoLoad:true,
+                            fields: ['id', 'storage_id', 'library_name', 'no'],
+                            autoLoad: true,
                             proxy: {
                                 type: 'ajax',
-                                actionMethods:{
-                                    read:'post',
+                                actionMethods: {
+                                    read: 'post',
                                 },
-                                url: apiBaseUrl+'/index.php/Warehouse/Index/getLoction',
-                                extraParams:{
-                                    id:id
+                                url: apiBaseUrl + '/index.php/Warehouse/Index/getLoction',
+                                extraParams: {
+                                    id: id
                                 },
                                 reader: {
                                     type: 'json',
@@ -695,18 +696,306 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             }
         )
     },
-    onMoveLocationGridDblClick:function(gp,record){
-        var panel = Ext.create('Ext.grid.Panel',{
-            title:'移位单详情',
-            flex:1,
-            layout:'vbox',
-            height:'100%'
-        });
-
-        return panel;
-    },
-    addMoveLocationOrder:function(){
+    addMoveLocationOrder: function () {
+        var me = this;
         var win = Ext.create('erp.view.window.AddMoveLocationWin');
+        win.on("refresh_move_location_grid", function () {
+            me.lookupReference("move_location_grid").getStore().load();
+        });
         win.show();
+    },
+    delMoveLocationOrder: function (btn) {
+        var grid = this.lookupReference("move_location_grid");
+        var sel = grid.getSelection(), ids = [], nos = [];
+        if (sel.length == 0) {
+            Ext.Msg.alert('系统提示', '请选择要删除的订单');
+            return;
+        }
+        Ext.each(sel, function (record) {
+            ids.push(record.get("id"));
+            nos.push(record.get("move_no"));
+        });
+        Ext.Msg.show({
+            title: '系统消息',
+            message: '你确定要删除以下移位单吗？<br>' + nos.join('<br>'),
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn === 'yes') {
+                    Ext.Ajax.request({
+                        url: apiBaseUrl + '/index.php/Warehouse/Manage/delWarehouseMoveLocationOrder',
+                        waitMsg: '正在删除...',
+                        params: {
+                            ids: ids.join(',')
+                        },
+                        success: function (data) {
+                            var res = Ext.decode(data.responseText);
+                            console.log(res);
+                            if (!res.success) {
+                                Ext.Msg.alert('系统提示', res.msg);
+                                return;
+                            }
+                            grid.getStore().load();
+                        },
+                        failure: function (data) {
+                            var res = Ext.decode(data.responseText);
+                            Ext.Msg.alert('系统提示', res.msg);
+                        }
+                    })
+                }
+            }
+        });
+    },
+    onMoveLocationGridDblClick: function (gp, record) {
+        var me = this;
+        var id = record.get("id"), no = record.get("move_no"), warehouse = record.get("storage_name"), status = record.get("status");
+        var container = gp.up("warehousemovelocation");
+        var info = this.lookupReference("move_location_order_info");
+        var model = this.getViewModel();
+
+        model.set("move_location_order_id", id);
+        model.set("move_location_order_no", no);
+        model.set("move_location_order_status", status == 1 ? true : false);
+        model.set("move_location_order_warehouse", warehouse);
+        if (info !== null) {
+            var store = info.down("grid").getStore();
+            store.setProxy({
+                type: 'ajax',
+                url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveLocationGoods?id=' + id,
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data'
+                }
+            });
+            store.load();
+            return;
+        }
+        container.add({
+            xtype: 'panel',
+            reference: 'move_location_order_info',
+            flex: 1,
+            title: '移位单详情',
+            items: [
+                {
+                    xtype: 'panel',
+                    margin: 10,
+                    layout: 'hbox',
+                    items: [
+                        {
+                            xtype: 'displayfield', fieldLabel: '移位单号', flex: 1,
+                            bind: {
+                                value: '{move_location_order_no}'
+                            }
+                        },
+                        {
+                            xtype: 'displayfield', fieldLabel: '移位仓库', flex: 2,
+                            bind: {
+                                value: '{move_location_order_warehouse}'
+                            }
+                        }
+                    ],
+                    dockedItems: [{
+                        xtype: 'toolbar',
+                        dock: 'bottom',
+                        bind: {
+                            hidden: '{move_location_order_status}'
+                        },
+                        items: [
+                            '->',
+                            {
+                                text: '移位',
+                                handler: function () {
+                                    var win = Ext.create('Ext.window.Window', {
+                                        title: '扫描商品',
+                                        bodyPadding: 10,
+                                        modal: true,
+                                        width: 400,
+                                        layout: 'anchor',
+                                        items: [
+                                            {
+                                                labelWidth: 70,
+                                                xtype: 'textfield',
+                                                fieldLabel: '移入库位',
+                                                labelAlign: 'right',
+                                                name: 'location',
+                                                anchor: '100%',
+                                                enableKeyEvents: true
+                                            },
+                                            {
+                                                labelWidth: 70,
+                                                xtype: 'textfield',
+                                                fieldLabel: '唯一码',
+                                                labelAlign: 'right',
+                                                name: 'no',
+                                                anchor: '100%',
+                                                enableKeyEvents: true,
+                                                listeners: {
+                                                    keyup: {
+                                                        fn: me.onMoveLoactionInfoKeyUp,
+                                                        scope: me
+                                                    }
+                                                }
+                                            }
+                                        ]
+
+                                    });
+                                    win.show();
+                                }
+                            },
+                            {
+                                text: '保存',
+                                handler: function () {
+                                    var grid = me.lookupReference("move_location_goods_gird");
+                                    var store = grid.getStore();
+                                    var items = store.getData().items;
+                                    var goods = [];
+                                    for(var i=0;i<items.length;++i){
+                                        var item = items[i];
+                                        if(item.get("mark") !== 0) continue;
+                                        goods.push({
+                                            goods_no:item.get("goods_no"),
+                                            move_in_location:item.get("move_in_location"),
+                                            move_out_location:item.get("move_out_location")
+                                        });
+                                    }
+                                    console.log(goods,id);
+                                    Ext.Ajax.request({
+                                        async: true,
+                                        url: apiBaseUrl + '/index.php/Warehouse/Manage/saveMoveLocationGoods',
+                                        params: {
+                                            id: model.get("move_location_order_id"),
+                                            status:0,
+                                            data: Ext.encode(goods)
+                                        },
+                                        success: function (response) {
+                                            var text = Ext.decode(response.responseText);
+                                            console.log(text);
+                                            if (!text.success) {
+                                                Ext.toast(no + text.msg, "系统提示", 't');
+                                                return;
+                                            }
+                                            Ext.toast("保存成功", "系统提示", 't');
+                                        }
+                                    });
+                                }
+                            },
+                            {
+                                text: '提交',
+                                handler: function () {
+                                    var grid = me.lookupReference("move_location_goods_gird");
+                                    var store = grid.getStore();
+                                    var items = store.getData().items;
+                                    var goods = [];
+                                    for(var i=0;i<items.length;++i){
+                                        var item = items[i];
+                                        if(item.get("mark") !== 0) continue;
+                                        goods.push({
+                                            goods_no:item.get("goods_no"),
+                                            move_in_location:item.get("move_in_location"),
+                                            move_out_location:item.get("move_out_location"),
+                                        });
+                                    }
+                                    Ext.Ajax.request({
+                                        async: true,
+                                        url: apiBaseUrl + '/index.php/Warehouse/Manage/saveMoveLocationGoods',
+                                        params: {
+                                            id: model.get("move_location_order_id"),
+                                            status:1,
+                                            data: Ext.encode(goods)
+                                        },
+                                        success: function (response) {
+                                            var text = Ext.decode(response.responseText);
+                                            console.log(text);
+                                            if (!text.success) {
+                                                Ext.toast(no + text.msg, "系统提示", 't');
+                                                return;
+                                            }
+                                            Ext.toast("提交成功", "系统提示", 't');
+                                            model.set("move_location_order_status",1);
+                                            gp.getStore().load();
+                                        }
+                                    });
+                                }
+                            }
+                        ]
+                    }]
+                },
+                {
+                    xtype: 'grid',
+                    title: '移位商品列表',
+                    flex: 1,
+                    width: '100%',
+                    reference:'move_location_goods_gird',
+                    enableRemoveColumn:false,
+                    sortableColumns:false,
+                    columns: [
+                        {text: '唯一码', dataIndex: 'goods_no', flex: 1},
+                        {text: '移出库位', dataIndex: 'move_out_location'},
+                        {text: '移入库位', dataIndex: 'move_in_location'},
+                        {text: '移位时间', dataIndex: 'create_time', format: 'data(Y-m-d)', flex: 1}
+                    ],
+                    listeners: {
+                        afterrender: function () {
+                            var store = Ext.create('Ext.data.Store', {
+                                fields: [],
+                                autoLoad: true,
+                                proxy: {
+                                    type: 'ajax',
+                                    url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveLocationGoods?id=' + id,
+                                    reader: {
+                                        type: 'json',
+                                        rootProperty: 'data'
+                                    }
+                                }
+                            });
+                            this.setStore(store);
+                        }
+                    }
+                }
+            ]
+        });
+    },
+    onMoveLoactionInfoKeyUp: function (obj, e) {
+        if (e.keyCode !== 13) return;
+        var me = this, location = obj.up("window").down("textfield[name=location]").getValue(),
+            no = obj.getValue();
+        me.nos = [];
+        if ("" == Ext.String.trim(location)) {
+            Ext.toast("请先输入移入库位", "系统提示", "t");
+            return;
+        }
+
+        if (Ext.String.trim(no) == "") return;
+        obj.setValue('');
+        var info = me.lookupReference("move_location_order_info"),
+            grid = info.down("grid");
+        var store = grid.getStore();
+        var res = store.findRecord("goods_no", no);
+        if (res !== null) {
+            Ext.toast(no + "这件商品已在列表中", "系统提示", 't');
+            return;
+        }
+
+        Ext.Ajax.request({
+            async: true,
+            url: apiBaseUrl + '/index.php/Warehouse/Manage/scanGoods',
+            params: {
+                no: no,
+                location: location
+            },
+            success: function (response) {
+                var text = Ext.decode(response.responseText);
+                console.log(text);
+                if (!text.success) {
+                    Ext.toast(no + text.msg, "系统提示", 't');
+                    return;
+                }
+                me.nos.push({no: no, location: location});
+                text.data.mark = 0;
+                text.data.move_in_location = location;
+                res = text.data;
+                store.insert(0, res);
+            }
+        });
     }
 });

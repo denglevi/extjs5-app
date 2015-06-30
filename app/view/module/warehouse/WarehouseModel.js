@@ -16,6 +16,10 @@ Ext.define('erp.view.module.warehouse.WarehouseModel', {
         exhibit_info:null,
         import_order:null,
         exhibit_diff:null,
-        exhibit_order:null
+        exhibit_order:null,
+        move_location_order_no:null,
+        move_location_order_status:false,
+        move_location_order_warehouse:null,
+        move_location_order_id:null
     }
 });

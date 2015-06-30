@@ -94,8 +94,8 @@ Ext.define('erp.view.main.MainModel', {
                 {
                     text: "仓库管理", expanded: false, children: [
                     {text: "商品移位", leaf: true,view:'warehousemovelocation'},
-                    {text: "移库通知单", leaf: true},
-                    {text: "商品移库", leaf: true}
+                    {text: "移库通知单", leaf: true,view:'warehousemovewarehousenotice'},
+                    {text: "商品移库", leaf: true,view:'warehousemovewarehouse'}
                 ]
                 },
                 {text: "库存查询", leaf: true},
