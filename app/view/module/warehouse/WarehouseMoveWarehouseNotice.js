@@ -23,7 +23,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseNotice', {
 
         var import_list = this.getMoveWarehouseNoticeList();
         this.items = [import_list];
-        import_list.on("rowdblclick","onMoveLocationGridDblClick");
+        import_list.on("rowdblclick","onMoveWarehouseGridDblClick");
 
         me.callParent();
     },

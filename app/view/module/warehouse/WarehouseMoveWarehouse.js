@@ -23,7 +23,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouse', {
 
         var import_list = this.getMoveLocationList();
         this.items = [import_list];
-        import_list.on("rowdblclick","onMoveLocationGridDblClick");
+        import_list.on("rowdblclick","onMoveWarehouseOrderGridDblClick");
 
         me.callParent();
     },
@@ -34,7 +34,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouse', {
             storeId:'moveLocationStore',
             proxy: {
                 type: 'ajax',
-                url: apiBaseUrl + '/index.php/Warehouse/Manage/getWarehouseMoveLocationList',
+                url: apiBaseUrl + '/index.php/Warehouse/Manage/getWarehouseMoveWarehouseList',
                 reader: {
                     type: 'json',
                     rootProperty: 'data',
@@ -46,7 +46,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouse', {
             title: '移库单列表',
             height: '100%',
             width: 200,
-            reference:'move_location_grid',
+            reference:'move_warehouse_grid',
             border: true,
             sortableColumns:false,
             selModel:'checkboxmodel',
@@ -56,15 +56,15 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouse', {
             ],
             store: store,
             tbar: [
-                {
-                    text: '新增',
-                    glyph: 0xf067,
-                    handler: 'addMoveLocationOrder'
-                },
+                //{
+                //    text: '新增',
+                //    glyph: 0xf067,
+                //    handler: 'addMoveLocationOrder'
+                //},
                 {
                     text: '删除',
                     glyph: 0xf1f8,
-                    handler:'delMoveLocationOrder'
+                    handler:'delMoveWarehouseOrder'
                 }
             ],
             //bbar: ['->', {

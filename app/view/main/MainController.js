@@ -26,6 +26,8 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.warehouse.WarehouseMoveLocation',
         'erp.view.module.warehouse.WarehouseMoveWarehouseNotice',
         'erp.view.module.warehouse.WarehouseMoveWarehouse',
+        'erp.view.module.warehouse.WarehouseSelect',
+        'erp.view.module.warehouse.WarehouseCheckTaskOrder',
         'erp.view.module.warehouse.WarehouseExhibitGoods'
     ],
     onMainMenu: function (el) {

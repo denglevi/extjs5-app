@@ -98,10 +98,10 @@ Ext.define('erp.view.main.MainModel', {
                     {text: "商品移库", leaf: true,view:'warehousemovewarehouse'}
                 ]
                 },
-                {text: "库存查询", leaf: true},
+                {text: "库存查询", leaf: true,view:'warehouseselect'},
                 {
                     text: "仓库盘点", expanded: false, children: [
-                    {text: "任务单", leaf: true},
+                    {text: "任务单", leaf: true,view:'warehousechecktaskorder'},
                     {text: "盘点单", leaf: true}
                 ]
                 }
@@ -109,6 +109,36 @@ Ext.define('erp.view.main.MainModel', {
         } else if(text == "财务"){
             menu = [
                 {text: "付款申请", leaf: true,view:'applypaylist'}
+            ];
+        } else if(text == "营运"){
+            menu = [
+                {text: "店员", leaf: false,children:[
+                    {text: "店员职位", leaf: true,view:'warehousechecktaskorder'},
+                    {text: "店员管理", leaf: true}
+                ]},
+                {text: "业绩分配", leaf: true},
+                {text: "活动促销", leaf: false,children:[
+                    {text: "捆绑促销", leaf: true,view:'warehousechecktaskorder'},
+                    {text: "整单促销", leaf: true}
+                ]},
+                {text: "结算方式", leaf: true}
+            ];
+        } else if(text == "会员"){
+            menu = [
+                {text: "VIP资料", leaf: false,children:[
+                    {text: "VIP卡类别", leaf: true,view:'warehousechecktaskorder'},
+                    {text: "VIP会员发卡规则", leaf: true},
+                    {text: "VIP会员升级规则", leaf: true},
+                    {text: "VIP会员卡制成投放单", leaf: true}
+                ]},
+                {text: "顾客管理", leaf: true},
+                {text: "会员管理", leaf: true},
+                {text: "礼品卡", leaf: false,children:[
+                    {text: "礼品卡资料", leaf: true,view:'warehousechecktaskorder'},
+                    {text: "礼品卡返利标准", leaf: true},
+                    {text: "礼品卡销售", leaf: true},
+                    {text: "礼品卡制成投放单", leaf: true}
+                ]}
             ];
         }
         return Ext.create('Ext.data.TreeStore', {

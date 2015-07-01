@@ -159,6 +159,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
                     if (2 == val) return '<b class="text-info">已上架</b>';
                     if (3 == val) return '<b class="text-warning">已下架</b>';
                     if (4 == val) return '<b class="text-primary">已出库</b>';
+                    if (5 == val) return '<b class="text-primary">待移库</b>';
                 }
                 }
             ],

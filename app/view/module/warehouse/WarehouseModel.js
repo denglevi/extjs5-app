@@ -20,6 +20,14 @@ Ext.define('erp.view.module.warehouse.WarehouseModel', {
         move_location_order_no:null,
         move_location_order_status:false,
         move_location_order_warehouse:null,
-        move_location_order_id:null
+        move_location_order_id:null,
+        move_warehouse_notice_id:null,
+        move_warehouse_notice_no:null,
+        move_warehouse_notice_status:null,
+        move_warehouse_notice_warehouse:null,
+        move_warehouse_order_id:null,
+        move_warehouse_order_no:null,
+        move_warehouse_order_status:null,
+        move_warehouse_order_warehouse:null
     }
 });
