@@ -2,83 +2,77 @@
  * Created by Administrator on 2015-06-30.
  */
 Ext.define('erp.view.module.warehouse.WarehouseCheckTaskOrder', {
-    extend: 'Ext.Container',
+    extend: 'Ext.grid.Panel',
     xtype: 'warehousechecktaskorder',
     requires: [
-        'Ext.data.Store',
-        'Ext.data.proxy.Ajax',
-        'Ext.data.reader.Json',
-        'Ext.grid.Panel',
-        'erp.view.module.warehouse.WarehouseModel',
-        'erp.view.module.warehouse.WarehouseMoveWarehouseController',
+        'Ext.grid.column.Action',
+        'Ext.toolbar.Paging',
+        'erp.view.module.warehouse.WarehouseCheckController',
+        'erp.view.module.warehouse.WarehouseModel'
     ],
-
     viewModel: {
         type: 'warehouse'
     },
-    controller: 'warehousemovewarehouse',
-    initComponent: function () {
-        var me = this;
-        me.layout = 'hbox';
-
-        var task_list = this.getCheckTaskList();
-        this.items = [task_list];
-        task_list.on("rowdblclick","onWarehouseCheckTaskOrderGridDblClick");
-
-        me.callParent();
-    },
-    getCheckTaskList: function () {
-        var store = Ext.create('Ext.data.Store', {
-            fields: ['move_no', 'id'],
-            autoLoad: false,
-            storeId:'warehouseCheckTaskOrderStore',
-            proxy: {
-                type: 'ajax',
-                url: apiBaseUrl + '/index.php/Warehouse/Manage/getWarehouseCheckTaskOrderList',
-                reader: {
-                    type: 'json',
-                    rootProperty: 'data',
-                    totalProperty: 'total'
-                }
-            }
-        });
-        var task_list_grid = Ext.create('Ext.grid.Panel', {
-            title: '任务单列表',
-            height: '100%',
-            width: 200,
-            reference:'move_warehouse_grid',
-            border: true,
-            sortableColumns:false,
-            selModel:'checkboxmodel',
-            enableRemoveColumn:false,
-            columns: [
-                {text: '任务单号', dataIndex: 'move_no', flex: 1}
-            ],
-            store: store,
-            tbar: [
-                {
-                    text: '新增',
-                    glyph: 0xf067,
-                    handler: 'addWarehouseCheckTaskOrder'
-                },
-                {
-                    text: '删除',
-                    glyph: 0xf1f8,
-                    handler:'delWarehouseCheckTaskOrder'
-                }
-            ],
-            //bbar: ['->', {
-            //    xtype: 'pagingtoolbar',
-            //    store: store,
-            //    displayInfo: true
-            //}],
-            listeners: {
-                afterrender: function () {
-                    store.load();
-                }
-            }
-        });
-        return task_list_grid;
+    controller: 'warehousecheck',
+    layout: 'fit',
+    height: '100%',
+    reference: 'move_warehouse_grid',
+    border: true,
+    sortableColumns: false,
+    selModel: 'checkboxmodel',
+    enableRemoveColumn: false,
+    columns: [
+        {text: '任务单号', dataIndex: 'receipts_no', flex: 1},
+        {text: '日期', dataIndex: 'data'},
+        {
+            text: '盘点类型', dataIndex: 'task_type', renderer: function (val) {
+            if (1 == val) return "全盘";
+            if (2 == val) return "品牌";
+            if (3 == val) return "分类";
+        }
+        },
+        {text: '实盘数', dataIndex: 'sum_length1'},
+        {text: '账面数', dataIndex: 'sum_length'},
+        {text: '亏盈数', dataIndex: 'pal_num'},
+        {text: '亏盈金额', dataIndex: 'pal'},
+        {text: '备注', dataIndex: 'remark'},
+        {text: '状态', dataIndex: 'status'},
+        {
+            text: '操作',
+            xtype: 'actioncolumn',
+            flex: 1,
+            width: 50,
+            items: [
+                {icon: '/resources/images/next.png', tooltip: '执行', iconCls: 'colunmsAction'},
+                {icon: '/resources/images/accept.png', tooltip: '确认', iconCls: 'colunmsAction'},
+                {icon: '/resources/images/chart_bar.png', tooltip: '盈亏', iconCls: 'colunmsAction'},
+                {icon: '/resources/images/setfieldrole.png', tooltip: '终止', iconCls: 'colunmsAction'}
+            ]
+        }
+    ],
+    store: 'WarehouseCheckTaskOrderStore',
+    tbar: [
+        {
+            text: '新增',
+            glyph: 0xf067,
+            handler: "addTaskOrder"
+        },
+        {
+            text: '删除',
+            glyph: 0xf1f8,
+            handler: 'delWarehouseCheckTaskOrder'
+        }
+    ],
+    bbar: ['->', {
+        xtype: 'pagingtoolbar',
+        store: 'WarehouseCheckTaskOrderStore',
+        displayInfo: true
+    }],
+    listeners: {
+        afterrender: function () {
+            this.getStore().load();
+        },
+        rowdblclick: "onWarehouseCheckTaskOrderGridDblClick"
     }
 });
 
