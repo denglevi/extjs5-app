@@ -70,6 +70,19 @@
 
 /*采购订单状态进度条样式*/
 
-.colunmsAction {
+.columnActionIcon1 {
     margin-left:10px;
+    background-image: url("images/next.png");
+}
+.columnActionIcon2 {
+    margin-left:10px;
+    background-image: url("images/accept.png");
+}
+.columnActionIcon3 {
+    margin-left:10px;
+    background-image: url("images/chart_bar.png");
+}
+.columnActionIcon4 {
+    margin-left:10px;
+    background-image: url("images/setfieldrole.png");
 }

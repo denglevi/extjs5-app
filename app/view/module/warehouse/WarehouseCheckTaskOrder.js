@@ -21,9 +21,10 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckTaskOrder', {
     sortableColumns: false,
     selModel: 'checkboxmodel',
     enableRemoveColumn: false,
+    bufferedRenderer:false,
     columns: [
         {text: '任务单号', dataIndex: 'receipts_no', flex: 1},
-        {text: '日期', dataIndex: 'data'},
+        {text: '日期', dataIndex: 'date'},
         {
             text: '盘点类型', dataIndex: 'task_type', renderer: function (val) {
             if (1 == val) return "全盘";
@@ -36,17 +37,30 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckTaskOrder', {
         {text: '亏盈数', dataIndex: 'pal_num'},
         {text: '亏盈金额', dataIndex: 'pal'},
         {text: '备注', dataIndex: 'remark'},
-        {text: '状态', dataIndex: 'status'},
+        {text: '备注1', dataIndex: 'status'},
         {
             text: '操作',
             xtype: 'actioncolumn',
+            dataIndex: 'status',
             flex: 1,
             width: 50,
-            items: [
-                {icon: '/resources/images/next.png', tooltip: '执行', iconCls: 'colunmsAction'},
-                {icon: '/resources/images/accept.png', tooltip: '确认', iconCls: 'colunmsAction'},
-                {icon: '/resources/images/chart_bar.png', tooltip: '盈亏', iconCls: 'colunmsAction'},
-                {icon: '/resources/images/setfieldrole.png', tooltip: '终止', iconCls: 'colunmsAction'}
+            items:[
+                {getClass:function(val){
+                    if(val == 0) return 'columnActionIcon1';
+                    return 'hide';
+                },tooltip: '执行'},
+                {getClass:function(val){
+                    if(val > 0) return 'columnActionIcon2';
+                    return 'hide';
+                },tooltip: '确认'},
+                {getClass:function(val){
+                    if(val > 0) return 'columnActionIcon3';
+                    return 'hide';
+                },tooltip: '盈亏'},
+                {getClass:function(val){
+                    if(val > 0) return 'columnActionIcon4';
+                    return 'hide';
+                },tooltip: '终止'}
             ]
         }
     ],
@@ -60,7 +74,7 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckTaskOrder', {
         {
             text: '删除',
             glyph: 0xf1f8,
-            handler: 'delWarehouseCheckTaskOrder'
+            handler: 'delWarehouseCheckOrder'
         }
     ],
     bbar: ['->', {

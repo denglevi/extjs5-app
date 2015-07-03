@@ -102,7 +102,7 @@ Ext.define('erp.view.main.MainModel', {
                 {
                     text: "仓库盘点", expanded: false, children: [
                     {text: "任务单", leaf: true,view:'warehousechecktaskorder'},
-                    {text: "盘点单", leaf: true}
+                    {text: "盘点单", leaf: true,view:'warehousecheckorder'}
                 ]
                 }
             ];
