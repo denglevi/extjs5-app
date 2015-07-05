@@ -93,6 +93,7 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
         return fields;
     },
     getBtns: function (need_notice) {
+        var me = this;
         return [
             {
                 text: '重置',
@@ -116,6 +117,7 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
                             },
                             waitMsg: '正在保存物流单...',
                             success: function (form, action) {
+                                me.destroy();
                                 console.log(action.result);
                             },
                             failure: function (form, action) {

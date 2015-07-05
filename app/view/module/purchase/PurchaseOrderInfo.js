@@ -45,7 +45,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             status = res.status,
             batchs = res.batchs,
             next_status = res.next_status;
-        var url = next_status.action==''?'/Purchasing/Buyer/purchasingAction':next_status.action;
+        console.log(next_status);
+        if(next_status !== null) var url = next_status.action==''?'/Purchasing/Buyer/purchasingAction':next_status.action;
         me.layout = 'vbox';
         me.items = [
             {
@@ -129,6 +130,15 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         url:url,
                                         total:total
                                     }).show();
+                                }else if("申请报关付款" == next_status.name){
+                                    Ext.create('erp.view.window.PurchasePayWin',{
+                                        title:next_status.name,
+                                        status_id:order_info.order_status,
+                                        order_no:order_info.order_nos,
+                                        batch_no:batchs[0].batch_no,
+                                        url:url,
+                                        total:total
+                                    }).show();
                                 }else if("验货" == next_status.name){
                                     var tab = {
                                         title:next_status.name,
@@ -138,20 +148,24 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         closable:true
                                     };
                                     me.up("tabpanel").setActiveTab(tab);
-                                }else if("提货" == next_status.name){
+                                }else if("提货" == next_status.name || "发货到仓库" == next_status.name){
+                                    var need_notice = "提货" == next_status.name?0:1;
                                     Ext.create('erp.view.window.AddLogisticsFormWin',{
                                         title:next_status.name,
+                                        need_notice:need_notice,
                                         order_no:order_info.order_nos,
                                         batch_no:batchs[0].batch_no,
                                         url:url
                                     }).show();
                                 }else if("申请报关" == next_status.name){
-                                    Ext.create('erp.view.window.AddPassCustomWin',{
+                                    var win = Ext.create('erp.view.window.AddPassCustomWin',{
                                         title:next_status.name,
                                         order_no:order_info.order_nos,
                                         batch_no:batchs[0].batch_no,
+                                        next_status:next_status,
                                         url:url
-                                    }).show();
+                                    });
+                                    win.show();
                                 }else if("完成报关" == next_status.name || "收货确认" == next_status.name || "完成付款" == next_status.name){
                                     me.handlerPurchaseOrder(order_info.order_nos,batchs[0].batch_no);
                                 }else if("关单" == next_status.name){
@@ -171,6 +185,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                         title: '商品信息',
                         xtype: 'grid',
                         scrollable:'y',
+                        itemId:'goods_info',
                         sortableColumns:false,
                         columns: [
                             {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
@@ -217,6 +232,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         me.callParent();
     },
     handlerPurchaseOrder:function(order_no,batch_no){
+        var me=this;
         Ext.Ajax.request({
             async:false,
             url: apiBaseUrl+'/index.php/Purchasing/Buyer/handlerPurchaseOrder',
@@ -231,11 +247,13 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     Ext.Msg.alert("系统提示",text.msg);
                     return;
                 }
+                me.destroy();
             }
         });
     },
     uploadCloseFile:function(order_no){
-        Ext.create('Ext.window.Window',{
+        var me = this;
+        var win = Ext.create('Ext.window.Window',{
             title:"上传清关文件",
             bodyPadding: 40,
             items:[
@@ -260,7 +278,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         },
                                         success: function (form, action) {
                                             var data = action.result.data;
-
+                                            win.destroy();
+                                            me.destroy();
                                         },
                                         failure: function (form, action) {
                                             switch (action.failureType) {

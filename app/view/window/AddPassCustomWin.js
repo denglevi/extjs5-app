@@ -19,6 +19,7 @@ Ext.define('erp.view.window.AddPassCustomWin', {
     bodyPadding: 10,
     initComponent: function () {
         var me = this,res;
+        var next_status_id = me.next_status.is_last == 1?0:me.next_status.id
         Ext.apply(me, {
             items: [
                 {
@@ -36,7 +37,7 @@ Ext.define('erp.view.window.AddPassCustomWin', {
                         columnWidth: 0.5,
                         labelWidth:120
                     },
-                    items: this.getFieldItems(me.batch_no,me.order_no),
+                    items: this.getFieldItems(me.batch_no,me.order_no,next_status_id,me.next_status.is_last),
                     buttons: this.getBtns()
                 }
             ],
@@ -61,7 +62,7 @@ Ext.define('erp.view.window.AddPassCustomWin', {
         });
         this.callParent();
     },
-    getFieldItems: function (batch_no,order_no) {
+    getFieldItems: function (batch_no,order_no,next_status,is_last) {
         var fields = [
             {fieldLabel: '供货单号', name: 'supply_no',value:batch_no,editable:false},
             {fieldLabel: '采购单号', name: 'order_no',value:order_no,editable:false},
@@ -85,12 +86,15 @@ Ext.define('erp.view.window.AddPassCustomWin', {
             },
             {fieldLabel: '报关公司联系人', name: 'cu_contaits',editable:false},
             {fieldLabel: '报关公司联系电话', name: 'cu_tel',editable:false},
+            {xtype:'hiddenfield', name: 'next_status',value:next_status},
+            {xtype:'hiddenfield', name: 'is_last_status',value:is_last},
             {fieldLabel: '报关公司联系地址', name: 'cu_address',xtype:'textarea',editable:false}
         ];
 
         return fields;
     },
     getBtns: function () {
+        var me =this;
         return [
             {
                 text: '重置',
@@ -108,6 +112,7 @@ Ext.define('erp.view.window.AddPassCustomWin', {
                         form.submit({
                             waitMsg: '正在保存物流单...',
                             success: function (form, action) {
+                                me.destroy();
                                 console.log(action.result);
                             },
                             failure: function (form, action) {

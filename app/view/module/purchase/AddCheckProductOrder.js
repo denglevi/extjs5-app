@@ -219,13 +219,15 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                         sortableColumns: false,
                         columns: [
                             {text: '装箱单号', dataIndex: 'packing_no', flex: 1},
+                            {text: '品牌', dataIndex: 'brand'},
                             {text: '国际款号', dataIndex: 'style_no',flex:1},
                             {text: '名称', dataIndex: 'product_name'},
+                            {text: '国际颜色代码', dataIndex: 'color'},
+                            {text: '尺码', dataIndex: 'size'},
                             {text: '性别', dataIndex: 'sex'},
                             {text: '产地', dataIndex: 'origin'},
                             {text: '材质', dataIndex: 'material'},
                             {text: '数量', dataIndex: 'num'},
-                            {text: '品牌', dataIndex: 'brand'},
                             {text: '箱号', dataIndex: 'box_no'}
                         ]
                     }

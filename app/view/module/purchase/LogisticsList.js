@@ -26,11 +26,12 @@ Ext.define('erp.view.module.purchase.LogisticsList', {
         {
             text:'新增',
             glyph:0xf067,
-            handler:'addPurchaseOrder'
+            //handler:'addPurchaseOrder'
         },
         {
             text:'删除',
-            glyph:0xf1f8
+            glyph:0xf1f8,
+            handler: 'deleteLogisticsOrder'
         },'->',
         {
             xtype: 'textfield',
@@ -57,9 +58,14 @@ Ext.define('erp.view.module.purchase.LogisticsList', {
         {text:'物流单号',dataIndex:'logistics_no',flex:1},
         {text:'供货单号',dataIndex:'batch_no',flex:1},
         {text:'供应商',dataIndex:'name',flex:1},
-        {text:'物流类型',dataIndex:'type'},
+        {text:'物流类型',dataIndex:'logistics_type',renderer:function(val){
+            if(0 == val) return "国内陆运";
+            if(1 == val) return "国内空运";
+            if(2 == val) return "国际空运";
+            if(3 == val) return "国际海运";
+        }},
         {text:'联系人',dataIndex:'contact',flex:1},
-        {text:'提交日期',dataIndex:'create_time'}
+        {text:'提交日期',dataIndex:'date'}
     ],
     listeners:{
         afterrender:function(){

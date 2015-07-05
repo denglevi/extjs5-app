@@ -69,10 +69,15 @@ Ext.define('erp.view.module.purchase.PassCustomList', {
             this.getStore().load();
         },
         rowdblclick:function(obj,record){
-            Ext.create('erp.view.window.PassCustomInfoWin',{
+            var me = this;
+            var win = Ext.create('erp.view.window.PassCustomInfoWin',{
                 title:record.get("status_name"),
                 record:record
-            }).show();
+            });
+            win.show();
+            win.on("beforedestroy",function(){
+                me.getStore().load();
+            });
         }
     }
 });

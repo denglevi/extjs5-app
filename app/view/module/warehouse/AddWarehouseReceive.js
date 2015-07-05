@@ -51,13 +51,6 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                         height: '100%',
                         sortableColumns: false,
                         columns: [
-                            //{text: '装箱单号', dataIndex: 'packing_no', flex: 1},
-                            //{text: '国际款号', dataIndex: 'style_no',flex:1},
-                            //{text: '名称', dataIndex: 'product_name'},
-                            //{text: '性别', dataIndex: 'sex'},
-                            //{text: '产地', dataIndex: 'origin'},
-                            //{text: '材质', dataIndex: 'material'},
-                            //{text: '品牌', dataIndex: 'brand'},
                             {text: '装箱单号', dataIndex: 'packing_no', flex: 1},
                             {text: '箱号', dataIndex: 'box_no', flex: 1},
                             {text: '数量', dataIndex: 'num', flex: 1, editor: {xtype: 'numberfield', minValue: 0}},
@@ -103,6 +96,7 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
         this.callParent(arguments);
     },
     getBtns:function(){
+        var me = this;
         console.log(this.record);
         if(this.record.get("status") == 1) return null;
         return [
@@ -140,6 +134,7 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                             },
                             success: function (form, action) {
                                 //me.down("grid").getStore().load();
+                                me.destroy();
                                 console.log(action.result);
                                 //Ext.Msg.alert('系统提示', '新增订单成功');
                             },

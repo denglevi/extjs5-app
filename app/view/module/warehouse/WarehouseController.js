@@ -98,6 +98,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         });
     },
     getImportGoodsData: function (id, batch_no, model) {
+
         Ext.Ajax.request({
             async: false,
             method: 'POST',
@@ -141,7 +142,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         });
         var total = 0, diff_total = 0;
         Ext.Array.each(order, function (item) {
-            total += item.num;
+            total += parseInt(item.num);
             diff_total += parseInt(item.diff_num);
         });
         info.sum = total;

@@ -55,8 +55,12 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
         me.sortableColumns = false;
         me.listeners = {
             rowdblclick: function (gp, record) {
-                var status = record.get("status");
-                Ext.create('erp.view.window.PayFormWin',{status:status,record:record}).show();
+                var status = record.get("status"),
+                    win = Ext.create('erp.view.window.PayFormWin',{status:status,record:record});
+                win.show();
+                win.on("beforedestroy",function(){
+                    me.getStore().load();
+                });
             }
         }
         me.tbar = [

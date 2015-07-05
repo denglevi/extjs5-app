@@ -55,8 +55,8 @@ Ext.define('erp.view.module.purchase.CheckProductList', {
     columns:[
         {text:'采购订单号',dataIndex:'order_no',flex:1},
         {text:'供货单号',dataIndex:'batch_no',flex:1},
-        {text:'供应商',dataIndex:'supplier_id'},
-        {text:'买手',dataIndex:'buyer_id'},
+        {text:'供应商',dataIndex:'name'},
+        {text:'买手',dataIndex:'username'},
         {text:'提交日期',dataIndex:'date'}
     ],
     listeners:{

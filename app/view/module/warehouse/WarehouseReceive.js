@@ -21,12 +21,13 @@ Ext.define('erp.view.module.warehouse.WarehouseReceive', {
         {
             text:'新增',
             glyph:0xf067,
-            handler:'addPurchaseOrder'
+            //handler:'addPurchaseOrder'
         },
-        {
-            text:'删除',
-            glyph:0xf1f8
-        },'->',
+        //{
+        //    text:'删除',
+        //    glyph:0xf1f8
+        //},
+        '->',
         {
             xtype: 'textfield',
             fieldLabel: "物流单号",
@@ -54,7 +55,7 @@ Ext.define('erp.view.module.warehouse.WarehouseReceive', {
         {text:'供应商',dataIndex:'name',flex:1},
         {text:'物流类型',dataIndex:'type'},
         {text:'联系人',dataIndex:'contact',flex:1},
-        {text:'提交日期',dataIndex:'create_time'},
+        {text:'提交日期',dataIndex:'date'},
         {text:'状态',dataIndex:'status',renderer:function(val){
             if(1 == val) return "已收货";
 
