@@ -29,7 +29,11 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.warehouse.WarehouseSelect',
         'erp.view.module.warehouse.WarehouseCheckTaskOrder',
         'erp.view.module.warehouse.WarehouseCheckOrder',
-        'erp.view.module.warehouse.WarehouseExhibitGoods'
+        'erp.view.module.warehouse.WarehouseExhibitGoods',
+        'erp.view.module.operation.ResultsAllot',
+        'erp.view.module.operation.PaymentMethod',
+        'erp.view.module.operation.BundledSales',
+        'erp.view.module.operation.SellerPositionList'
     ],
     onMainMenu: function (el) {
         //点击不同菜单之后，左边栏显示不同的菜单
@@ -68,7 +72,7 @@ Ext.define('erp.view.main.MainController', {
                     rootVisible: false,
                     listeners: {
                         itemdblclick: function (tree, record, item, index, e, eOpts) {
-                            me.addMainTab(record.get("text"),tree,record.get("view"));
+                            if(record.get("leaf")) me.addMainTab(record.get("text"),tree,record.get("view"));
                         }
                     }
                 }

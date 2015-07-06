@@ -505,6 +505,13 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
 
                         win.show();
                     }
+                },
+                {
+                    text:'保存',
+                    glyph:0xf0c7,
+                    handler:function(){
+                        console.log(123);
+                    }
                 }
             ]
         }, {

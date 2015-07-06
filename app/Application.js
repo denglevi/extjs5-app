@@ -15,7 +15,8 @@ Ext.define('erp.Application', {
     stores: [
         'SupplierStore', 'PurchaseOrderListStore', 'PurchaseOrderStore','CheckProductListStore',
         'LogisticsListStore','PassCustomListStore','WarehouseReceiveStore','GoodsMenuStore','GoodsListStore',
-        'WarehouseListStore','WarehouseCheckTaskOrderStore','WarehouseCheckOrderStore'
+        'WarehouseListStore','WarehouseCheckTaskOrderStore','WarehouseCheckOrderStore','SellerPositionListStore',
+        'SellerListStore','ResultAllotListStore','PaymentMethodStore','BundledSalesListStore'
         // TODO: add global / shared stores here
     ],
 

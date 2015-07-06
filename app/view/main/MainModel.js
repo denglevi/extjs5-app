@@ -112,16 +112,13 @@ Ext.define('erp.view.main.MainModel', {
             ];
         } else if(text == "营运"){
             menu = [
-                {text: "店员", leaf: false,children:[
-                    {text: "店员职位", leaf: true,view:'warehousechecktaskorder'},
-                    {text: "店员管理", leaf: true}
-                ]},
-                {text: "业绩分配", leaf: true},
+                {text: "店员管理", leaf: true,view:'sellerpositionlist'},
+                {text: "业绩分配", leaf: true,view:'resultsallot'},
                 {text: "活动促销", leaf: false,children:[
-                    {text: "捆绑促销", leaf: true,view:'warehousechecktaskorder'},
+                    {text: "捆绑促销", leaf: true,view:'bundledsales'},
                     {text: "整单促销", leaf: true}
                 ]},
-                {text: "结算方式", leaf: true}
+                {text: "结算方式", leaf: true,view:'paymentmethod'}
             ];
         } else if(text == "会员"){
             menu = [
