@@ -20,6 +20,7 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.purchase.SupplierMng',
         'erp.view.module.goods.GoodsMenu',
         'erp.view.module.goods.GoodsList',
+        'erp.view.module.goods.BaseDataMng',
         'erp.view.module.warehouse.WarehouseReceive',
         'erp.view.module.warehouse.WarehouseImportGoods',
         'erp.view.module.warehouse.WarehouseSetting',
