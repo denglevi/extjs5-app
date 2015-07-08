@@ -128,8 +128,6 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
         me.bbar = ['->', {
             xtype: 'pagingtoolbar',
             store: me.store,
-            emptyMsg: '<b>暂无记录</b>',
-            displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
             displayInfo: true
         }];
         me.callParent();

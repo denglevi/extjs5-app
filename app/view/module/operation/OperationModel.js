@@ -6,6 +6,8 @@ Ext.define('erp.view.module.operation.OperationModel', {
 
     alias: 'viewmodel.operation',
     data:{
-        fieldDisabled:true
+        fieldDisabled:true,
+        budledSalesInfoBtnStatus:false,
+        bundledSalesInfoEditable:true
     }
 });

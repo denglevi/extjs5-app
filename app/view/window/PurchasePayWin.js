@@ -16,11 +16,13 @@ Ext.define('erp.view.window.PurchasePayWin',{
     bodyPadding:10,
     initComponent:function(){
         var me = this;
+        console.log(me.url);
         me.items=[
             {
                 xtype:'form',
                 url:apiBaseUrl+'/index.php'+me.url+'?api=1',
                 method:'POST',
+                modal:true,
                 defaults:{
                     anchor: '100%',
                     xtype: 'textfield',
@@ -101,9 +103,10 @@ Ext.define('erp.view.window.PurchasePayWin',{
                                         order_no:me.order_no,
                                         batch_no:me.batch_no
                                     },
-                                    waitMsg:'正在提交付款申请...',
+                                    waitMsg:'正在提交...',
                                     success: function (form, action) {
                                         console.log(action.result);
+                                        me.destroy();
                                     },
                                     failure: function (form, action) {
                                         console.log(action);

@@ -7,6 +7,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
     requires: [
         'Ext.Ajax',
         'Ext.data.Store',
+        'Ext.data.StoreManager',
         'Ext.form.Panel',
         'Ext.form.RadioGroup',
         'Ext.form.action.Action',
@@ -30,6 +31,10 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                     success: function (response) {
                         //myMask.destroy( );
                         var text = Ext.decode(response.responseText);
+                        if(!text.success){
+                            Ext.toast("获取数据错误,请关闭重试!","系统提示");
+                            return;
+                        }
                         res = text.data;
                         var form = me.down("form");
                         form.down("combo[name=buyer]").setStore(Ext.create('Ext.data.Store', {
@@ -40,6 +45,9 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                             fields: ['id_no', 'name'],
                             data:res.supplier
                         }));
+
+                        form.down("combo[name=buyer]").setDisabled(false);
+                        form.down("combo[name=supplier]").setDisabled(false);
                     }
                 });
             }
@@ -75,7 +83,8 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                         xtype: 'combo',
                         editable: false,
                         displayField: 'name',
-                        valueField: 'id_no'
+                        valueField: 'id_no',
+                        disabled:true
                     },
                     {
                         fieldLabel: '买手',
@@ -84,13 +93,14 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                         editable: false,
                         displayField: 'username',
                         valueField: 'id',
+                        disabled:true
                     },
                     {
                         xtype: 'radiogroup',
                         fieldLabel: '订货类型',
                         items: [
-                            {boxLabel: '现货', name: 'type', inputValue: 'spot_purchase_order', checked: true},
-                            {boxLabel: '期货', name: 'type', inputValue: 'future_purchase_order'}
+                            {boxLabel: '现货', name: 'type', inputValue: '0', checked: true},
+                            {boxLabel: '期货', name: 'type', inputValue: '1'}
                         ]
                     },
                     {
@@ -164,6 +174,9 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                                     success: function (form, action) {
                                         //me.down("grid").getStore().load();
                                         console.log(action.result);
+                                        me.destroy();
+                                        var store = Ext.StoreManager.lookup("PurchaseOrderListStore");
+                                        if(store != null) store.load();
                                         //Ext.Msg.alert('系统提示', '新增订单成功');
                                     },
                                     failure: function (form, action) {
