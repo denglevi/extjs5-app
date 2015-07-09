@@ -19,9 +19,9 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
         stretch:true,
         align:'middle'
     },
+    modal:true,
     minWidth: 650,
     maximizable:true,
-    bodyPadding: 10,
     width:780,
     minHeight:500,
     initComponent: function () {
@@ -36,7 +36,6 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
             success: function(response){
                 var text = Ext.decode(response.responseText);
                 res = text.data;
-                console.log(res);
             }
         });
         var status = res.custom_status,
@@ -45,7 +44,7 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
             items: [
                 {
                     xtype: 'container',
-                    margin:'10 10 15 10',
+                    margin:'20',
                     anchor:'100%',
                     data: status,
                     tpl: new Ext.XTemplate(
@@ -79,7 +78,8 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                     xtype: 'form',
                     flex:1,
                     anchor:'100%',
-                    url: apiBaseUrl + '/Purchasing/Customs/handlerPassCustom',
+                    bodyPadding:10,
+                    url: apiBaseUrl + '/index.php/Purchasing/Customs/handlerPassCustom',
                     method: 'POST',
                     layout: 'column',
                     defaults: {
@@ -141,7 +141,6 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
     },
     getBtns: function (sort,status,id) {
         var me=this,text,status_id,is_last_status,len = status.length;
-        console.log(sort,status,id,me.record);
         for(var i=0;i<len;i++){
             if(status[i].sort != sort) continue;
             if(status[i].is_last == 1) return;

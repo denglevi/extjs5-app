@@ -53,7 +53,12 @@ Ext.define('erp.view.module.warehouse.WarehouseReceive', {
         {text:'物流单号',dataIndex:'logistics_no',flex:1},
         {text:'供货单号',dataIndex:'batch_no',flex:1},
         {text:'供应商',dataIndex:'name',flex:1},
-        {text:'物流类型',dataIndex:'type'},
+        {text:'物流类型',dataIndex:'logistics_type',renderer:function(val){
+            if(val == 1) return "国内陆运";
+            if(val == 2) return "国内空运";
+
+            return "未定义";
+        }},
         {text:'联系人',dataIndex:'contact',flex:1},
         {text:'提交日期',dataIndex:'date'},
         {text:'状态',dataIndex:'status',renderer:function(val){

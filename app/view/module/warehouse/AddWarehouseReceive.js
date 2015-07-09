@@ -4,6 +4,7 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
     requires: [
         'Ext.Array',
         'Ext.data.Store',
+        'Ext.data.StoreManager',
         'Ext.data.proxy.Ajax',
         'Ext.data.reader.Json',
         'Ext.form.Panel',
@@ -135,7 +136,8 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                             success: function (form, action) {
                                 //me.down("grid").getStore().load();
                                 me.destroy();
-                                console.log(action.result);
+                                var store = Ext.StoreManager.lookup("WarehouseReceiveStore");
+                                if(store != null) store.load();
                                 //Ext.Msg.alert('系统提示', '新增订单成功');
                             },
                             failure: function (form, action) {

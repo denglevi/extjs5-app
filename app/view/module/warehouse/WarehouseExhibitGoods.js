@@ -86,6 +86,7 @@ Ext.define('erp.view.module.warehouse.WarehouseExhibitGoods', {
     getInfoPanel: function () {
         var panel = Ext.create('Ext.panel.Panel',{
             name:"exhibit_info",
+            reference:"exhibit_info_panel",
             title:'上架单详情',
             flex:1,
             layout:'vbox',

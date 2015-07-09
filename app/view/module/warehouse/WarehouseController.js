@@ -259,6 +259,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                             return;
                                                         }
                                                         nos.push(no);
+                                                        text.data.mark = 1;
                                                         res = text.data;
                                                         store.insert(0, res);
                                                     }
@@ -510,7 +511,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                     text:'保存',
                     glyph:0xf0c7,
                     handler:function(){
-                        console.log(123);
+                        var store = me.lookupReference("exhibit_info_panel").down("#exhibit_order_info").getStore(),
+                            items = store.getData().items;
                     }
                 }
             ]
@@ -527,6 +529,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 {
                     title: '上架信息',
                     reference: 'exhibit_order_info',
+                    itemId: 'exhibit_order_info',
                     columns: [
                         {text: '唯一码', dataIndex: 'no', flex: 1},
                         {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},

@@ -185,6 +185,7 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                                     success: function (form, action) {
                                         //me.down("grid").getStore().load();
                                         console.log(action.result);
+                                        me.destroy();
                                         //Ext.Msg.alert('系统提示', '新增订单成功');
                                     },
                                     failure: function (form, action) {

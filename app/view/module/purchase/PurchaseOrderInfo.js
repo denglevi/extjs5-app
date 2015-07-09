@@ -7,6 +7,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
 
     requires: [
         'Ext.Ajax',
+        'Ext.Array',
         'Ext.container.Container',
         'Ext.data.Store',
         'Ext.data.StoreManager',
@@ -18,13 +19,14 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         'Ext.form.field.Date',
         'Ext.form.field.Display',
         'Ext.form.field.File',
+        'Ext.form.field.Number',
         'Ext.form.field.Text',
         'Ext.form.field.TextArea',
         'Ext.grid.Panel',
         'Ext.layout.container.Column',
         'Ext.layout.container.Fit',
+        'Ext.layout.container.HBox',
         'Ext.panel.Panel',
-        'Ext.tab.Panel',
         'Ext.toolbar.Toolbar',
         'Ext.window.Window',
         'erp.view.module.purchase.AddCheckProductOrder',
@@ -54,8 +56,11 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             order_info = res.order_info,
             status = res.status,
             batchs = res.batchs,
-            next_status = res.next_status;
+            next_status = res.next_status,
+            barContainer = me.getBarContainer(batchs),
+            infoGrid = me.getInfoGrid(product_info);
         console.log(res);
+        me.res = res;
         if (next_status !== null) var url = next_status.action == '' ? '/Purchasing/Buyer/purchasingAction' : next_status.action;
         me.layout = 'vbox';
         me.items = [
@@ -96,6 +101,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 width: '100%',
                 margin: 10,
                 dockedItems: [{
+                    hidden: next_status == null || next_status.mark == 1 ? true : false,
                     xtype: 'toolbar',
                     dock: 'bottom',
                     items: [
@@ -106,9 +112,9 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     '<div class="col-md-12">',
                     '<div class="col-md-2">日期：{order_time}</div>',
                     '<div class="col-md-2">供应商：{vendor_name}</div>',
-                    '<div class="col-md-2">订单号：{order_nos}</div>',
+                    '<div class="col-md-3">订单号：{order_nos}</div>',
                     '<div class="col-md-2">买手：{username}</div>',
-                    '<div class="col-md-4">订单类型：{[this.getType(values.order_state)]}</div>',
+                    '<div class="col-md-3">订单类型：{[this.getType(values.order_state)]}</div>',
                     '</div>',
                     {
                         getType: function (type) {
@@ -144,20 +150,20 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                     var win = Ext.create('Ext.window.Window', {
                                         title: next_status.name,
                                         width: 550,
-                                        modal:true,
+                                        modal: true,
                                         layout: 'fit',
                                         items: [
                                             {
                                                 xtype: 'form',
                                                 bodyPadding: 10,
                                                 method: 'POST',
-                                                layout:'column',
+                                                layout: 'column',
                                                 defaults: {
                                                     margin: 5,
-                                                    xtype:'textfield',
-                                                    columnWidth:0.5,
-                                                    labelAlign:'right',
-                                                    labelWidth:80
+                                                    xtype: 'textfield',
+                                                    columnWidth: 0.5,
+                                                    labelAlign: 'right',
+                                                    labelWidth: 90
                                                 },
                                                 url: apiBaseUrl + '/index.php/Purchasing/Buyer/applyPartGoodsPay',
                                                 items: [
@@ -165,7 +171,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                         xtype: 'displayfield',
                                                         fieldLabel: '订单号',
                                                         value: order_info.order_nos,
-                                                        columnWidth:1
+                                                        columnWidth: 1
                                                     },
                                                     {
                                                         xtype: 'combo',
@@ -174,13 +180,13 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                         disabled: true,
                                                         displayField: 'name',
                                                         valueField: 'id_no',
-                                                        editable:false
+                                                        editable: false
                                                     },
                                                     {
                                                         xtype: 'combo', fieldLabel: '买手', name: 'buyer', disabled: true,
                                                         displayField: 'username',
                                                         valueField: 'id',
-                                                        editable:false
+                                                        editable: false
                                                     },
                                                     {
                                                         fieldLabel: '收款公司',
@@ -197,7 +203,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                     {
                                                         fieldLabel: '付款金额',
                                                         name: 'money',
-                                                        value: me.total
+                                                        value: me.total,
+                                                        xtype: 'numberfield'
                                                     },
                                                     {
                                                         fieldLabel: '最后付款日期',
@@ -301,17 +308,20 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                                     params: {
                                                                         products: Ext.encode(me.products),
                                                                         order_no: order_info.order_nos,
-                                                                        status_id: next_status.id
+                                                                        status_id: order_info.order_status
                                                                     },
                                                                     success: function (form, action) {
                                                                         //me.down("grid").getStore().load();
                                                                         console.log(action.result);
                                                                         win.destroy();
-                                                                        console.log(store);
                                                                         me.down("tabpanel").setActiveTab({
                                                                             xtype: 'grid',
-                                                                            title:action.result.batch_no,
+                                                                            title: action.result.batch_no,
                                                                             sortableColumns: false,
+                                                                            store: Ext.create('Ext.data.Store', {
+                                                                                fields: [],
+                                                                                data: action.result.product
+                                                                            }),
                                                                             columns: [
                                                                                 {
                                                                                     text: '国际款号',
@@ -344,11 +354,11 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                                                 },
                                                                                 {
                                                                                     text: '官方零售价(欧)',
-                                                                                    flex:1,
+                                                                                    flex: 1,
                                                                                     dataIndex: 'orderinfo_official'
                                                                                 }
                                                                             ],
-                                                                            store:store
+                                                                            store: store
                                                                         });
                                                                         var store = Ext.StoreManager.lookup("PurchaseOrderListStore");
                                                                         if (store != null) store.load();
@@ -455,26 +465,145 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     }
                 }
             },
-            {
-                xtype: 'tabpanel',
-                width: '100%',
-                flex: 1,
-                items: this.getTabItems(batchs,log,product_info),
-                listeners: {}
-            }
+            barContainer,
+            infoGrid
         ];
 
         me.callParent();
     },
-    getTabItems:function(batchs,log,product_info){
+    getInfoGrid: function (product_info) {
+        var me = this;
+        return {
+            title: '商品信息',
+            xtype: 'grid',
+            margin: '10 0 0 0',
+            flex: 1,
+            width: '100%',
+            sortableColumns: false,
+            columns: [
+                {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
+                {text: '商品名称', dataIndex: 'orderinfo_name'},
+                {text: '颜色', dataIndex: 'orderinfo_color'},
+                {text: '尺码', dataIndex: 'orderinfo_group'},
+                {text: '数量', dataIndex: 'orderinfo_amount'},
+                {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
+                {text: '总价(欧)', dataIndex: 'orderinfo_nprice'},
+                {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
+            ],
+            store: Ext.create('Ext.data.Store', {
+                fields: [],
+                data: product_info
+            }),
+            dockedItems: [{
+                xtype: 'toolbar',
+                dock: 'top',
+                hidden: true,
+                items: ['->', {
+                    text: '',
+                    handler: me.batchOrderStatusBtnClick,
+                    scope: this
+                }]
+            }]
+        }
+    },
+    batchOrderStatusBtnClick: function (btn) {
+        var me = this, batch_no = btn.up("grid").getTitle(), batchs = me.res.batchs, len = batchs.length, bat;
+        for (var i = 0; i < len; i++) {
+            if (batchs[i].batch_no == batch_no) {
+                var bat = batchs[i];
+                break;
+            }
+        }
+        console.log(bat);
+        var status = bat.status,
+            status_name = status.name;
+        if (status !== null) var url = status.action == '' ? '/Purchasing/Buyer/purchasingAction' : status.action;
+        if ("完成报关" == status_name || "收货确认" == status_name || "完成付款" == status_name) {
+            me.handlerPurchaseOrder(bat.order_no, bat.batch_no);
+        } else if ("验货" == status_name) {
+            var tab = {
+                title: status_name,
+                order_no: bat.order_no,
+                batch_no: bat.batch_no,
+                xtype: "addcheckproductorder",
+                closable: true
+            };
+            me.up("tabpanel").setActiveTab(tab);
+        } else if ("提货" == status_name || "发货到仓库" == status_name) {
+            var need_notice = "提货" == status_name ? 0 : 1;
+            Ext.create('erp.view.window.AddLogisticsFormWin', {
+                title: status_name,
+                need_notice: need_notice,
+                order_no: bat.order_no,
+                batch_no: bat.batch_no
+            }).show();
+        } else if ("申请报关" == status_name) {
+            var win = Ext.create('erp.view.window.AddPassCustomWin', {
+                title: status_name,
+                order_no: bat.order_no,
+                batch_no: bat.batch_no,
+                next_status: status
+            });
+            win.show();
+        } else if ("申请报关付款" == status_name) {
+            Ext.create('erp.view.window.PurchasePayWin', {
+                title: status_name,
+                status_id: bat.batch_status,
+                order_no: bat.order_no,
+                batch_no: bat.batch_no,
+                url: url,
+                total: 0
+            }).show();
+        }
+    },
+    getBarContainer: function (batchs) {
+        var me = this;
         var items = [
-            {
-                title: '商品信息',
-                xtype: 'grid',
-                scrollable: 'y',
-                itemId: 'goods_info',
-                sortableColumns: false,
-                columns: [
+            {itemId: 'goods_info', text: '商品信息', disabled: true},
+            {itemId: 'log', text: '操作日志'}
+        ];
+        for (var i = 0; i < batchs.length; i++) {
+            var bat = batchs[i];
+            items.push({itemId: bat.batch_no, text: bat.batch_no})
+        }
+        return {
+            xtype: 'container',
+            layout: 'hbox',
+            itemId: 'bar_container',
+            defaultType: 'button',
+            defaults: {
+                margin: '0 0 0 5',
+                scope: this,
+                handler: me.onGridTopBtnClick
+            },
+            items: items
+        };
+    },
+    setBtnDisabled: function () {
+        var items = this.down("#bar_container").items.items;
+        Ext.Array.each(items, function (item) {
+            item.setDisabled(false);
+        });
+    },
+    onGridTopBtnClick: function (btn) {
+        var grid = this.down("grid"),
+            text = btn.getText(), columns, data, me = this;
+        me.setBtnDisabled();
+        btn.setDisabled(true);
+        grid.setTitle(text);
+        var item = grid.getDockedItems('toolbar[dock="top"]');
+        if ("操作日志" == text) {
+            item[0].setHidden(true);
+            columns = [
+                {text: '日期', dataIndex: 'time'},
+                {text: '操作', dataIndex: 'name', flex: 1},
+                {text: '操作人', dataIndex: 'username', flex: 1}
+            ];
+            data = me.res.log;
+        } else {
+            if (text == "商品信息") {
+                item[0].setHidden(true);
+                columns = [
                     {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
                     {text: '商品名称', dataIndex: 'orderinfo_name'},
                     {text: '颜色', dataIndex: 'orderinfo_color'},
@@ -483,41 +612,47 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
                     {text: '总价(欧)', dataIndex: 'orderinfo_nprice'},
                     {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
-                ],
-                listeners: {
-                    afterrender: function () {
-                        var store = Ext.create('Ext.data.Store', {
-                            fields: [],
-                            data: product_info
-                        });
-                        this.setStore(store);
+                ];
+                data = me.res.product_info;
+            } else {
+                var batchs = me.res.batchs, len = batchs.length;
+                columns = [
+                    {text: '国际款号', dataIndex: 'style_no', flex: 1},
+                    {text: '商品名称', dataIndex: 'name'},
+                    {text: '颜色', dataIndex: 'color'},
+                    {text: '尺码', dataIndex: 'size'},
+                    {text: '数量', dataIndex: 'num'},
+                    {text: '批发价(欧)', dataIndex: 'batch_price'},
+                    {text: '总价(欧)', dataIndex: 'total_price'},
+                    {text: '官方零售价(欧)', dataIndex: 'retail_price', flex: 1}
+                ];
+                for (var i = 0; i < len; i++) {
+                    var bat = batchs[i];
+                    if (bat.batch_no == text) {
+                        if(bat.status != null){
+                            item[0].setHidden(false)
+                            var button = item[0].down("button");
+                            button.setText(bat.status.name);
+                            if (bat.status.other_action == 1) button.setDisabled(true);
+                            else button.setDisabled(false)
+                        }else{
+                            item[0].setHidden(true);
+                        }
+                        data = bat.products;
                     }
                 }
             }
-        ];
-
-        for(var i=0;i<batchs.length;i++){
-            var bat = batchs[i];
-            items.push(
-                {
-                    title: bat.batch_no,
-                    xtype: 'grid',
-                    sortableColumns: false,
-                    columns: [
-                        {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
-                        {text: '商品名称', dataIndex: 'orderinfo_name'},
-                        {text: '颜色', dataIndex: 'orderinfo_color'},
-                        {text: '尺码', dataIndex: 'orderinfo_group'},
-                        {text: '数量', dataIndex: 'orderinfo_amount'},
-                        {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
-                        {text: '总价(欧)', dataIndex: 'orderinfo_nprice'},
-                        {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
-                    ]
-                }
-            );
         }
 
-        items.push(
+        var store = Ext.create('Ext.data.Store', {
+            fields: [],
+            data: data
+        });
+        grid.reconfigure(store, columns);
+    },
+    getTabItems: function (batchs, log, product_info) {
+        var me = this;
+        var items = [,
             {
                 title: '操作日志',
                 xtype: 'grid',
@@ -533,7 +668,71 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     data: log
                 })
             }
-        );
+        ];
+
+        for (var i = 0; i < batchs.length; i++) {
+            var bat = batchs[i];
+            var status_name = bat.status.name,
+                order_no = bat.order_no,
+                batch_no = bat.batch_no;
+            console.log(bat);
+            items.push(
+                {
+                    title: batch_no,
+                    xtype: 'grid',
+                    sortableColumns: false,
+                    store: Ext.create('Ext.data.Store', {
+                        fields: [],
+                        data: bat.products
+                    }),
+                    tbar: ['->', {
+                        text: status_name, disabled: bat.status.other_action == 1 ? true : false,
+                        handler: function () {
+                            console.log(bat);
+                            if (status !== null) var url = status.action == '' ? '/Purchasing/Buyer/purchasingAction' : status.action;
+                            if ("完成报关" == status_name || "收货确认" == status_name || "完成付款" == status_name) {
+                                me.handlerPurchaseOrder(bat.order_no, bat.batch_no);
+                            } else if ("验货" == status_name) {
+                                var tab = {
+                                    title: status_name,
+                                    order_no: order_no,
+                                    batch_no: batch_no,
+                                    xtype: "addcheckproductorder",
+                                    closable: true
+                                };
+                                me.up("tabpanel").setActiveTab(tab);
+                            } else if ("提货" == status_name || "发货到仓库" == status_name) {
+                                var need_notice = "提货" == status_name ? 0 : 1;
+                                Ext.create('erp.view.window.AddLogisticsFormWin', {
+                                    title: status_name,
+                                    need_notice: need_notice,
+                                    order_no: order_no,
+                                    batch_no: batch_no
+                                }).show();
+                            } else if ("申请报关" == status_name) {
+                                var win = Ext.create('erp.view.window.AddPassCustomWin', {
+                                    title: status_name,
+                                    order_no: order_no,
+                                    batch_no: batch_no,
+                                    next_status: status
+                                });
+                                win.show();
+                            }
+                        }
+                    }],
+                    columns: [
+                        {text: '国际款号', dataIndex: 'style_no', flex: 1},
+                        {text: '商品名称', dataIndex: 'name'},
+                        {text: '颜色', dataIndex: 'color'},
+                        {text: '尺码', dataIndex: 'size'},
+                        {text: '数量', dataIndex: 'num'},
+                        {text: '批发价(欧)', dataIndex: 'batch_price'},
+                        {text: '总价(欧)', dataIndex: 'total_price'},
+                        {text: '官方零售价(欧)', dataIndex: 'retail_price', flex: 1}
+                    ]
+                }
+            );
+        }
 
         return items;
     },

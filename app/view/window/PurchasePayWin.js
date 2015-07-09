@@ -7,13 +7,13 @@ Ext.define('erp.view.window.PurchasePayWin',{
         'Ext.form.Panel',
         'Ext.form.field.ComboBox',
         'Ext.form.field.Date',
+        'Ext.form.field.Number',
         'Ext.form.field.Text',
         'Ext.form.field.TextArea',
         'Ext.layout.container.Anchor'
     ],
     xtype:'purchasepaywin',
     layout:'anchor',
-    bodyPadding:10,
     initComponent:function(){
         var me = this;
         console.log(me.url);
@@ -29,6 +29,7 @@ Ext.define('erp.view.window.PurchasePayWin',{
                     allowBlank: false,
                     margin: 10
                 },
+                bodyPadding:10,
                 items:[
                     {
                         fieldLabel: '收款公司',
@@ -44,6 +45,7 @@ Ext.define('erp.view.window.PurchasePayWin',{
                     },
                     {
                         fieldLabel: '付款金额',
+                        xtype:'numberfield',
                         name: 'money',
                         value:me.total
                     },

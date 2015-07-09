@@ -10,6 +10,7 @@ Ext.define('erp.view.window.AddPassCustomWin', {
         'Ext.data.Store',
         'Ext.form.Panel',
         'Ext.form.field.ComboBox',
+        'Ext.form.field.Hidden',
         'Ext.form.field.Text',
         'Ext.form.field.TextArea',
         'Ext.layout.container.Column',

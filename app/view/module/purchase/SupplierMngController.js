@@ -55,6 +55,11 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
                             ids:ids.join(',')
                         },
                         success:function(data){
+                            var res = Ext.decode(data.responseText);
+                            if(!res.success){
+                                Ext.Msg.alert('系统提示', res.msg);
+                                return;
+                            }
                             del_btn.up('grid').getStore().load();
                         },
                         failure:function(data){

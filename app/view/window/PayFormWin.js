@@ -8,6 +8,7 @@ Ext.define('erp.view.window.PayFormWin', {
         'Ext.form.Panel',
         'Ext.form.field.Display',
         'Ext.form.field.File',
+        'Ext.form.field.Number',
         'Ext.form.field.Text',
         'Ext.form.field.TextArea',
         'Ext.layout.container.Column',
@@ -58,7 +59,7 @@ Ext.define('erp.view.window.PayFormWin', {
         if (this.status == 0) {
             var newFields = [
                 {
-                    fieldLabel: '欧元金额', name: 'EUR', allowBlank: false,
+                    fieldLabel: '欧元金额', name: 'EUR', allowBlank: false,xtype:'numberfield',
                     listeners: {
                         blur: function () {
                             var form = me.down("form"),
