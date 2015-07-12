@@ -26,10 +26,12 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
     },
     initComponent: function () {
         var me = this;
+        me.getViewModel().set('isHidden',true);
         this.items = [
             {
                 xtype: 'grid',
                 title: '基础资料',
+                itemId:'key_list',
                 sortableColumns: false,
                 enableColumnHide: false,
                 width: 200,
@@ -122,9 +124,110 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                             rootProperty: 'data'
                         }
                     }
-                })
+                }),
+                listeners:{
+                    rowdblclick:me.onKeyListDblClick,
+                    scope:this
+                }
+            },
+            {
+                xtype:'grid',
+                itemId:'value_list',
+                title:'值列表',
+                flex:1,
+                height:'100%',
+                border:true,
+                tbar: [
+                    {
+                        text: '新增',
+                        glyph: 0xf1f8,
+                        handler: me.addGoodsBaseDataValue,
+                        scope:me
+                    },
+                    {
+                        text: '删除',
+                        glyph: 0xf1f8
+                    }
+                ],
+            },
+            {
+                xtype:'form',
+                title:'资料表单',
+                itemId:'value_form',
+                flex:1,
+                layout:'anchor',
+                height:'100%',
+                bodyPadding:10,
+                defaults:{
+                    allowBlank:false,
+                    margin:5,
+                    labelAlign:'right',
+                    anchor:'100%',
+                    xtype:'textfield',
+                    labelWidth:70
+                },
+                buttons:[
+                    {text:'重置',bind:{hidden:'{isHidden}'}},
+                    {text:'提交',bind:{hidden:'{isHidden}'}}
+                ]
             }
         ]
         me.callParent();
+    },
+    onKeyListDblClick:function(gp,record){
+        this.record = record;
+        var me = this,
+            name = record.get("name"),
+            fields = Ext.decode(record.get("fields")),
+            id = record.get("id"),
+            valueList = me.down("#value_list"),
+            store = Ext.create('Ext.data.Store',{
+                fields:[],
+                autoLoad:true,
+                proxy:{
+                    type:'ajax',
+                    url:apiBaseUrl + '/index.php/Commodity/Public/getGoodsBaseDataValueList',
+                    params:{
+                        id:id
+                    },
+                    reader:{
+                        type:'json',
+                        rootProperty:'data'
+                    }
+                }
+            }),
+            columns = [],len = fields.length;
+            for(var i=0;i<len;i++){
+                var field = fields[i];
+                if(field.name === null || field.mark === null) continue;
+                columns.push({
+                    text:field.name,
+                    dataIndex:field.mark
+                });
+            }
+        valueList.setTitle(name+"列表");
+        valueList.reconfigure(null,columns);
+        console.log(record,fields,columns);
+
+    },
+    addGoodsBaseDataValue:function(btn){
+        this.url = apiBaseUrl + '/index.php/Commodity/Public/addGoodsBaseDataValue';
+        var me = this;
+        var form = this.down("#value_form"),
+            fields = Ext.decode(me.record.get("fields")),
+            len = fields.length,
+            formFields = [];
+        form.setTitle("新增"+me.record.get("name")+"属性值");
+        for(var i=0;i<len;i++){
+            var field = fields[i];
+            if(field.name === null || field.mark === null) continue;
+            formFields.push({
+                fieldLabel:field.name,
+                name:field.mark
+            });
+        }
+        form.removeAll();
+        form.add(formFields);
+        me.getViewModel().set('isHidden',false);
     }
 });

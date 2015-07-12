@@ -43,7 +43,7 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
             fields: ['receive_money_company', 'company_bank_no', 'company_open_bank', 'money', 'pay_function', 'pay_function', "pay_type", "status"],
             proxy: {
                 type: 'ajax',
-                url: apiBaseUrl + '/Financial/Index/getApplyPayList',
+                url: apiBaseUrl + '/index.php/Financial/Index/getApplyPayList',
                 reader: {
                     type: 'json',
                     rootProperty: 'data',

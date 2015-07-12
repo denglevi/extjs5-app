@@ -14,15 +14,14 @@ Ext.define('erp.view.window.PurchasePayWin',{
     ],
     xtype:'purchasepaywin',
     layout:'anchor',
+    modal:true,
     initComponent:function(){
         var me = this;
-        console.log(me.url);
         me.items=[
             {
                 xtype:'form',
                 url:apiBaseUrl+'/index.php'+me.url+'?api=1',
                 method:'POST',
-                modal:true,
                 defaults:{
                     anchor: '100%',
                     xtype: 'textfield',

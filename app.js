@@ -6,8 +6,8 @@
 Ext.application({
     name: 'erp',
     extend: 'erp.Application',
-    autoCreateViewport: 'erp.view.main.Main'
-	
+    //autoCreateViewport: 'erp.view.main.Main'
+    //autoCreateViewport: true
     //-------------------------------------------------------------------------
     // Most customizations should be made to app.Application. If you need to
     // customize this file, doing so below this section reduces the likelihood

@@ -21,20 +21,42 @@ Ext.define('erp.Application', {
     ],
 
     launch: function () {
+        Ext.get("splash").remove();
         // TODO - Launch the application
-        //Ext.create('Ext.form.Panel',{
-        //    width:300,
-        //    height:200,
-        //    layout:'fit',
-        //    renderTo:Ext.getBody(),
-        //    title:'系统登录',
-        //    items:[
-        //        {fieldLable:'用户名',name:'username',labelAlign:'right'},
-        //        {fieldLable:'密码',name:'password',labelAlign:'right'}
-        //    ],
-        //    buttons:[
-        //        {text:'登录'}
-        //    ]
-        //})
+        Ext.create('Ext.form.Panel',{
+            title: 'Login',
+            frame:true,
+            width: 320,
+            bodyPadding: 15,
+            defaultType: 'textfield',
+            renderTo:Ext.getBody(),
+            items: [{
+                allowBlank: false,
+                fieldLabel: 'User ID',
+                name: 'user',
+                emptyText: 'user id'
+            }, {
+                allowBlank: false,
+                fieldLabel: 'Password',
+                name: 'pass',
+                emptyText: 'password',
+                inputType: 'password'
+            }, {
+                xtype:'checkbox',
+                fieldLabel: 'Remember me',
+                name: 'remember'
+            }],
+
+            buttons: [
+                { text:'Register' },
+                { text:'Login' }
+            ],
+            style: { //formpanel位置
+                marginRight: 'auto', //
+                marginLeft: 'auto',
+                marginTop: '150px',
+                marginBottom: 'auto'
+            }
+        });
     }
 });

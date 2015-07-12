@@ -17,7 +17,6 @@ Ext.define('erp.view.window.AddPassCustomWin', {
         'Ext.layout.container.Fit'
     ],
     layout: 'fit',
-    bodyPadding: 10,
     initComponent: function () {
         var me = this,res;
         var next_status_id = me.next_status.is_last == 1?0:me.next_status.id
@@ -25,10 +24,11 @@ Ext.define('erp.view.window.AddPassCustomWin', {
             items: [
                 {
                     xtype: 'form',
-                    url: apiBaseUrl + '/Purchasing/Customs/addPassCustomOrder',
+                    url: apiBaseUrl + '/index.php/Purchasing/Customs/addPassCustomOrder',
                     method: 'POST',
                     width: 650,
                     layout: 'column',
+                    bodyPadding: 10,
                     defaults: {
                         anchor: '100%',
                         xtype: 'textfield',

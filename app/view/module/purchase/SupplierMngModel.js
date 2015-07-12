@@ -6,7 +6,10 @@ Ext.define('erp.view.module.purchase.SupplierMngModel', {
 
     alias: 'viewmodel.suppliermng',
     data:{
-        fieldDisabled:true
+        fieldDisabled:true,
+        purchaseOrderStatus:null,
+        nextStatusText:null,
+        btnIsHidden:true
     }
 });
 

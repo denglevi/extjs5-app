@@ -54,7 +54,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             warehouseimportgoods = gp.up("warehouseimportgoods"),
             panel = warehouseimportgoods.down("panel[name=info]"),
             model = warehouseimportgoods.getViewModel();
-
+        model.set("import_goods_id",id);
         this.getImportGoodsData(id, batch_no, model);
 
         if (panel.items.items.length > 0) {
@@ -207,7 +207,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                             url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/importGoods',
                                             params: {
                                                 nos: nos.join(","),
-                                                id: id
+                                                id: model.get("import_goods_id")
                                             },
                                             success: function (response) {
                                                 var text = Ext.decode(response.responseText);
@@ -441,6 +441,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                                 return;
                                                             }
                                                             nos.push(no);
+                                                            text.data.mark = 1;
                                                             res = text.data;
                                                             store.insert(0, res);
                                                         }
@@ -507,14 +508,40 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         win.show();
                     }
                 },
-                {
-                    text:'保存',
-                    glyph:0xf0c7,
-                    handler:function(){
-                        var store = me.lookupReference("exhibit_info_panel").down("#exhibit_order_info").getStore(),
-                            items = store.getData().items;
-                    }
-                }
+                //{
+                //    text:'保存',
+                //    glyph:0xf0c7,
+                //    handler:function(){
+                //        var store = me.lookupReference("exhibit_info_panel").down("#exhibit_order_info").getStore(),
+                //            items = store.getData().items;
+                //        console.log(items);
+                //        //var goods = [];
+                //        //for(var i=0;i<items.length;++i){
+                //        //    var item = items[i];
+                //        //    if(item.get("mark") !== 1) continue;
+                //        //    goods.push(item.data);
+                //        //}
+                //        //console.log(goods);
+                //        //Ext.Ajax.request({
+                //        //    async: true,
+                //        //    url: apiBaseUrl + '/index.php/Warehouse/Manage/saveMoveLocationGoods',
+                //        //    params: {
+                //        //        id: model.get("move_location_order_id"),
+                //        //        status:0,
+                //        //        data: Ext.encode(goods)
+                //        //    },
+                //        //    success: function (response) {
+                //        //        var text = Ext.decode(response.responseText);
+                //        //        console.log(text);
+                //        //        if (!text.success) {
+                //        //            Ext.toast(no + text.msg, "系统提示", 't');
+                //        //            return;
+                //        //        }
+                //        //        Ext.toast("保存成功", "系统提示", 't');
+                //        //    }
+                //        //});
+                //    }
+                //}
             ]
         }, {
             xtype: 'tabpanel',

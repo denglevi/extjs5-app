@@ -73,15 +73,29 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
     },
     onPurchaseOrderGridDblClick:function(gp,record){
         var order_id = record.get("id");
-        gp.up('tabpanel').setActiveTab({
-            xtype:'purchaseorderinfo',
-            title:'订单详情',
-            closable:true,
-            order_id:order_id,
-            listeners:{
-                beforedestroy:function(){
-                    gp.getStore().load();
-                }
+        Ext.getBody().mask("请稍等,正在获取数据...");
+        Ext.Ajax.request({
+            async: true,
+            url: apiBaseUrl + '/index.php/Purchasing/Buyer/getPurchaseOrderInfo',
+            params: {
+                id: order_id
+            },
+            success: function (response) {
+                Ext.getBody().unmask();
+                var text = Ext.decode(response.responseText);
+                res = text.data;
+                gp.up('tabpanel').setActiveTab({
+                    xtype:'purchaseorderinfo',
+                    title:'订单详情',
+                    closable:true,
+                    order_id:order_id,
+                    res:res,
+                    listeners:{
+                        beforedestroy:function(){
+                            gp.getStore().load();
+                        }
+                    }
+                });
             }
         });
     },

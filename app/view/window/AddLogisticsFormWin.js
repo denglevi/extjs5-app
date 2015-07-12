@@ -24,7 +24,7 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
             items: [
                 {
                     xtype: 'form',
-                    url: apiBaseUrl + '/Purchasing/Logistics/addLogisticsOrder',
+                    url: apiBaseUrl + '/index.php/Purchasing/Logistics/addLogisticsOrder',
                     method: 'POST',
                     width: 600,
                     layout: 'column',

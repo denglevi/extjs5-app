@@ -25,7 +25,7 @@ Ext.define('erp.view.window.PayFormWin', {
         this.items = [
             {
                 xtype: 'form',
-                url: apiBaseUrl + '/Financial/Index/pay',
+                url: apiBaseUrl + '/index.php/Financial/Index/pay',
                 method: 'POST',
                 bodyPadding: 10,
                 layout:'column',
