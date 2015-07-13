@@ -104,10 +104,10 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                             win.show();
                         }
                     },
-                    {
-                        text: '删除',
-                        glyph: 0xf1f8
-                    }
+                    //{
+                    //    text: '删除',
+                    //    glyph: 0xf1f8
+                    //}
                 ],
                 columns: [
                     {text: '名称', dataIndex: 'name',flex:1}
@@ -137,6 +137,7 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                 flex:1,
                 height:'100%',
                 border:true,
+                selModel:'checkboxmodel',
                 tbar: [
                     {
                         text: '新增',
@@ -144,11 +145,16 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                         handler: me.addGoodsBaseDataValue,
                         scope:me
                     },
+                    //{
+                    //    text: '删除',
+                    //    glyph: 0xf1f8
+                    //},
                     {
-                        text: '删除',
-                        glyph: 0xf1f8
+                        text:'修改',
+                        handler:me.editGoodBaseDataValue,
+                        scope:me
                     }
-                ],
+                ]
             },
             {
                 xtype:'form',
@@ -167,12 +173,89 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                     labelWidth:70
                 },
                 buttons:[
-                    {text:'重置',bind:{hidden:'{isHidden}'}},
-                    {text:'提交',bind:{hidden:'{isHidden}'}}
+                    {text:'重置',bind:{hidden:'{isHidden}'},handler:function(){
+                        this.up("form").reset();
+                    }},
+                    {text:'提交',bind:{hidden:'{isHidden}'},handler:me.formSubmit,scope:me}
                 ]
             }
         ]
         me.callParent();
+    },
+    formSubmit:function(){
+        var form = this.down("form").getForm(),
+            me = this,
+            id = me.record.get("id"),
+            val = form.getValues();
+        console.log(val.base_data_id);
+        if(val.base_data_id === undefined){
+            form.submit({
+                waitMsg:'正在提交...',
+                params:{
+                    id:id
+                },
+                url:apiBaseUrl + '/index.php/Commodity/Public/addGoodsBaseDataValue',
+                method:'POST',
+                success:function(form,action){
+                    console.log(action);
+                    me.down("form").setTitle("资料表单");
+                    me.down("form").removeAll();
+                    me.getViewModel().set('isHidden',true);
+                    me.down("#value_list").getStore().load();
+                },
+                failure:function(form,action){
+                    console.log(123);
+                }
+            });
+        }else{
+            form.submit({
+                waitMsg:'正在提交...',
+                url:apiBaseUrl + '/index.php/Commodity/Public/editGoodsBaseDataValue',
+                method:'POST',
+                success:function(form,action){
+                    console.log(action);
+                    me.down("form").setTitle("资料表单");
+                    me.down("form").removeAll();
+                    me.getViewModel().set('isHidden',true);
+                    me.down("#value_list").getStore().load();
+                },
+                failure:function(form,action){
+                    console.log(123);
+                }
+            });
+        }
+    },
+    editGoodBaseDataValue:function(){
+        var me = this;
+        var sel = this.down("#value_list").getSelection();
+        if(sel.length == 0) return;
+        if(sel.length > 1){
+            Ext.Msg.alert("系统提示","一次只能修改一条记录");
+            return;
+        }
+        var form = this.down("#value_form"),
+            record = sel[0],
+            fields = Ext.decode(me.record.get("fields")),
+            len = fields.length,
+            formFields = [];
+        form.setTitle("修改"+me.record.get("name")+"属性值");
+        formFields.push({
+            xtype:'hidden',
+            name:'base_data_id',
+            value:record.get("id")
+        });
+        for(var i=0;i<len;i++){
+            var field = fields[i];
+            if(field.name === null || field.mark === null) continue;
+            formFields.push({
+                fieldLabel:field.name,
+                name:field.mark,
+                value:record.get(field.mark)
+            });
+        }
+        form.removeAll();
+        form.add(formFields);
+        me.getViewModel().set('isHidden',false);
     },
     onKeyListDblClick:function(gp,record){
         this.record = record;
@@ -186,10 +269,7 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                 autoLoad:true,
                 proxy:{
                     type:'ajax',
-                    url:apiBaseUrl + '/index.php/Commodity/Public/getGoodsBaseDataValueList',
-                    params:{
-                        id:id
-                    },
+                    url:apiBaseUrl + '/index.php/Commodity/Public/getGoodsBaseDataValueList?id='+id,
                     reader:{
                         type:'json',
                         rootProperty:'data'
@@ -202,16 +282,14 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                 if(field.name === null || field.mark === null) continue;
                 columns.push({
                     text:field.name,
-                    dataIndex:field.mark
+                    dataIndex:field.mark,
+                    flex:1
                 });
             }
         valueList.setTitle(name+"列表");
-        valueList.reconfigure(null,columns);
-        console.log(record,fields,columns);
-
+        valueList.reconfigure(store,columns);
     },
     addGoodsBaseDataValue:function(btn){
-        this.url = apiBaseUrl + '/index.php/Commodity/Public/addGoodsBaseDataValue';
         var me = this;
         var form = this.down("#value_form"),
             fields = Ext.decode(me.record.get("fields")),

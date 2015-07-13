@@ -20,7 +20,9 @@ Ext.define('erp.view.main.region.Bottom', {
             text: '寇莎国际品牌管理有限公司'
         }, '->',
         {
-            text: '登录用户：denglevi',
+            bind:{
+                text: '登录用户：{currentUser}'
+            },
             glyph: 0xf007
         }, '->',
         {
