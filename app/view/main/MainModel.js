@@ -16,35 +16,43 @@ Ext.define('erp.view.main.MainModel', {
         menus: [
             {
                 text: '采购',
-                glyph: 0xf07a
+                //glyph: 0xf07a,
+                iconCls:'purchaseIcon'
             },
             {
                 text: '商品',
-                glyph: 0xf1b3
+                //glyph: 0xf1b3
+                iconCls:'goodsIcon'
             },
             {
                 text: '仓库',
-                glyph: 0xf1b2
+                //glyph: 0xf1b2
+                iconCls:'warehouseIcon'
             },
             {
                 text: '会员',
-                glyph: 0xf007
+                //glyph: 0xf007
+                iconCls:'memberIcon'
             },
             {
                 text: '营运',
-                glyph: 0xf07a
+                //glyph: 0xf07a
+                iconCls:'operationIcon'
             },
             {
                 text: '财务',
-                glyph: 0xf0ce
+                //glyph: 0xf0ce
+                iconCls:'financialIcon'
             },
             {
                 text: '报表',
-                glyph: 0xf080
+                //glyph: 0xf080
+                iconCls:'reportIcon'
             },
             {
                 text: '系统',
-                glyph: 0xf085
+                //glyph: 0xf085
+                iconCls:'systemIcon'
             }
         ]
     },
@@ -55,7 +63,7 @@ Ext.define('erp.view.main.MainModel', {
         var menu = [];
         if (text == "采购") {
             menu = [
-                {text: "供应商管理", leaf: true, iconCls: 'user', view: 'suppliermng'},
+                {text: "供应商管理", leaf: true,view: 'suppliermng',iconCls:'userIcon'},
                 {text: "采购清单", leaf: true, view: 'purchaseorderlist'},
                 //{text: "收货清单", leaf: true},
                 {text: "验货清单", leaf: true, view: 'checkproductlist'},

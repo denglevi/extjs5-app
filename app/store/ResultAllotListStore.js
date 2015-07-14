@@ -3,6 +3,7 @@
  */
 Ext.define('erp.store.ResultAllotListStore', {
         extend: 'Ext.data.Store',
+        storeId:"ResultAllotListStore",
         fields: ['id', 'shop_id','month','money','allot_time','status'],
         autoLoad: false,
         proxy: {

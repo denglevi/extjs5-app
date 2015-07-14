@@ -3,7 +3,7 @@
  */
 Ext.define('erp.store.PurchaseOrderStore', {
     extend: 'Ext.data.Store',
-
+    storeId:"PurchaseOrderStore",
     fields: ["style_no", "name", 'color', 'size', 'num', 'batch_price', 'total_price', 'retail_price'],
     autoLoad: true,
     data: [

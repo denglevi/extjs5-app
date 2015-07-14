@@ -6,30 +6,34 @@ Ext.define('erp.view.main.region.Bottom', {
         'Ext.toolbar.TextItem',
         'erp.ux.TransparentButton'
     ],
-
-    height: 30,
-    defaults: {
-        xtype: 'transparentbutton'
-    },
-    items: [
-        {
-            xtype: 'tbtext',
-            html: '欢迎使用COSCIA ERP系统'
-        },'->',
-        {
-            text: '寇莎国际品牌管理有限公司'
-        }, '->',
-        {
-            bind:{
-                text: '登录用户：{currentUser}'
+    initComponent: function () {
+        var username = this.up("main").username;
+        Ext.apply(this, {
+            height: 30,
+            defaults: {
+                xtype: 'transparentbutton'
             },
-            glyph: 0xf007
-        }, '->',
-        {
-            text: '寇莎国际品牌管理有限公司 @版权所有'
-        }, '',
-        {
-            text: 'version 0.1'
-        }, '->'
-    ]
+            items: [
+                {
+                    xtype: 'tbtext',
+                    html: '欢迎使用COSCIA ERP系统'
+                }, '->',
+                {
+                    text: '寇莎国际品牌管理有限公司'
+                }, '->',
+                {
+                    text: '登录用户：' + username,
+                    //glyph: 0xf007
+                    iconCls: 'userIcon'
+                }, '->',
+                {
+                    text: '寇莎国际品牌管理有限公司 @版权所有'
+                }, '',
+                {
+                    text: 'version 0.1'
+                }, '->'
+            ]
+        });
+        this.callParent();
+    }
 });

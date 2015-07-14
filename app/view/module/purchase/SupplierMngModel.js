@@ -10,6 +10,7 @@ Ext.define('erp.view.module.purchase.SupplierMngModel', {
         purchaseOrderStatus:null,
         nextStatusText:null,
         btnIsHidden:true
-    }
+    },
+    stores:['PurchaseOrderListStore']
 });
 

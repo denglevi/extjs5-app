@@ -86,3 +86,60 @@
     margin-left:10px;
     background-image: url("images/setfieldrole.png");
 }
+
+.homeIcon{
+    background-size: contain;
+    background-image: url("images/home.png");
+}
+.logoutIcon{
+    background-size: contain;
+    background-image: url("images/system-log-out.png");
+}
+.purchaseIcon{
+    background-size: contain;
+    background-image: url("images/cart.png");
+}
+.goodsIcon{
+    background-size: contain;
+    background-image: url("images/goods.png");
+}
+.warehouseIcon{
+    background-size: contain;
+    background-image: url("images/storehouse_400.png");
+}
+.memberIcon{
+    background-size: contain;
+    background-image: url("images/users.png");
+}
+.operationIcon{
+    background-size: contain;
+    background-image: url("images/61413.png");
+}
+.financialIcon{
+    background-size: contain;
+    background-image: url("images/emblem-money.png");
+}
+.reportIcon{
+    background-size: contain;
+    background-image: url("images/report.png");
+}
+.systemIcon{
+    background-size: contain;
+    background-image: url("images/emblem-system.png");
+}
+.helpIcon{
+    background-size: contain;
+    background-image: url("images/help.png");
+}
+.aboutIcon{
+    background-size: contain;
+    background-image: url("images/about.png");
+}
+.contactIcon{
+    background-size: contain;
+    background-image: url("images/contact.png");
+}
+.userIcon{
+    background-size: contain;
+    background-image: url("images/user.png") !important;
+}

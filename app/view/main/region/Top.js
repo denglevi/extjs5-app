@@ -10,7 +10,15 @@ Ext.define('erp.view.main.region.Top', {
         'Ext.form.Label',
         'erp.ux.TransparentButton'
     ],
-
+    style: 'background-color : #205081',
+    height: 50,
+    defaults: {
+        xtype: 'transparentbutton'
+    },
+    controller: 'main',
+    viewModel: {
+        type: 'main'
+    },
     initComponent: function () {
         var me = this;
         me.items = [
@@ -23,22 +31,31 @@ Ext.define('erp.view.main.region.Top', {
         var menus = me.up("main").getViewModel().getTopMenus();
         me.items = me.items.concat([{
             text: '首页',
-            glyph: 0xf015
+            //glyph: 0xf015,
+            iconCls:'homeIcon'
         }], menus, ['->', {
-            text: '帮助',
-            glyph: 0xf059,
-            tooltip: '获取帮助',
-            menu: [
-                {
-                    text: '关于',
-                    glyph: 0xf06a
-                },
-                {
-                    text: '在线支持',
-                    glyph: 0xf1cd
-                }
-            ]
+            text:'注销',
+            handler:'logoutSystem',
+            iconCls:'logoutIcon'
         },
+            {
+                text: '帮助',
+                //glyph: 0xf059,
+                iconCls:'helpIcon',
+                tooltip: '获取帮助',
+                menu: [
+                    {
+                        text: '关于',
+                        iconCls:'aboutIcon'
+                        //glyph: 0xf06a
+                    },
+                    {
+                        text: '在线支持',
+                        iconCls:'contactIcon'
+                        //glyph: 0xf1cd
+                    }
+                ]
+            },
             //{
             //    glyph : 0xf102,
             //    handler : 'hiddenTopBottom',
@@ -50,7 +67,7 @@ Ext.define('erp.view.main.region.Top', {
             afterrender: function (tb) {
                 var menus = tb.query("transparentbutton");
                 Ext.Array.each(menus, function (menu) {
-                    if ("帮助" == menu.text) {
+                    if ("帮助" == menu.text || "注销" == menu.text) {
                         return;
                     }
                     menu.on("click", "onMainMenu");
@@ -58,10 +75,5 @@ Ext.define('erp.view.main.region.Top', {
             }
         };
         me.callParent(arguments);
-    },
-    style: 'background-color : #205081',
-    height: 50,
-    defaults: {
-        xtype: 'transparentbutton'
     }
 });

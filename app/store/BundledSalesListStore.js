@@ -3,6 +3,7 @@
  */
 Ext.define('erp.store.BundledSalesListStore', {
         extend: 'Ext.data.Store',
+        storeId:"BundledSalesListStore",
         fields: ['id'],
         autoLoad: false,
         proxy: {

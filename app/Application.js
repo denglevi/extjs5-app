@@ -17,15 +17,33 @@ Ext.define('erp.Application', {
     //    // TODO: add controllers here
     //],
     stores: [
-        'SupplierStore', 'PurchaseOrderListStore', 'PurchaseOrderStore','CheckProductListStore',
+        'SupplierStore','PurchaseOrderListStore','PurchaseOrderStore','CheckProductListStore',
         'LogisticsListStore','PassCustomListStore','WarehouseReceiveStore','GoodsMenuStore','GoodsListStore',
         'WarehouseListStore','WarehouseCheckTaskOrderStore','WarehouseCheckOrderStore','SellerPositionListStore',
         'SellerListStore','ResultAllotListStore','PaymentMethodStore','BundledSalesListStore',
         'VIPCardListStore'
         // TODO: add global / shared stores here
     ],
+    views:['erp.view.login.Login','erp.view.main.Main'],
 
     launch: function () {
-
+        console.log(123);
+        //var package = true;
+        //if(!package){
+        //    Ext.gui = require('nw.gui');
+        //    var win = Ext.gui.Window.get();
+        //    win.on('close', function() {
+        //        this.hide();
+        //        localStorage.removeItem("is_login");
+        //        localStorage.removeItem("user");
+        //        this.close(true);
+        //    });
+        //}
+        if(localStorage.getItem("is_login") == 1){
+            var username = localStorage.getItem("user")
+            Ext.widget("main",{username:username});
+            return;
+        }
+        Ext.widget("login");
     }
 });

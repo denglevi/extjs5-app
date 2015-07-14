@@ -22,7 +22,8 @@ Ext.define("erp.view.main.region.Left", {
         Ext.Array.each(menus, function (m) {
             var items = {
                 title: m.text,
-                glyph: m.glyph,
+                //glyph: m.glyph,
+                iconCls: m.iconCls,
                 xtype: 'treepanel',
                 //cls:'person-form',
                 //store: menusStore,

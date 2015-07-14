@@ -2,17 +2,26 @@
  * Created by denglevi on 15-7-13.
  */
 Ext.define('erp.view.login.Login', {
-        requires: ['erp.view.login.LoginController'],
-        xtype:'login',
-        extend: 'Ext.container.Container',
+        extend: 'Ext.container.Viewport',
+        requires: [
+            'Ext.form.field.Checkbox',
+            'Ext.window.Window',
+            'erp.view.login.LoginController',
+            'erp.view.login.LoginModel'
+        ],
+        xtype: 'login',
         controller: 'login',
-        initComponent:function(){
-            Ext.get("splash").remove();
+
+        initComponent: function () {
+            if (Ext.get("splash")) Ext.get("splash").remove();
             this.callParent();
         },
-        items:[
+        viewModel: {
+            type: 'login'
+        },
+        items: [
             {
-                xtype:'window',
+                xtype: 'window',
                 closable: false,
                 resizable: false,
                 modal: true,
@@ -35,35 +44,39 @@ Ext.define('erp.view.login.Login', {
                         fieldLabel: '用户名',
                         name: 'username',
                         emptyText: '用户名',
+                        msgTarget:'under',
                         value: localStorage.getItem("username") || ""
                     }, {
                         allowBlank: false,
                         fieldLabel: '密码',
                         name: 'password',
                         emptyText: '密码',
+                        msgTarget:'under',
                         inputType: 'password',
                         value: localStorage.getItem("password") || ""
                     }, {
                         xtype: 'checkbox',
                         fieldLabel: '记住密码',
                         name: 'remember',
-                        checked:true
-                    }]
+                        checked: true
+                    }],
+                    buttons: [
+                        //    {
+                        //    name: 'registbutton',
+                        //    text: '用户注册',
+                        //    //glyph: 0xf118
+                        //},
+                        {
+                            formBind: true,
+                            disabled: true,
+                            name: 'loginbutton',
+                            text: '登录',
+                            glyph: 'xf110@FontAwesome',
+                            listeners: {
+                                click: 'onLoginbtnClick'//单击事件 调用LoginConroller.js中的onLoginbtnClick函数
+                            }
+                        }]
                 }],
-                buttons: [
-                    //    {
-                    //    name: 'registbutton',
-                    //    text: '用户注册',
-                    //    //glyph: 0xf118
-                    //},
-                    {
-                        name: 'loginbutton',
-                        text: '登录',
-                        glyph: 'xf110@FontAwesome',
-                        listeners: {
-                            click: 'onLoginbtnClick'//单击事件 调用LoginConroller.js中的onLoginbtnClick函数
-                        }
-                    }]
             }
         ]
 

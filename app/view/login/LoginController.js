@@ -2,6 +2,10 @@
         extend: 'Ext.app.ViewController',
         alias: 'controller.login',
 
+        requires: [
+            'Ext.form.action.Action'
+        ],
+
         //用户登录按钮事件处理
         onLoginbtnClick: function () {
             var form = this.lookupReference('form'),me=this;
@@ -24,18 +28,13 @@
                             localStorage.setItem("username","");
                             localStorage.setItem("password","");
                         }
-                        me.lookupReference('form').up("login").destroy();
-                        this.viewport = Ext.create('erp.view.main.Main',
-                            {   //用户信息传入视图
-                                viewModel: {
-                                    data: {
-                                        currentUser: val.username
-                                    }
-                                }
-                            }
-                        );
-                        return;
-                        me.fireViewEvent('login', val.username);
+                        localStorage.setItem("is_login",1);
+                        localStorage.setItem("user",val.username);
+                        me.getView().destroy();
+                        Ext.widget("main",{username:val.username});
+                        //var win = Ext.gui.Window.get()
+                        //win.setResizable(true);
+                        //win.maximize();
                     },
                     failure: function (form, action) {
                         switch (action.failureType) {

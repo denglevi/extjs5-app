@@ -16,6 +16,9 @@ Ext.define('erp.view.main.MainController', {
         'Ext.layout.container.Accordion',
         'Ext.tree.Panel',
         'erp.view.module.purchase.PurchaseOrderList',
+        'erp.view.module.purchase.LogisticsList',
+        'erp.view.module.purchase.PassCustomList',
+        'erp.view.module.purchase.CheckProductList',
         'erp.view.module.financial.ApplyPayList',
         'erp.view.module.purchase.SupplierMng',
         'erp.view.module.goods.GoodsMenu',
@@ -40,20 +43,36 @@ Ext.define('erp.view.main.MainController', {
         //点击不同菜单之后，左边栏显示不同的菜单
         var me = this;
         var text = el.text;
-        var model = el.up("maintop").up("main").getViewModel();
+        var model = el.up("maintop").getViewModel();
         if (text == model.get("name")) return;
         model.set("name", text);
         model.set("index_icon", el.glyph);
-        var mainLeft = this.lookupReference("mainleft")
+        var mainLeft = el.up("maintop").up("main").down("mainleft");
         if (text == "首页") {
             var menus = model.get("menus");
             var menu = [];
+            var i = 0;
             Ext.Array.each(menus, function (m) {
-                menu.push({
+                var items = {
                     title: m.text,
-                    glyph: m.glyph,
-                    html: m.text + m.glyph
-                });
+                    iconCls: m.iconCls,
+                    xtype: 'treepanel',
+                    rootVisible: false,
+                    listeners: {
+                        itemdblclick: "onAddMainTab",
+                        expand:function(obj){
+                            var len = obj.getStore().data.length;
+                            if(len > 0) return;
+                            var menusStore = model.getLeftMenus(m.text);
+                            obj.setStore(menusStore);
+                        }
+                    }
+                };
+                if(0 == i){
+                    items.store = model.getLeftMenus(m.text);
+                }
+                i++;
+                menu.push(items);
             });
             var items = [
                 {
@@ -143,4 +162,30 @@ Ext.define('erp.view.main.MainController', {
         };
         this.showButton.show();
     },
+    logoutSystem:function(){
+        var me = this;
+        Ext.getBody().mask("正在注销...");
+        Ext.Ajax.request({
+            aynsc:true,
+            url: apiBaseUrl + '/index.php/System/Index/logoutSystem',
+            method:'POST',
+            success:function(res){
+                Ext.getBody().unmask();
+                var data = Ext.decode(res.responseText);
+                if(!data.success){
+                    Ext.toast(data.msg,"系统提示");
+                }
+
+                localStorage.removeItem("is_login");
+                localStorage.removeItem("user");
+                //history.go(0);
+                me.getView().up("viewport").destroy();
+                Ext.widget("login");
+            },
+            failure:function(res){
+                Ext.getBody().unmask();
+                Ext.toast("网络请求错误,请检查网络!重试","系统提示");
+            }
+        })
+    }
 });

@@ -3,11 +3,12 @@
  */
 Ext.define('erp.store.WarehouseListStore', {
         extend: 'Ext.data.Store',
+        storeId:"WarehouseListStore",
         fields: ['id','storage_name','no'],
         autoLoad:false,
         proxy: {
             type: 'ajax',
-            url: apiBaseUrl+'/index.php/Warehouse/Index/getLoction',
+            url: apiBaseUrl+'/index.php/Warehouse/Index/getLocation',
             reader: {
                 type: 'json',
                 rootProperty: 'data',

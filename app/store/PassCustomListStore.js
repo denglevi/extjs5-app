@@ -6,6 +6,7 @@
  */
 Ext.define('erp.store.PassCustomListStore', {
         extend: 'Ext.data.Store',
+        storeId:"PassCustomListStore",
         fields: ['id','logistics_no','order_no','supply_no','cu_contaits','cu_name','create_time'],
         autoLoad:false,
         proxy: {

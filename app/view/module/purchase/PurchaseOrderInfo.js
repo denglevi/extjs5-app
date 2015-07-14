@@ -27,9 +27,12 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         'Ext.layout.container.Fit',
         'Ext.layout.container.HBox',
         'Ext.panel.Panel',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Toolbar',
         'Ext.window.Window',
         'erp.view.module.purchase.AddCheckProductOrder',
+        'erp.view.module.purchase.SupplierMngController',
+        'erp.view.module.purchase.SupplierMngModel',
         'erp.view.window.AddLogisticsFormWin',
         'erp.view.window.AddPassCustomWin',
         'erp.view.window.PurchasePayWin'
@@ -642,7 +645,6 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 for (var i = 0; i < len; i++) {
                     var bat = batchs[i];
                     if (bat.batch_no == text) {
-
                         if(bat.status != null && bat.status.is_last != 1){
                             item[0].setHidden(false)
                             var button = item[0].down("button");
@@ -653,6 +655,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                             item[0].setHidden(true);
                         }
                         data = bat.products;
+                        break;
                     }
                 }
             }

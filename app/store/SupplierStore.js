@@ -3,6 +3,7 @@
  */
 Ext.define('erp.store.SupplierStore', {
     extend: 'Ext.data.Store',
+    storeId:"SupplierStore",
     requires: [
         'erp.model.SupplierModel'
     ],

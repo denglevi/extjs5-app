@@ -47,6 +47,7 @@
      *      ]
      */
     "requires": [
+        "ext-locale"
     ],
 
     /**
@@ -63,7 +64,7 @@
          */
         "namespace": "app"
     },
-
+    "locale": "zh_CN",
     /**
      * List of all JavaScript assets in the right execution order.
      *
@@ -108,9 +109,6 @@
     "js": [
         {
             "path": "${framework.dir}/build/ext-all-rtl-debug.js"
-        },
-        {
-            "path": "${framework.dir}/packages/ext-locale/build/ext-locale-zh_CN-debug.js"
         },
         {
             "path": "app.js",

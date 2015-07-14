@@ -7,7 +7,7 @@ Ext.application({
     name: 'erp',
     extend: 'erp.Application',
     //autoCreateViewport: 'erp.view.main.Main'
-    autoCreateViewport: 'erp.view.login.Login'
+    //autoCreateViewport: 'erp.view.login.Login'
     //autoCreateViewport: true
     //-------------------------------------------------------------------------
     // Most customizations should be made to app.Application. If you need to

@@ -3,6 +3,7 @@
  */
 Ext.define('erp.store.PaymentMethodStore', {
         extend: 'Ext.data.Store',
+        storeId:"PaymentMethodStore",
         fields: ['id', 'shop_id','month','money','allot_time','status'],
         autoLoad: false,
         proxy: {

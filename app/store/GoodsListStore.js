@@ -3,6 +3,7 @@
  */
 Ext.define('erp.store.GoodsListStore', {
         extend: 'Ext.data.Store',
+        storeId:"GoodsListStore",
         fields: ['id', 'image', 'no', 'name_zh', 'supply_color_no', 'company_retail_price', 'color', 'size'],
         autoLoad: false,
         proxy: {

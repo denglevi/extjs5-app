@@ -2,8 +2,8 @@
  * Created by denglevi on 15-6-14.
  */
 Ext.define('erp.view.module.purchase.CheckProductList', {
-    extend: 'Ext.grid.Panel',
-    xtype:'checkproductlist',
+    extend: "Ext.grid.Panel",
+    alias:"widget.checkproductlist",
     requires: [
         'Ext.form.field.Text',
         'Ext.toolbar.Paging',
