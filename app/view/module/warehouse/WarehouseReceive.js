@@ -6,6 +6,7 @@ Ext.define('erp.view.module.warehouse.WarehouseReceive', {
     xtype:'warehousereceive',
     requires: [
         'Ext.form.field.Text',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.warehouse.WarehouseController'
     ],

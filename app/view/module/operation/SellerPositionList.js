@@ -8,6 +8,7 @@ Ext.define('erp.view.module.operation.SellerPositionList',{
     requires: [
         'Ext.grid.Panel',
         'Ext.layout.container.HBox',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.operation.OperationController',
         'erp.view.module.operation.OperationModel'

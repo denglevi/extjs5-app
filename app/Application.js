@@ -9,6 +9,8 @@ Ext.define('erp.Application', {
     requires: [
         'Ext.form.Panel',
         'Ext.layout.container.Fit',
+        'erp.view.login.Login',
+        'erp.view.main.Main'
     ],
 
     name: 'erp',
@@ -21,13 +23,14 @@ Ext.define('erp.Application', {
         'LogisticsListStore','PassCustomListStore','WarehouseReceiveStore','GoodsMenuStore','GoodsListStore',
         'WarehouseListStore','WarehouseCheckTaskOrderStore','WarehouseCheckOrderStore','SellerPositionListStore',
         'SellerListStore','ResultAllotListStore','PaymentMethodStore','BundledSalesListStore',
-        'VIPCardListStore'
+        'VIPCardListStore','VIPCardOpenLimitStore','VIPCardUpdateLimitStore','VIPCardPutLimitStore',
+        'CustomerMngStore','VIPCardListStore','GiftCardInfoStore','GiftCardReturnStandardStore',
+        'GiftCardSaleStore','GiftCardPutLimitStore'
         // TODO: add global / shared stores here
     ],
-    views:['erp.view.login.Login','erp.view.main.Main'],
+    //views:['erp.view.login.Login','erp.view.main.Main'],
 
     launch: function () {
-        console.log(123);
         //var package = true;
         //if(!package){
         //    Ext.gui = require('nw.gui');

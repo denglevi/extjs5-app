@@ -135,20 +135,20 @@ Ext.define('erp.view.main.MainModel', {
             menu = [
                 {
                     text: "VIP资料", leaf: false, children: [
-                    {text: "VIP卡类别", leaf: true, view: 'warehousechecktaskorder'},
-                    {text: "VIP会员发卡规则", leaf: true},
-                    {text: "VIP会员升级规则", leaf: true},
-                    {text: "VIP会员卡制成投放单", leaf: true}
+                    {text: "VIP卡类别", leaf: true, view: 'vipcardlist'},
+                    {text: "VIP会员发卡规则", leaf: true,view:'vipcardopenlimit'},
+                    {text: "VIP会员升级规则", leaf: true,view:'vipcardupdatelimit'},
+                    {text: "VIP会员卡制成投放单", leaf: true,view:'vipcardputlimit'}
                 ]
                 },
-                {text: "顾客管理", leaf: true},
-                {text: "会员管理", leaf: true},
+                {text: "顾客管理", leaf: true,view:'customermng'},
+                {text: "会员管理", leaf: true,view:'vipmng'},
                 {
                     text: "礼品卡", leaf: false, children: [
-                    {text: "礼品卡资料", leaf: true, view: 'warehousechecktaskorder'},
-                    {text: "礼品卡返利标准", leaf: true},
-                    {text: "礼品卡销售", leaf: true},
-                    {text: "礼品卡制成投放单", leaf: true}
+                    {text: "礼品卡资料", leaf: true, view: 'giftcardinfo'},
+                    {text: "礼品卡返利标准", leaf: true,view:'giftcardreturnstandard'},
+                    {text: "礼品卡销售", leaf: true,view:'giftcardsale'},
+                    {text: "礼品卡制成投放单", leaf: true,view:'giftcardputlimit'}
                 ]
                 }
             ];

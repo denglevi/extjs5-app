@@ -143,3 +143,16 @@
     background-size: contain;
     background-image: url("images/user.png") !important;
 }
+
+.addIcon{
+    background-size: contain;
+    background-image: url("images/new.png");
+}
+.delIcon{
+    background-size: contain;
+    background-image: url("images/delete.png");
+}
+.editIcon{
+    background-size: contain;
+    background-image: url("images/edit.png");
+}

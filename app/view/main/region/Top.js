@@ -8,7 +8,9 @@ Ext.define('erp.view.main.region.Top', {
     requires: [
         'Ext.Array',
         'Ext.form.Label',
-        'erp.ux.TransparentButton'
+        'erp.ux.TransparentButton',
+        'erp.view.main.MainController',
+        'erp.view.main.MainModel'
     ],
     style: 'background-color : #205081',
     height: 50,

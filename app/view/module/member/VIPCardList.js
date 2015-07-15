@@ -4,12 +4,37 @@
 Ext.define('erp.view.module.member.VIPCardList',{
     extend:'Ext.grid.Panel',
     xtype:'vipcardlist',
-    columns:[
-        {text:'´úÂë',dataIndex:''},
-        {text:'Ãû³Æ',dataIndex:''},
-        {text:'ÕÛ¿Û',dataIndex:''},
-        {text:'»ù±¾½ğ¶î»ı·Ö±È',dataIndex:''},
-        {text:'´úÂë',dataIndex:'»ı·Ö±¶ÂÊ'}
+
+    requires: [
+        'erp.view.module.member.VIPCardController'
     ],
-    store:"VIPCardListStore"
+    initComponenet:function(){
+        var me = this;
+        me.callParent();
+    },
+    controller:"vipcard",
+    tbar:[
+        {text:'æ–°å¢',iconCls:'addIcon',handler:"addVIPCardType"},
+        {text:'åˆ é™¤',iconCls:'delIcon',handler:"delVIPCardType"},
+        {text:'ä¿®æ”¹',iconCls:'editIcon',handler:"editVIPCardType"}
+    ],
+    sortableColumns:false,
+    selModel:'checkboxmodel',
+    columns:[
+        {text:'ä»£ç ',dataIndex:'member_code',flex:1},
+        {text:'åç§°',dataIndex:'member_name',flex:1},
+        {text:'æŠ˜æ‰£',dataIndex:'member_dis',flex:1},
+        {text:'åŸºæœ¬é‡‘é¢ç§¯åˆ†æ¯”',dataIndex:'member_netcash',flex:1},
+        {text:'ç§¯åˆ†å€ç‡',dataIndex:'member_ratio',flex:1},
+        {text:'çŠ¶æ€',dataIndex:'member_out',flex:1,renderer:function(val){
+            if(1==val) return "åœç”¨";
+            if(0==val) return "å¯ç”¨";
+        }}
+    ],
+    store:"VIPCardListStore",
+    listeners:{
+        afterrender:function(){
+            this.getStore().load();
+        }
+    }
 });

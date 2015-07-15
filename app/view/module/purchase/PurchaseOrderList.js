@@ -6,6 +6,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
     alias: "widget.purchaseorderlist",
     requires: [
         'Ext.form.field.Text',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.purchase.SupplierMngController',
         'erp.view.module.purchase.SupplierMngModel'

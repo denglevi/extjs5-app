@@ -11,19 +11,25 @@ Ext.define('erp.view.main.MainController', {
     alias: 'controller.main',
 
     requires: [
+        'Ext.container.Container',
+        'Ext.layout.container.Accordion',
+        'Ext.tree.Panel'
+    ],
+
+    requires: [
         'Ext.Array',
         'Ext.container.Container',
         'Ext.layout.container.Accordion',
         'Ext.tree.Panel',
-        'erp.view.module.purchase.PurchaseOrderList',
-        'erp.view.module.purchase.LogisticsList',
-        'erp.view.module.purchase.PassCustomList',
-        'erp.view.module.purchase.CheckProductList',
+        //'erp.view.module.purchase.PurchaseOrderList',
+        //'erp.view.module.purchase.LogisticsList',
+    //    'erp.view.module.purchase.PassCustomList',
+    //    'erp.view.module.purchase.CheckProductList',
         'erp.view.module.financial.ApplyPayList',
-        'erp.view.module.purchase.SupplierMng',
+    //    'erp.view.module.purchase.SupplierMng',
         'erp.view.module.goods.GoodsMenu',
         'erp.view.module.goods.GoodsList',
-        'erp.view.module.goods.BaseDataMng',
+        //'erp.view.module.goods.BaseDataMng',
         'erp.view.module.warehouse.WarehouseReceive',
         'erp.view.module.warehouse.WarehouseImportGoods',
         'erp.view.module.warehouse.WarehouseSetting',
@@ -37,7 +43,18 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.operation.ResultsAllot',
         'erp.view.module.operation.PaymentMethod',
         'erp.view.module.operation.BundledSales',
-        'erp.view.module.operation.SellerPositionList'
+        'erp.view.module.operation.SellerPositionList',
+        //新增VIEW
+        'erp.view.module.member.VIPCardOpenLimit',
+        'erp.view.module.member.VIPCardUpdateLimit',
+        'erp.view.module.member.VIPCardPutLimit',
+        'erp.view.module.member.CustomerMng',
+        'erp.view.module.member.VIPMng',
+        'erp.view.module.member.GiftCardInfo',
+        'erp.view.module.member.GiftCardReturnStandard',
+        'erp.view.module.member.GiftCardSale',
+        'erp.view.module.member.GiftCardPutLimit',
+        'erp.view.module.member.VIPCardList',
     ],
     onMainMenu: function (el) {
         //点击不同菜单之后，左边栏显示不同的菜单
