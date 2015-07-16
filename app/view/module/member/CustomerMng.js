@@ -4,14 +4,20 @@
 Ext.define('erp.view.module.member.CustomerMng',{
     extend:'Ext.grid.Panel',
     xtype:'customermng',
+
+    requires: [
+        'erp.view.module.member.CustomerController'
+    ],
+
+    controller:'customer',
     initComponenet:function(){
         var me = this;
         me.callParent();
     },
     tbar:[
-        {text:'新增',iconCls:'addIcon'},
-        {text:'删除',iconCls:'delIcon'},
-        {text:'修改',iconCls:'editIcon'}
+        {text:'新增',iconCls:'addIcon',handler:'addCustomer'},
+        {text:'删除',iconCls:'delIcon',handler:'delCustomer'},
+        {text:'修改',iconCls:'editIcon',handler:'editCustomer'}
     ],
     selModel:'checkboxmodel',
     columns:[

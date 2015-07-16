@@ -5,14 +5,19 @@ Ext.define('erp.view.module.member.GiftCardReturnStandard',{
     extend:'Ext.grid.Panel',
     xtype:'giftcardreturnstandard',
 
+    requires: [
+        'erp.view.module.member.GiftCardController'
+    ],
+
+    controller:'giftcard',
     initComponenet:function(){
         var me = this;
         me.callParent();
     },
     tbar:[
-        {text:'新增',iconCls:'addIcon'},
-        {text:'删除',iconCls:'delIcon'},
-        {text:'修改',iconCls:'editIcon'}
+        {text:'新增',iconCls:'addIcon',handler:'addGiftCardReturnStandard'},
+        {text:'删除',iconCls:'delIcon',handler:'delGiftCardReturnStandard'},
+        //{text:'修改',iconCls:'editIcon',handler:'addGiftCardReturnStandard'}
     ],
     selModel:'checkboxmodel',
     columns:[

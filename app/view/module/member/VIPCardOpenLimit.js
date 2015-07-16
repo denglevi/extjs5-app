@@ -4,14 +4,20 @@
 Ext.define('erp.view.module.member.VIPCardOpenLimit',{
     extend:'Ext.grid.Panel',
     xtype:'vipcardopenlimit',
+
+    requires: [
+        'erp.view.module.member.VIPCardController'
+    ],
+
+    controller:"vipcard",
     initComponenet:function(){
         var me = this;
         me.callParent();
     },
     tbar:[
-        {text:'新增',iconCls:'addIcon'},
-        {text:'删除',iconCls:'delIcon'},
-        {text:'修改',iconCls:'editIcon'}
+        {text:'新增',iconCls:'addIcon',handler:"addVIPCardOpenLimit"},
+        {text:'删除',iconCls:'delIcon',handler:"delVIPCardOpenLimit"},
+        {text:'修改',iconCls:'editIcon',handler:"editVIPCardOpenLimit"}
     ],
     selModel:'checkboxmodel',
     columns:[

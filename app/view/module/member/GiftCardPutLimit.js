@@ -4,14 +4,20 @@
 Ext.define('erp.view.module.member.GiftCardPutLimit',{
     extend:'Ext.grid.Panel',
     xtype:'giftcardputlimit',
+
+    requires: [
+        'erp.view.module.member.GiftCardController'
+    ],
+
+    controller:'giftcard',
     initComponenet:function(){
         var me = this;
         me.callParent();
     },
     tbar:[
-        {text:'新增',iconCls:'addIcon'},
-        {text:'删除',iconCls:'delIcon'},
-        {text:'修改',iconCls:'editIcon'}
+        {text:'新增',iconCls:'addIcon',handler:'addGiftCardPutLimit'},
+        {text:'删除',iconCls:'delIcon',handler:'delGiftCardPutLimit'},
+        {text:'修改',iconCls:'editIcon',handler:'editGiftCardPutLimit'}
     ],
     selModel:'checkboxmodel',
     columns:[
