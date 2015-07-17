@@ -6,6 +6,7 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckTaskOrder', {
     xtype: 'warehousechecktaskorder',
     requires: [
         'Ext.grid.column.Action',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.warehouse.WarehouseCheckController',
         'erp.view.module.warehouse.WarehouseModel'

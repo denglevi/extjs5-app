@@ -1,9 +1,9 @@
 /**
- * Created by Administrator on 2015-07-16.
+ * Created by Administrator on 2015-07-17.
  */
-Ext.define('erp.view.module.member.CustomerController', {
+Ext.define('erp.view.module.member.VIPController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.customer',
+    alias: 'controller.vip',
 
     requires: [
         'Ext.button.Button',
@@ -15,8 +15,6 @@ Ext.define('erp.view.module.member.CustomerController', {
         'Ext.form.field.Date',
         'Ext.form.field.Display',
         'Ext.form.field.Hidden',
-        'Ext.form.field.Number',
-        'Ext.form.field.Radio',
         'Ext.form.field.Text',
         'Ext.form.field.TextArea',
         'Ext.grid.Panel',
@@ -28,28 +26,10 @@ Ext.define('erp.view.module.member.CustomerController', {
     /**
      * Called when the view is created
      */
-    init: function () {
+    init: function() {
 
     },
-    addCustomer: function () {
-        var url = apiBaseUrl + '/index.php/Membership/Customer/addCustomer';
-        var form = this.getCustomerFormWin(url);
-        var win = Ext.create('Ext.window.Window', {
-            modal: true,
-            resizable: false,
-            width: 600,
-            layout: 'fit',
-            title: "新增顾客",
-            items: [form]
-        });
-        form.on("destroyCustomerWin", function () {
-            win.destroy();
-            var store = Ext.StoreManager.lookup("CustomerMngStore");
-            if (store !== null) store.load();
-        });
-        win.show();
-    },
-    delCustomer: function (del_btn) {
+    delVIP: function (del_btn) {
         var sel = del_btn.up('grid').getSelection(), ids = [], names = [];
         if (sel.length == 0) {
             Ext.Msg.alert('系统提示', '请选择要删除的顾客');
@@ -91,10 +71,10 @@ Ext.define('erp.view.module.member.CustomerController', {
             }
         });
     },
-    editCustomer: function (grid, rowIndex, colIndex, item, e, record, row) {
+    editVIP: function (grid, rowIndex, colIndex, item, e, record, row) {
 
         var url = apiBaseUrl + '/index.php/Membership/Customer/editCustomer';
-        var form = this.getCustomerFormWin(url);
+        var form = this.getVIPFormWin(url);
         form.loadRecord(record);
         var win = Ext.create('Ext.window.Window', {
             modal: true,
@@ -111,7 +91,7 @@ Ext.define('erp.view.module.member.CustomerController', {
         });
         win.show();
     },
-    getCustomerFormWin: function (url) {
+    getVIPFormWin: function (url) {
         var form = Ext.create('Ext.form.Panel', {
             layout: 'column',
             bodyPadding: 10,
@@ -223,12 +203,13 @@ Ext.define('erp.view.module.member.CustomerController', {
         });
         return form;
     },
-    viewCustomerInfo: function (grid, rowIndex, colIndex, item, e, record, row) {
-        var grid = this.getCustomerInfoGrid(0),me=this;
+    viewVIPInfo: function (grid, rowIndex, colIndex, item, e, record, row) {
+        var grid = this.getVIPInfoGrid(),me=this;
         var win = Ext.create('Ext.window.Window', {
-            title: '查看顾客信息',
+            title: '查看VIP信息',
             width: 600,
             height: 500,
+            resizable:false,
             modal: true,
             layout: {
                 type: 'vbox',
@@ -244,22 +225,21 @@ Ext.define('erp.view.module.member.CustomerController', {
                         xtype: 'displayfield',
                         labelAlign: 'right',
                         labelWidth: 70,
-                        columnWidth: 0.25
+                        columnWidth: 0.3
                     },
                     items: [
-                        {fieldLabel: '顾客姓名', value: record.get("customer_name")},
-                        {fieldLabel: '顾客类型', value:  record.get("customer_type")},
-                        {fieldLabel: '性别', value:  record.get("customer_sex")},
-                        {fieldLabel: '生日', value:  record.get("customer_birthday")},
-                        {fieldLabel: '年龄', value:  record.get("customer_age")},
-                        {fieldLabel: '手机号', value:  record.get("customer_phone")},
-                        {fieldLabel: '推荐人', value: record.get("customer_referrer")},
-                        {fieldLabel: '所属终端', value:  record.get("customer_terminal")},
-                        {fieldLabel: '登记终端', value:  record.get("customer_regter")},
-                        {fieldLabel: '省份', value:  record.get("customer_province")},
-                        {fieldLabel: '城市', value:  record.get("customer_city")},
-                        {fieldLabel: '地区', value:  record.get("customer_area")},
-                        {fieldLabel: '备注', value:  record.get("customer_backups")}
+                        {fieldLabel: '会员卡号', value: record.get("card_no")},
+                        {fieldLabel: '顾客姓名', value:  record.get("customer_name")},
+                        {fieldLabel: '手机', value:  record.get("customer_phone")},
+                        {fieldLabel: 'VIP卡类别', value:  record.get("member_name")},
+                        {fieldLabel: '折扣', value:  record.get("card_discount")},
+                        {fieldLabel: '发卡终端', value:  record.get("customer_terminal")},
+                        {fieldLabel: '到期日期', value: record.get("customer_referrer")},
+                        {fieldLabel: '状态', value:  record.get("customer_terminal")},
+                        {fieldLabel: '积分', value:  record.get("card_integral")},
+                        {fieldLabel: '开卡品牌', value:  record.get("brand_id")},
+                        {fieldLabel: '经手店员', value:  record.get("card_handle")},
+                        {fieldLabel: '备注', value:  record.get("card_remarks")}
                     ]
                 },
                 {
@@ -269,7 +249,7 @@ Ext.define('erp.view.module.member.CustomerController', {
                     defaults: {
                         xtype: 'button',
                         margin: 5,
-                        handler:me.onCustmoerInfoBtnClick
+                        handler:me.onVIPInfoBtnClick
                     },
                     items: [
                         {
@@ -281,32 +261,37 @@ Ext.define('erp.view.module.member.CustomerController', {
                         },
                         {
                             text: '消费商品明细'
-                        }
+                        },
+                        {text:'操作日志'}
                     ]
                 },
                 grid
             ],
             buttons:[
-                {text:'发卡'}
+                {text:'升级VIP卡'},
+                {text:'降级VIP卡'},
+                {text:'挂失'},
+                {text:'停用'},
+                {text:'换卡'}
             ]
         });
         win.show();
     },
-    getCustomerInfoGrid: function (mark) {
+    getVIPInfoGrid: function (mark) {
         var columns,store;
-            columns = [
-                {text: '消费信息', dataIndex: 'key',flex:1},
-                {text: '消费值', dataIndex: 'val',flex:1}
-            ];
-            store = Ext.create('Ext.data.Store', {
-                fields: [],
-                data: [
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                ]
-            });
+        columns = [
+            {text: '消费信息', dataIndex: 'key',flex:1},
+            {text: '消费值', dataIndex: 'val',flex:1}
+        ];
+        store = Ext.create('Ext.data.Store', {
+            fields: [],
+            data: [
+                {key: '首次消费日期', val: '1'},
+                {key: '首次消费日期', val: '1'},
+                {key: '首次消费日期', val: '1'},
+                {key: '首次消费日期', val: '1'},
+            ]
+        });
 
         var grid = {
             xtype: 'grid',
@@ -319,7 +304,7 @@ Ext.define('erp.view.module.member.CustomerController', {
 
         return grid;
     },
-    onCustmoerInfoBtnClick:function(btn){
+    onVIPInfoBtnClick:function(btn){
         var text = btn.getText(),
             items = btn.up("container").items.items,
             store,columns,
@@ -387,7 +372,23 @@ Ext.define('erp.view.module.member.CustomerController', {
                 ]
             });
         }
-
+        else if("操作日志" == text){
+            columns = [
+                {text: '日期', dataIndex: 'key',flex:1},
+                {text: '状态', dataIndex: 'key',flex:1},
+                {text: '关联卡号', dataIndex: 'key',flex:1},
+                {text: '操作人', dataIndex: 'key',flex:2}
+            ];
+            store = Ext.create('Ext.data.Store', {
+                fields: [],
+                data: [
+                    {key: '首次消费日期', val: '1'},
+                    {key: '首次消费日期', val: '1'},
+                    {key: '首次消费日期', val: '1'},
+                    {key: '首次消费日期', val: '1'},
+                ]
+            });
+        }
         grid.reconfigure(store,columns);
     }
 });

@@ -84,19 +84,10 @@ Ext.define('erp.view.module.member.VIPCardController', {
             }
         });
     },
-    editVIPCardType: function (btn) {
-        var sel = btn.up('grid').getSelection(), ids = [], nos = [];
-        if (sel.length > 1) {
-            Ext.Msg.alert('系统提示', '一次只能修改一条记录!');
-            return;
-        }
-        if (sel.length == 0) {
-            Ext.Msg.alert('系统提示', '请选择你要修改的VIP卡类型');
-            return;
-        }
+    editVIPCardType: function (grid, rowIndex, colIndex, item, e, record, row) {
         var url = apiBaseUrl + '/index.php/Membership/sort/editVIPType';
         var form = this.getVIPCardTypeForm(url);
-        form.loadRecord(sel[0]);
+        form.loadRecord(record);
         var win = Ext.create('Ext.window.Window', {
             modal: true,
             reference: 'vip_win',
@@ -245,19 +236,10 @@ Ext.define('erp.view.module.member.VIPCardController', {
             }
         });
     },
-    editVIPCardOpenLimit: function (btn) {
-        var sel = btn.up('grid').getSelection(), ids = [], nos = [];
-        if (sel.length > 1) {
-            Ext.Msg.alert('系统提示', '一次只能修改一条记录!');
-            return;
-        }
-        if (sel.length == 0) {
-            Ext.Msg.alert('系统提示', '请选择你要修改的VIP卡类型');
-            return;
-        }
+    editVIPCardOpenLimit: function (grid, rowIndex, colIndex, item, e, record, row) {
         var url = apiBaseUrl + '/index.php/Membership/Hairpin/editVIPCardOpenLimit';
         var form = this.getVIPCardOpenLimitForm(url);
-        form.loadRecord(sel[0]);
+        form.loadRecord(record);
         var win = Ext.create('Ext.window.Window', {
             modal: true,
             reference: 'vip_win',
@@ -421,19 +403,10 @@ Ext.define('erp.view.module.member.VIPCardController', {
             }
         });
     },
-    editVIPCardUpdateLimit:function(btn){
-        var sel = btn.up('grid').getSelection(), ids = [], nos = [];
-        if (sel.length > 1) {
-            Ext.Msg.alert('系统提示', '一次只能修改一条记录!');
-            return;
-        }
-        if (sel.length == 0) {
-            Ext.Msg.alert('系统提示', '请选择你要修改的VIP卡升级规则');
-            return;
-        }
+    editVIPCardUpdateLimit:function(grid, rowIndex, colIndex, item, e, record, row){
         var url = apiBaseUrl+'/index.php/Membership/Change/editVIPCardUpdateLimit';
         var form = this.getVIPCardUpdateLimitWin(url);
-        form.loadRecord(sel[0]);
+        form.loadRecord(record);
         var win = Ext.create('Ext.window.Window', {
             modal: true,
             reference: 'vip_win',
@@ -603,19 +576,10 @@ Ext.define('erp.view.module.member.VIPCardController', {
             }
         });
     },
-    editVIPCardPutLimit:function(btn){
-        var sel = btn.up('grid').getSelection(), ids = [], nos = [];
-        if (sel.length > 1) {
-            Ext.Msg.alert('系统提示', '一次只能修改一条记录!');
-            return;
-        }
-        if (sel.length == 0) {
-            Ext.Msg.alert('系统提示', '请选择你要修改的VIP卡投放单');
-            return;
-        }
+    editVIPCardPutLimit:function(grid, rowIndex, colIndex, item, e, record, row){
         var url = apiBaseUrl+'/index.php/Membership/Put/editVIPCardPutLimit';
         var form = this.getVIPCardPutLimitWin(url);
-        form.loadRecord(sel[0]);
+        form.loadRecord(record);
         var win = Ext.create('Ext.window.Window', {
             modal: true,
             resizable: false,

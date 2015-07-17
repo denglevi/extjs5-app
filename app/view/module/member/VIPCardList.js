@@ -6,6 +6,7 @@ Ext.define('erp.view.module.member.VIPCardList',{
     xtype:'vipcardlist',
 
     requires: [
+        'Ext.grid.column.Action',
         'erp.view.module.member.VIPCardController'
     ],
     initComponenet:function(){
@@ -16,7 +17,7 @@ Ext.define('erp.view.module.member.VIPCardList',{
     tbar:[
         {text:'新增',iconCls:'addIcon',handler:"addVIPCardType"},
         {text:'删除',iconCls:'delIcon',handler:"delVIPCardType"},
-        {text:'修改',iconCls:'editIcon',handler:"editVIPCardType"}
+        //{text:'修改',iconCls:'editIcon',handler:"editVIPCardType"}
     ],
     sortableColumns:false,
     selModel:'checkboxmodel',
@@ -29,7 +30,24 @@ Ext.define('erp.view.module.member.VIPCardList',{
         {text:'状态',dataIndex:'member_out',flex:1,renderer:function(val){
             if(1==val) return "停用";
             if(0==val) return "启用";
-        }}
+        }},
+        {
+            text: '操作',
+            xtype: 'actioncolumn',
+            flex: 1,
+            items: [
+                //{
+                //    iconCls: 'viewIcon columnAction',
+                //    tooltip: '查看',
+                //    handler: "viewVIPInfo"
+                //},
+                {
+                    iconCls: 'editIcon columnAction',
+                    tooltip: '修改',
+                    handler: "editVIPCardType"
+                }
+            ]
+        }
     ],
     store:"VIPCardListStore",
     listeners:{

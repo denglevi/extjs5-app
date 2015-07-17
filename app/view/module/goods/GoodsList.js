@@ -11,6 +11,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
         'Ext.form.field.ComboBox',
         'Ext.form.field.Text',
         'Ext.grid.Panel',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.goods.GoodsController',
         'erp.view.module.goods.GoodsModel'

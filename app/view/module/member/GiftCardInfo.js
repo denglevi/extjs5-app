@@ -5,6 +5,10 @@ Ext.define('erp.view.module.member.GiftCardInfo',{
     extend:'Ext.grid.Panel',
     xtype:'giftcardinfo',
 
+    requires: [
+        'Ext.grid.column.Action'
+    ],
+
     initComponenet:function(){
         var me = this;
         me.callParent();
@@ -12,7 +16,7 @@ Ext.define('erp.view.module.member.GiftCardInfo',{
     tbar:[
         {text:'新增',iconCls:'addIcon'},
         {text:'删除',iconCls:'delIcon'},
-        {text:'修改',iconCls:'editIcon'}
+        //{text:'修改',iconCls:'editIcon'}
     ],
     selModel:'checkboxmodel',
     columns:[
@@ -21,6 +25,23 @@ Ext.define('erp.view.module.member.GiftCardInfo',{
         {text:'发卡日期',dataIndex:'sales_time',flex:1},
         {text:'当前余额',dataIndex:'giftcard_money',flex:1},
         {text:'状态',dataIndex:'giftcard_status',flex:1},
+        {
+            text: '操作',
+            xtype: 'actioncolumn',
+            flex: 1,
+            items: [
+                //{
+                //    iconCls: 'viewIcon columnAction',
+                //    tooltip: '查看',
+                //    handler: "viewVIPInfo"
+                //},
+                {
+                    iconCls: 'editIcon columnAction',
+                    tooltip: '修改',
+                    //handler: "editVIPCardUpdateLimit"
+                }
+            ]
+        }
     ],
     store:"GiftCardInfoStore",
     listeners:{

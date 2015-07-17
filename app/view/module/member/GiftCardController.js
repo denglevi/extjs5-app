@@ -195,19 +195,10 @@ Ext.define('erp.view.module.member.GiftCardController', {
             }
         });
     },
-    editGiftCardPutLimit:function(btn){
-        var sel = btn.up('grid').getSelection(), ids = [], nos = [];
-        if (sel.length > 1) {
-            Ext.Msg.alert('系统提示', '一次只能修改一条记录!');
-            return;
-        }
-        if (sel.length == 0) {
-            Ext.Msg.alert('系统提示', '请选择你要修改的礼品卡投放单');
-            return;
-        }
+    editGiftCardPutLimit:function(grid, rowIndex, colIndex, item, e, record, row){
         var url = apiBaseUrl+'/index.php/Membership/Gift/editGiftCardPutLimit';
         var form = this.getGiftCardPutLimitWin(url);
-        form.loadRecord(sel[0]);
+        form.loadRecord(record);
         var win = Ext.create('Ext.window.Window', {
             modal: true,
             resizable: false,

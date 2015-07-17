@@ -6,6 +6,7 @@ Ext.define('erp.view.module.member.VIPCardUpdateLimit',{
     xtype:'vipcardupdatelimit',
 
     requires: [
+        'Ext.grid.column.Action',
         'erp.view.module.member.VIPCardController'
     ],
 
@@ -17,7 +18,7 @@ Ext.define('erp.view.module.member.VIPCardUpdateLimit',{
     tbar:[
         {text:'新增',iconCls:'addIcon',handler:"addVIPCardUpdateLimit"},
         {text:'删除',iconCls:'delIcon',handler:"delVIPCardUpdateLimit"},
-        {text:'修改',iconCls:'editIcon',handler:"editVIPCardUpdateLimit"}
+        //{text:'修改',iconCls:'editIcon',handler:"editVIPCardUpdateLimit"}
     ],
     selModel:'checkboxmodel',
     columns:[
@@ -27,7 +28,24 @@ Ext.define('erp.view.module.member.VIPCardUpdateLimit',{
         {text:'周期消费内金额',dataIndex:'change_money',flex:1},
         {text:'消费周期(年)',dataIndex:'change_year',flex:1},
         {text:'周期消费内金额',dataIndex:'change_yearey',flex:1},
-        {text:'状态',dataIndex:'change_status',flex:1}
+        {text:'状态',dataIndex:'change_status',flex:1},
+        {
+            text: '操作',
+            xtype: 'actioncolumn',
+            flex: 1,
+            items: [
+                //{
+                //    iconCls: 'viewIcon columnAction',
+                //    tooltip: '查看',
+                //    handler: "viewVIPInfo"
+                //},
+                {
+                    iconCls: 'editIcon columnAction',
+                    tooltip: '修改',
+                    handler: "editVIPCardUpdateLimit"
+                }
+            ]
+        }
     ],
     store:"VIPCardUpdateLimitStore",
     listeners:{

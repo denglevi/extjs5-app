@@ -85,7 +85,7 @@ Ext.define('erp.view.main.MainModel', {
                 },
                 {text: "商品目录", leaf: true, view: 'goodsmenu'},
                 {text: "商品列表", leaf: true, view: 'goodslist'},
-                {text: "配送通知单", leaf: true}
+                {text: "配送通知单", leaf: true,view:'goodsdeliveryorder'}
             ];
         } else if (text == "仓库") {
             menu = [
@@ -98,7 +98,7 @@ Ext.define('erp.view.main.MainModel', {
                 {text: "仓库设置", leaf: true, view: 'warehousesetting'},
                 {text: "仓库收货", leaf: true, view: 'warehousereceive'},
                 {text: "进货单", leaf: true, view: 'warehouseimportgoods'},
-                {text: "商品配货单", leaf: true},
+                {text: "商品配货单", leaf: true,view:'warehousedeliveryorder'},
                 {text: "商品上架", leaf: true, view: 'warehouseexhibitgoods'},
                 {
                     text: "仓库管理", expanded: false, children: [

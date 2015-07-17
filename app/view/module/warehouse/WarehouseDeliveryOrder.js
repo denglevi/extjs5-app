@@ -1,42 +1,31 @@
 /**
- * Created by Administrator on 2015-07-17.
+ * Created by Administrator on 2015-06-30.
  */
-Ext.define('erp.view.module.goods.GoodsDeliveryOrder', {
-    extend: 'Ext.Container',
-
-    xtype: 'goodsdeliveryorder',
+Ext.define("erp.view.module.warehouse.WarehouseDeliveryOrder",{
+    extend:'Ext.Container',
+    xtype:'warehousedeliveryorder',
 
     requires: [
-        'Ext.container.Container',
         'Ext.grid.Panel',
         'Ext.layout.container.HBox',
         'Ext.layout.container.VBox',
         'Ext.panel.Panel',
-        'erp.view.module.goods.GoodsController',
-        'erp.view.module.goods.GoodsModel'
+        'erp.view.module.warehouse.WarehouseController',
+        'erp.view.module.warehouse.WarehouseModel'
     ],
-
-    controller: 'goods',
-    layout: {
-        type: 'hbox',
-        align: 'stretch'
-    },
-    viewModel: {
-        type: 'goods'
-    },
+    controller:'warehouse',
+    viewModel:'warehouse',
     initComponent: function () {
-
         var me = this;
         me.layout = {
             type: 'hbox',
             align: 'stretch'
         };
-
-        var import_list = this.getNoticeOrderListGrid();
+        var import_list = this.getDeliveryOrderListGrid();
         this.items = [
             import_list, {
                 xtype: 'panel',
-                title: '配货通知单详情',
+                title: '配货单详情',
                 flex: 1,
                 layout: {
                     type: 'vbox',
@@ -45,7 +34,7 @@ Ext.define('erp.view.module.goods.GoodsDeliveryOrder', {
                 itemId: 'info_panel'
             }
         ];;
-        import_list.on("rowdblclick","onGoodsDeliveryNoticeGridDblClick");
+        import_list.on("rowdblclick","onWarehouseDeliveryGoodsOrderGridDblClick");
         this.listeners = {
             afterrender: function () {
                 me.down("grid").getStore().load();
@@ -53,22 +42,22 @@ Ext.define('erp.view.module.goods.GoodsDeliveryOrder', {
         }
         me.callParent();
     },
-    getNoticeOrderListGrid: function () {
+    getDeliveryOrderListGrid: function () {
         var grid = Ext.create('Ext.grid.Panel', {
-            title: '配货通知单列表',
+            title: '配货单列表',
             width: 200,
             border:true,
             sortableColumns: false,
             enableColumnHide: false,
             tbar: [
-                {text: '新增', iconCls: 'addIcon', handler: "addGoodsDeliveryNotice"},
+                {text: '新增', iconCls: 'addIcon', handler: "addWarehouseDeliveryGoodsOrder"},
                 {text: '删除', iconCls: 'delIcon'}
             ],
             selModel: 'checkboxmodel',
-            columns: [{text: '通知单号', dataIndex: 'notice_no', flex: 1}],
-            store: 'GoodsDeliveryNoticeStore'
+            columns: [{text: '配货单号', dataIndex: 'noder_no', flex: 1}],
+            store: 'WarehouseDeliveryOrderStore'
         });
 
         return grid;
     }
-});
+})

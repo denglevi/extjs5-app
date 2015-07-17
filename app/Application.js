@@ -25,7 +25,7 @@ Ext.define('erp.Application', {
         'SellerListStore','ResultAllotListStore','PaymentMethodStore','BundledSalesListStore',
         'VIPCardListStore','VIPCardOpenLimitStore','VIPCardUpdateLimitStore','VIPCardPutLimitStore',
         'CustomerMngStore','VIPCardListStore','GiftCardInfoStore','GiftCardReturnStandardStore',
-        'GiftCardSaleStore','GiftCardPutLimitStore'
+        'GiftCardSaleStore','GiftCardPutLimitStore','VIPListStore','GoodsDeliveryNoticeStore','WarehouseDeliveryOrderStore'
         // TODO: add global / shared stores here
     ],
     //views:['erp.view.login.Login','erp.view.main.Main'],

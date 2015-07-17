@@ -10,16 +10,22 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         'Ext.Array',
         'Ext.String',
         'Ext.XTemplate',
+        'Ext.button.Segmented',
         'Ext.data.Store',
+        'Ext.data.StoreManager',
         'Ext.data.proxy.Ajax',
         'Ext.data.reader.Json',
+        'Ext.form.field.ComboBox',
+        'Ext.form.field.Date',
         'Ext.form.field.Display',
         'Ext.form.field.Text',
         'Ext.grid.Panel',
         'Ext.layout.container.Anchor',
+        'Ext.layout.container.Column',
         'Ext.layout.container.HBox',
         'Ext.panel.Panel',
         'Ext.tab.Panel',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Toolbar',
         'Ext.window.Window',
         'erp.view.module.warehouse.AddImportGoodsOrder',
@@ -1035,5 +1041,279 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 store.insert(0, res);
             }
         });
-    }
+    },
+    onWarehouseDeliveryGoodsOrderGridDblClick:function(gp,record){
+
+        var id = record.get("id"),
+            me = this,
+            order = gp.up("warehousedeliveryorder"),
+            panel = order.down("#info_panel"),
+            model = order.getViewModel();
+        model.set("goods_delivery_order_id", id);
+
+        model.set("order_info", {
+            noder_no: record.get("noder_no"),
+            store: record.get("store"),
+            storage: record.get("storage"),
+            order_nos: record.get("order_nos"),
+            price_select: record.get("price_select"),
+            discounts: record.get("discounts"),
+            id_brand: record.get("id_brand"),
+            ditch: record.get("ditch")
+        });
+
+        if (panel.items.items.length > 0) {
+            //this.lookupReference("goods_delivery_info_grid").setStore(model.get("goods_info"));
+            return;
+        }
+
+        var items = this.getWarehouseDeliveryGoodsDetailItems();
+        panel.add(items);
+        //this.lookupReference("goods_delivery_info_grid").setStore(model.get("goods_info"));
+    },
+    getWarehouseDeliveryGoodsDetailItems:function(){
+        return [{
+            xtype: 'panel',
+            name: "info",
+            bind: {
+                data: '{order_info}'
+            },
+            margin: '30 30 0 30',
+            tpl: new Ext.XTemplate(
+                '<div class="col-md-12">',
+                '<div class="col-md-4">配货单号：{noder_no}</div>',
+                '<div class="col-md-4">商店：{store}</div>',
+                '<div class="col-md-4">仓库：{storage}</div>',
+                '</div>',
+                '<div class="col-md-12">',
+                '<div class="col-md-4">通知单号：{order_nos}</div>',
+                '<div class="col-md-4">价格选定：{price_select}</div>',
+                '<div class="col-md-4">折扣：{discounts}</div>',
+                '</div>',
+                '<div class="col-md-12">',
+                '<div class="col-md-4">品牌：{id_brand}</div>',
+                '<div class="col-md-4">渠道：{ditch}</div>',
+                '</div>'
+            ),
+            bbar: [
+                '->', {
+                    text: '扫描货品',
+                    iconCls: 'scanIcon'
+                }
+            ]
+        }, {
+            xtype: 'segmentedbutton',
+            defaults: {
+                margin: 5
+            },
+            items: [
+                {text: '商品详细信息', pressed: true},
+                {text: '商品通知信息'},
+                {text: '差异数'},
+                {text: '操作日志'}
+            ],
+            listeners: {
+                toggle: function (container, button, pressed) {
+                    var text = button.getText(),
+                        columns, store,
+                        grid = container.up("panel").down("grid");
+                    if ("商品详细信息" == text) {
+                        columns = [
+                            {text: '商品代码', dataIndex: 'no', flex: 1},
+                            {text: '国际码', dataIndex: 'no', flex: 1},
+                            {text: '名称', dataIndex: 'no', flex: 1},
+                            {text: '颜色', dataIndex: 'no', flex: 1},
+                            {text: '尺码', dataIndex: 'no', flex: 1},
+                            {text: '数量', dataIndex: 'no', flex: 1},
+                            {text: '库存数', dataIndex: 'no', flex: 1},
+                            {text: '数据状态', dataIndex: 'no', flex: 1}
+                        ];
+                    } else if("商品通知信息" == text){
+                        columns = [
+                            {text: '商品代码', dataIndex: 'no', flex: 1},
+                            {text: '国际码', dataIndex: 'no', flex: 1},
+                            {text: '名称', dataIndex: 'no', flex: 1},
+                            {text: '颜色', dataIndex: 'no', flex: 1},
+                            {text: '尺码', dataIndex: 'no', flex: 1},
+                            {text: '数量', dataIndex: 'no', flex: 1},
+                            {text: '库位', dataIndex: 'no', flex: 1}
+                        ];
+                    } else if("差异数" == text){
+                        columns = [
+                            {text: '商品代码', dataIndex: 'no', flex: 1},
+                            {text: '国际码', dataIndex: 'no', flex: 1},
+                            {text: '名称', dataIndex: 'no', flex: 1},
+                            {text: '颜色', dataIndex: 'no', flex: 1},
+                            {text: '尺码', dataIndex: 'no', flex: 1},
+                            {text: '数量', dataIndex: 'no', flex: 1},
+                            {text: '库位', dataIndex: 'no', flex: 1},
+                            {text: '差异数', dataIndex: 'no', flex: 1}
+                        ];
+                    }else {
+                        columns = [
+                            {text: '操作类型', dataIndex: 'no', flex: 1},
+                            {text: '操作人', dataIndex: 'no', flex: 1},
+                            {text: '操作时间', dataIndex: 'no', flex: 1}
+                        ];
+                    }
+                    grid.setTitle(text);
+                    grid.reconfigure(null, columns);
+                }
+            }
+        }, {
+            xtype: 'grid',
+            flex: 1,
+            reference: 'goods_delivery_info_grid',
+            title: '商品详细信息',
+            sortableColumns: false,
+            enableColumnHide: false,
+            columns: [
+                {text: '商品代码', dataIndex: 'no', flex: 1},
+                {text: '国际码', dataIndex: 'no', flex: 1},
+                {text: '名称', dataIndex: 'no', flex: 1},
+                {text: '颜色', dataIndex: 'no', flex: 1},
+                {text: '尺码', dataIndex: 'no', flex: 1},
+                {text: '数量', dataIndex: 'no', flex: 1},
+                {text: '库存数', dataIndex: 'no', flex: 1},
+                {text: '数据状态', dataIndex: 'no', flex: 1}
+            ]
+        }
+        ];
+    },
+    addWarehouseDeliveryGoodsOrder: function () {
+        var win = Ext.create('Ext.window.Window', {
+            width: 600,
+            modal: true,
+            title: '新增配货单',
+            layout: 'fit',
+            items: [{
+                xtype: 'form',
+                bodyPadding: 10,
+                layout: 'column',
+                defaults: {
+                    margin: 5,
+                    xtype: 'textfield',
+                    labelAlign: 'right',
+                    labelWidth: 70,
+                    columnWidth: 0.5,
+                    anchor: '100%',
+                    allowBlank: false
+                },
+                items: [
+                    {
+                        fieldLabel: '商店',
+                        name: 'store',
+                        xtype: 'combo',
+                        disabled: true,
+                        valueField: 'id',
+                        displayField: 'shops_name',
+                        editable: false
+                    },
+                    {
+                        fieldLabel: '仓库',
+                        name: 'storage',
+                        xtype: 'combo',
+                        disabled: true,
+                        valueField: 'id',
+                        displayField: 'storage_name',
+                        editable: false
+                    },
+                    {fieldLabel: '通知单号', name: 'order_nos'},
+                    {fieldLabel: '发货类型', name: 'send_type'},
+                    {fieldLabel: '价格选定', name: 'price_select'},
+                    {fieldLabel: '折扣', name: 'discounts'},
+                    {
+                        fieldLabel: '品牌',
+                        name: 'id_brand',
+                        xtype: 'combo',
+                        disabled: true,
+                        valueField: 'id',
+                        displayField: 'name_en',
+                        editable: false
+                    },
+                    {fieldLabel: '渠道', name: 'ditch'}
+                ],
+                buttons: [
+                    {
+                        text: '重置',
+                        handler: function () {
+                            this.up("form").getForm().reset();
+                        }
+                    },
+                    {
+                        text: '提交',
+                        formBind: true,
+                        disabled: false,
+                        handler: function (btn) {
+                            var form = this.up("form").getForm();
+                            if (form.isValid()) {
+                                form.submit({
+                                    waitMsg: '正在提交...',
+                                    url: apiBaseUrl + '/index.php/Warehouse/DeliveryGoods/addDeliveryGoodsOrder',
+                                    method: 'POST',
+                                    success: function (form, action) {
+                                        win.destroy();
+                                        var store = Ext.StoreManager.lookup("WarehouseDeliveryOrderStore");
+                                        if (store !== null) store.load();
+                                    },
+                                    failur: function (form, action) {
+                                        if (action.result.msg) {
+                                            Ext.toast(action.result.msg, "系统提示");
+                                            return;
+                                        }
+                                        Ext.toast("网络请求错误,请检查网络!", "系统提示");
+                                    }
+                                });
+                            }
+                        }
+                    }
+                ]
+            }]
+        });
+        Ext.Ajax.request({
+            async: true,
+            url: apiBaseUrl + '/index.php/Commodity/Distribution/getBaseData',
+            method: 'POST',
+            params: {
+                shop: 1,
+                warehouse: 1,
+                brand: 1
+            },
+            success: function (res) {
+                var json = Ext.decode(res.responseText), data = json.data;
+                if (data.shop === undefined || data.warehouse === undefined || data.brand === undefined) {
+                    Ext.toast("数据获取错误,请重试!", "系统提示");
+                    return;
+                }
+                var form = win.down("form");
+                var shop = form.down("combo[name=store]"),
+                    warehouse = form.down("combo[name=storage]"),
+                    brand = form.down("combo[name=id_brand]"),
+                    shop_store = Ext.create('Ext.data.Store', {
+                        fields: [],
+                        data: data.shop
+                    }),
+                    warehouse_store = Ext.create('Ext.data.Store', {
+                        fields: [],
+                        data: data.warehouse
+                    }),
+                    brand_store = Ext.create('Ext.data.Store', {
+                        fields: [],
+                        data: data.brand
+                    })
+                    ;
+
+                shop.setDisabled(false);
+                warehouse.setDisabled(false);
+                brand.setDisabled(false);
+                shop.setStore(shop_store);
+                warehouse.setStore(warehouse_store);
+                brand.setStore(brand_store);
+            },
+            failure: function () {
+                Ext.toast("服务请求失败,请稍后再试!", "系统提示");
+            }
+        });
+        win.show();
+    },
 });
