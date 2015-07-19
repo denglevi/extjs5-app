@@ -1099,6 +1099,10 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 '->', {
                     text: '扫描货品',
                     iconCls: 'scanIcon'
+                },{
+                    text:'保存'
+                },{
+                    text:'提交配货'
                 }
             ]
         }, {

@@ -308,6 +308,23 @@ Ext.define('erp.view.module.goods.GoodsController', {
         win.show();
     },
     getNoticeDetailItems: function () {
+        var id = this.getViewModel().get("goods_delivery_notice_id");
+        this.products = [];
+        this.logs = [];
+        var me = this;
+        var productStore = Ext.create("Ext.data.Store",{
+            fields:[],
+            autoLoad:true,
+            storeId:'delivery_goods_notice_store',
+            proxy:{
+                type:'ajax',
+                url:apiBaseUrl + '/index.php/Commodity/Distribution/getDeliveryNoticeGoods?id='+id,
+                reader:{
+                    type:'json',
+                    rootProperty:'data'
+                }
+            }
+        });
         return [{
             xtype: 'panel',
             name: "info",
@@ -335,12 +352,82 @@ Ext.define('erp.view.module.goods.GoodsController', {
                 '<div class="col-md-4">渠道：{challne}</div>',
                 '</div>'
             ),
-            bbar: [
-                '->', {
-                    text: '导入数据',
-                    iconCls: 'importIcon'
-                }
-            ]
+            dockedItems:{
+                dock:'bottom',
+                items:[
+                    {
+                        xtype:"toolbar",
+                        bind:{
+                            hidden:'{notice_status}'
+                        },
+                        items:[
+                            '->',
+                            {
+                                xtype:'form',
+                                items:[
+                                    {
+                                        buttonOnly:true,
+                                        hideLabel: true,
+                                        width:82,
+                                        buttonConfig:{
+                                            text: '导入数据',
+                                            margin:'5 0 0 0',
+                                            iconCls: 'importIcon',
+                                            ui:'default'
+                                        },
+                                        xtype:'fileuploadfield',
+                                        name:'delivery_file',
+                                        listeners:{
+                                            change:function(btn,val){
+                                                var form = this.up("form").getForm();
+                                                form.submit({
+                                                    waitMsg:'正在导入商品信息...',
+                                                    url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
+                                                    method:'POST',
+                                                    success:function(form,action){
+                                                        if(!action.result.success){
+                                                            Ext.toast(action.result.msg,"系统提示");
+                                                            return;
+                                                        }
+                                                        var data = action.result.data,
+                                                            len = data.length,
+                                                            tmp_arr = [];
+                                                        for(var i=0;i<len;i++){
+                                                            var product = data[i];
+                                                            product.mark = 1;
+                                                            tmp_arr.push(product);
+                                                        }
+
+                                                        me.products = me.products.concat(tmp_arr);
+                                                        var store = me.lookupReference('goods_delivery_info_grid').getStore();
+                                                        store.insert(0,tmp_arr);
+                                                    },
+                                                    failure:function(form,action){
+                                                        if(action.response.status == 200){
+                                                            Ext.toast(action.result.msg,"系统提示");
+                                                            return;
+                                                        }
+                                                        Ext.toast("服务请求错误,请重试!","系统提示");
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                    ,{
+                                text:'保存',
+                                handler:me.saveDeliveryGoodsNotice,
+                                scope:me
+                            },{
+                                text:'申请配货',
+                                handler:me.saveDeliveryGoodsNotice,
+                                scope:me
+                            }
+                        ]
+                    }
+                ]
+            }
         }, {
             xtype: 'segmentedbutton',
             defaults: {
@@ -348,7 +435,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
             },
             items: [
                 {text: '商品详细信息', pressed: true},
-                {text: '操作日志'}
+                //{text: '操作日志'}
             ],
             listeners: {
                 toggle: function (container, button, pressed) {
@@ -356,15 +443,15 @@ Ext.define('erp.view.module.goods.GoodsController', {
                         columns, store,
                         grid = container.up("panel").down("grid");
                     if ("商品详细信息" == text) {
+                        store = Ext.data.StoreManager.lookup("delivery_goods_notice_store");
                         columns = [
-                            {text: '商品代码', dataIndex: 'no', flex: 1},
-                            {text: '国际码', dataIndex: 'no', flex: 1},
-                            {text: '名称', dataIndex: 'no', flex: 1},
-                            {text: '颜色', dataIndex: 'no', flex: 1},
-                            {text: '尺码', dataIndex: 'no', flex: 1},
-                            {text: '数量', dataIndex: 'no', flex: 1},
-                            {text: '库存数', dataIndex: 'no', flex: 1},
-                            {text: '数据状态', dataIndex: 'no', flex: 1}
+                            {text: '商品代码', dataIndex: 'system_style_no', flex: 1},
+                            {text: '国际码', dataIndex: 'supply_style_no', flex: 1},
+                            {text: '名称', dataIndex: 'name', flex: 1},
+                            {text: '颜色', dataIndex: 'color', flex: 1},
+                            {text: '尺码', dataIndex: 'size', flex: 1},
+                            {text: '数量', dataIndex: 'num', flex: 1},
+                            {text: '库存数', dataIndex: 'warehouse_num', flex: 1}
                         ];
                     } else {
                         columns = [
@@ -374,7 +461,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
                         ];
                     }
                     grid.setTitle(text);
-                    grid.reconfigure(null, columns);
+                    grid.reconfigure(store, columns);
                 }
             }
         }, {
@@ -384,27 +471,29 @@ Ext.define('erp.view.module.goods.GoodsController', {
             title: '商品详细信息',
             sortableColumns: false,
             enableColumnHide: false,
+            store:productStore,
             columns: [
-                {text: '商品代码', dataIndex: 'no', flex: 1},
-                {text: '国际码', dataIndex: 'no', flex: 1},
-                {text: '名称', dataIndex: 'no', flex: 1},
-                {text: '颜色', dataIndex: 'no', flex: 1},
-                {text: '尺码', dataIndex: 'no', flex: 1},
-                {text: '数量', dataIndex: 'no', flex: 1},
-                {text: '库存数', dataIndex: 'no', flex: 1},
-                {text: '数据状态', dataIndex: 'no', flex: 1}
+                {text: '商品代码', dataIndex: 'system_style_no', flex: 1},
+                {text: '国际码', dataIndex: 'supply_style_no', flex: 1},
+                {text: '名称', dataIndex: 'name', flex: 1},
+                {text: '颜色', dataIndex: 'color', flex: 1},
+                {text: '尺码', dataIndex: 'size', flex: 1},
+                {text: '数量', dataIndex: 'num', flex: 1},
+                {text: '库存数', dataIndex: 'warehouse_num', flex: 1}
             ]
         }
         ];
     },
     onGoodsDeliveryNoticeGridDblClick: function (gp, record) {
 
-        var id = record.get("id"),
+        var id = record.get("eid"),
+            notice_status = record.get("notice_status"),
             me = this,
             order = gp.up("goodsdeliveryorder"),
             panel = order.down("#info_panel"),
             model = order.getViewModel();
         model.set("goods_delivery_notice_id", id);
+        model.set("notice_status", notice_status==1?true:false);
 
         model.set("notice_info", {
             notice_no: record.get("notice_no"),
@@ -420,12 +509,52 @@ Ext.define('erp.view.module.goods.GoodsController', {
         });
 
         if (panel.items.items.length > 0) {
+            var store = Ext.StoreManager.lookup("delivery_goods_notice_store");
+            store.setProxy({
+                type: 'ajax',
+                url:apiBaseUrl + '/index.php/Commodity/Distribution/getDeliveryNoticeGoods?id='+id,
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data'
+                }});
+            store.load();
             //this.lookupReference("goods_delivery_info_grid").setStore(model.get("goods_info"));
             return;
         }
-
         var items = this.getNoticeDetailItems();
         panel.add(items);
         //this.lookupReference("goods_delivery_info_grid").setStore(model.get("goods_info"));
+    },
+    saveDeliveryGoodsNotice:function(btn){
+        var me = this,
+            id = this.getViewModel().get("goods_delivery_notice_id");
+        console.log(me.products);
+        var status = btn.getText()=="申请配货"?1:0;
+        var tmp = [];
+        for(var i=0;i<me.products.length;i++){
+            tmp.push(me.products[i]);
+        }
+        Ext.Ajax.request({
+            async:true,
+            method:'POST',
+            url:apiBaseUrl + '/index.php/Commodity/Distribution/saveDeliveryGoodsNotice',
+            params:{
+                products:Ext.encode(tmp),
+                id:id,
+                status:status
+            },
+            success:function(res){
+                var json = Ext.decode(res.responseText);
+                if(!json.success){
+                    Ext.toast(json.msg,"系统提示");
+                    return;
+                }
+                Ext.toast(btn.getText()+"成功!","系统提示");
+                if(1 == status) me.getViewModel().set("notice_status",true);
+            },
+            failure:function(){
+                Ext.toast("网络链接错误,请检查网络,稍后再试!","系统提示");
+            }
+        })
     }
 });

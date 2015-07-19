@@ -27,15 +27,54 @@ Ext.define('erp.view.window.GoodsInfoWin', {
         var info = me.info;
         this.tbar = [
             '->',
-            //{
-            //    text:'上传图片'
-            //},
+            {
+                xtype:'form',
+                items:[
+                    {
+                        buttonOnly:true,
+                        hideLabel: true,
+                        width:82,
+                        buttonConfig:{
+                            text: '上传图片',
+                            iconCls: 'importIcon',
+                            margin:'5 0 0 0',
+                            ui:'default',
+                            cls:'btn-default'
+                        },
+                        xtype:'fileuploadfield',
+                        name:'goods_pic',
+                        listeners:{
+                            change:function(btn,val){
+                                var form = this.up("form").getForm();
+                                form.submit({
+                                    waitMsg:'正在上传图片...',
+                                    url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
+                                    method:'POST',
+                                    success:function(form,action){
+                                        if(!action.result.success){
+                                            Ext.toast(action.result.msg,"系统提示");
+                                            return;
+                                        }
+                                    },
+                                    failure:function(form,action){
+                                        if(action.response.status == 200){
+                                            Ext.toast(action.result.msg,"系统提示");
+                                            return;
+                                        }
+                                        Ext.toast("服务请求错误,请重试!","系统提示");
+                                    }
+                                });
+                            }
+                        }
+                    }
+                ]
+            },
             //{
             //    text: '修改'
             //},
-            //{
-            //    text:'打印吊牌'
-            //}
+            {
+                text:'打印吊牌'
+            }
         ];
         this.items = [
             {

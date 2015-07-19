@@ -21,6 +21,7 @@ Ext.define('erp.view.module.goods.GoodsModel', {
         system_style_no:'',
         no:'',
         status:'',
-        import_id:null
+        import_id:null,
+        notice_status:null
     }
 });
