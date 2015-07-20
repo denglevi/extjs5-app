@@ -11,14 +11,6 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
         'erp.view.module.purchase.CheckProductOrderInfo',
         'erp.view.module.purchase.PurchaseOrderInfo'
     ],
-
-    //config: {
-    //    control: {
-    //        'useredit button[action=save]': {
-    //            click: 'updateUser'
-    //        }
-    //    }
-    //},
     onSupplierGridDblClick:function(gp,record){
         gp.up("suppliermng").getViewModel().set("fieldDisabled",true);
         var form = gp.up("suppliermng").down("form");

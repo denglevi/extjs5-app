@@ -56,10 +56,14 @@ Ext.define('erp.view.module.goods.GoodsList', {
         var import_list_grid = Ext.create('Ext.grid.Panel', {
             title: '导入列表',
             height: '100%',
-            width: 200,
+            width: 350,
             border: true,
             columns: [
-                {text: '导入单号', dataIndex: 'no', flex: 1}
+                {text: '导入单号', dataIndex: 'no', flex: 2},
+                {text: '商品总数', dataIndex: 'goods_num', flex: 1},
+                {text: '未入库数', dataIndex: 'unimport_num', flex: 1},
+                {text: '已入库数', dataIndex: 'import_num', flex: 1}
+
             ],
             store: Ext.create('Ext.data.Store', {
                 fields: ['no', 'id'],

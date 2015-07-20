@@ -117,6 +117,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                                     url: apiBaseUrl + '/index.php/Purchasing/Buyer/importPurchaseOrderProduct',
                                     success: function (form, action) {
                                         var data = action.result.data;
+                                        console.log(data);
                                         me.products = data;
                                         var store = Ext.create('Ext.data.Store', {
                                             fields: ["style_no", "name", 'color', 'size', 'num', 'batch_price', 'total_price', 'retail_price'],
@@ -196,6 +197,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                 height: '100%',
                 sortableColumns: false,
                 columns: [
+                    {text: '品牌', dataIndex: 'brand', flex: 1},
                     {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
                     {text: '商品名称', dataIndex: 'orderinfo_name'},
                     {text: '颜色', dataIndex: 'orderinfo_color'},

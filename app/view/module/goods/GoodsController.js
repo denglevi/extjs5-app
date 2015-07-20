@@ -12,6 +12,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
         'Ext.container.Container',
         'Ext.data.Store',
         'Ext.data.StoreManager',
+        'Ext.data.proxy.Ajax',
         'Ext.data.reader.Json',
         'Ext.form.Panel',
         'Ext.form.action.Action',
@@ -26,6 +27,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
         'Ext.layout.container.VBox',
         'Ext.panel.Panel',
         'Ext.toolbar.Fill',
+        'Ext.toolbar.Toolbar',
         'Ext.window.Window',
         'erp.view.window.GoodsInfoWin',
         'erp.view.window.GoodsMenuInfoWin'

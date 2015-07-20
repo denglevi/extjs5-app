@@ -7,6 +7,7 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
     requires: [
         'Ext.data.reader.Json',
         'Ext.form.field.Text',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.goods.GoodsController',
         'erp.view.module.goods.GoodsModel'
@@ -66,7 +67,7 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
         {text: '供应商款号', dataIndex: 'supply_style_no', flex: 2},
         {text: '中文名字', dataIndex: 'name_zh', flex: 1},
         {text: '大类', dataIndex: 'large_class', flex: 1},
-        {text: '年季', dataIndex: 'year_season', flex: 1},
+        {text: '季节', dataIndex: 'year_season', flex: 1},
         {text: '品牌', dataIndex: 'brand'},
         {text: '中类代码', dataIndex: 'middle_class'},
         {text: '小类名称', dataIndex: 'small_class'},

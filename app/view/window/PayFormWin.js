@@ -71,7 +71,7 @@ Ext.define('erp.view.window.PayFormWin', {
                     }
                 },
                 {xtype:'displayfield',fieldLabel: '汇率',name: 'rate', value: rate},
-                {fieldLabel: '人民币', editable:false,name: 'RMB', allowBlank: false},
+                {fieldLabel: '人民币', editable:true,name: 'RMB', allowBlank: false},
                 {
                     fieldLabel: '付款凭证',
                     name: 'fileinfo[]',
@@ -92,7 +92,7 @@ Ext.define('erp.view.window.PayFormWin', {
             {xtype:'displayfield',fieldLabel: '汇率', name: 'rate', value: info.rate},
             {xtype:'displayfield',fieldLabel: '人民币', name: 'RMB', value: info.RMB},
             {xtype:'displayfield',fieldLabel: '付款凭证', name: 'fileinfo', value: info.fileinfo,renderer:function(val){
-                return '<a href="'+val+'">付款凭证</a>';
+                return '<a href="'+apiBaseUrl+val+'">付款凭证</a>';
             }},
             {xtype:'displayfield',fieldLabel: '备注', name: 'mark', value: info.mark,columnWidth:1}
         ];
@@ -114,7 +114,13 @@ Ext.define('erp.view.window.PayFormWin', {
                 formBind: true,
                 disabled: true,
                 handler: function () {
-                    var form = this.up('form').getForm();
+                    var form = this.up('form').getForm(),
+                        vals = form.getValues();
+                    var money = this.up('form').down("displayfield[name=money]").getValue();
+                    if(vals.RMB != money){
+                        Ext.Msg.alert('系统提示', "实际付款金额和申请金额不等!");
+                        return;
+                    }
                     if (form.isValid()) {
                         form.submit({
                             params: {

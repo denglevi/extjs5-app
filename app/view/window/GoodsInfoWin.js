@@ -8,6 +8,8 @@ Ext.define('erp.view.window.GoodsInfoWin', {
         'Ext.Img',
         'Ext.container.Container',
         'Ext.form.field.Display',
+        'Ext.form.field.File',
+        'Ext.form.field.FileButton',
         'Ext.form.field.Text',
         'Ext.layout.container.HBox',
         'Ext.layout.container.VBox',
@@ -68,6 +70,45 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                         }
                     }
                 ]
+            },
+            {
+                xtype:'filebutton',
+                text:'1111',
+                listeners:{
+                    change:function(field,val,newVal){
+                        console.log(field,newVal);
+
+                        var form = Ext.create('Ext.form.Panel',{
+                            waitMsg:'正在上传图片...',
+                            url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
+                            items:[{
+                                xtype:'fileuploadfield',
+                                name:"goods_pic",
+                                value:newVal
+                            }]
+                        });
+                        console.log(form.down("fileuploadfield").getValue());
+                        console.log(form,Ext.getDom(form.down("fileuploadfield")),form.down("fileuploadfield").getEl());
+                        form.submit({
+                            waitMsg:'正在上传图片...',
+                            url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
+                            method:'POST',
+                            success:function(form,action){
+                                if(!action.result.success){
+                                    Ext.toast(action.result.msg,"系统提示");
+                                    return;
+                                }
+                            },
+                            failure:function(form,action){
+                                if(action.response.status == 200){
+                                    Ext.toast(action.result.msg,"系统提示");
+                                    return;
+                                }
+                                Ext.toast("服务请求错误,请重试!","系统提示");
+                            }
+                        });
+                    }
+                }
             },
             //{
             //    text: '修改'

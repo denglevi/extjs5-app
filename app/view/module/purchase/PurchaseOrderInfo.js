@@ -31,13 +31,13 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         'Ext.toolbar.Toolbar',
         'Ext.window.Window',
         'erp.view.module.purchase.AddCheckProductOrder',
-        'erp.view.module.purchase.SupplierMngController',
+        //'erp.view.module.purchase.SupplierMngController',
         'erp.view.module.purchase.SupplierMngModel',
         'erp.view.window.AddLogisticsFormWin',
         'erp.view.window.AddPassCustomWin',
         'erp.view.window.PurchasePayWin'
     ],
-    controller: 'suppliermng',
+    //controller: 'suppliermng',
     viewModel: {
         type: 'suppliermng'
     },
@@ -119,11 +119,15 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 }],
                 tpl: new Ext.XTemplate(
                     '<div class="col-md-12">',
-                    '<div class="col-md-2">日期：{order_time}</div>',
-                    '<div class="col-md-2">供应商：{vendor_name}</div>',
+                    '<div class="col-md-3">日期：{order_time}</div>',
+                    '<div class="col-md-3">供应商：{vendor_name}</div>',
                     '<div class="col-md-3">订单号：{order_nos}</div>',
-                    '<div class="col-md-2">买手：{username}</div>',
+                    '<div class="col-md-3">买手：{username}</div>',
+                    '</div>',
+                    '<div class="col-md-12">',
                     '<div class="col-md-3">订单类型：{[this.getType(values.order_state)]}</div>',
+                    '<div class="col-md-3">商品数量：{product_num}</div>',
+                    '<div class="col-md-3">订单金额：{product_total_price}</div>',
                     '</div>',
                     {
                         getType: function (type) {
@@ -146,6 +150,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         var me = this,
             next_status = me.res.next_status,
             order_info = me.res.order_info,
+            product_info = me.res.product_info,
             batchs = me.res.batchs;
         if (next_status === null) return;
         var url = next_status.action == '' ? '/Purchasing/Buyer/purchasingAction' : next_status.action;
@@ -470,6 +475,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             width: '100%',
             sortableColumns: false,
             columns: [
+                {text: '品牌', dataIndex: 'brand',flex:1},
                 {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
                 {text: '商品名称', dataIndex: 'orderinfo_name'},
                 {text: '颜色', dataIndex: 'orderinfo_color'},

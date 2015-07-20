@@ -21,7 +21,7 @@ Ext.define('erp.view.main.MainController', {
         'Ext.container.Container',
         'Ext.layout.container.Accordion',
         'Ext.tree.Panel',
-        //'erp.view.module.purchase.PurchaseOrderList',
+        'erp.view.module.purchase.PurchaseOrderList',
         //'erp.view.module.purchase.LogisticsList',
     //    'erp.view.module.purchase.PassCustomList',
     //    'erp.view.module.purchase.CheckProductList',

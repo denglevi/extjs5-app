@@ -69,7 +69,7 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
                         tpl: new Ext.XTemplate(
                             '<table class="table table-bordered">',
                             '<tr><td class="col-md-3 text-right">大类</td><td class="col-md-9">{large_class}</td></tr>',
-                            '<tr><td class="col-md-3 text-right">年份</td><td>{year_season}</td></tr>',
+                            '<tr><td class="col-md-3 text-right">季节</td><td>{year_season}</td></tr>',
                             '<tr><td class="col-md-3 text-right">品牌</td><td>{brand}</td></tr>',
                             '<tr><td class="col-md-3 text-right">中类</td><td>{middle_class}</td></tr>',
                             '<tr><td class="col-md-3 text-right">小类</td><td>{small_class}</td></tr>',
@@ -84,7 +84,7 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
                         data:color,
                         tpl: new Ext.XTemplate(
                             '<table class="table table-bordered">',
-                            '<tr><td class="col-md-3 text-right">供应商颜色代码</td><td class="col-md-9">名称</td></tr>',
+                            '<tr><td class="col-md-3 text-right">国际颜色代码</td><td class="col-md-9">名称</td></tr>',
                             '<tpl for=".">',
                             '<tr><td class="col-md-3 text-right">{supply_color_no}</td><td class="col-md-9">{color}</td></tr>',
                             '</tpl>',
@@ -96,9 +96,13 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
                         data:size,
                         tpl: new Ext.XTemplate(
                             '<table class="table table-bordered">',
-                            '<tr><td class="col-md-3 text-right">代码</td><td class="col-md-9">名称</td></tr>',
+                            '<tr>',
+                            //'<td class="col-md-3 text-right">代码</td>',
+                            '<td class="col-md-9">名称</td></tr>',
                             '<tpl for=".">',
-                            '<tr><td class="col-md-3 text-right">{size}</td><td class="col-md-9">{size}</td></tr>',
+                            '<tr>',
+                            //'<td class="col-md-3 text-right">{size}</td>',
+                            '<td class="col-md-9">{size}</td></tr>',
                             '</tpl>',
                             '</table>'
                         )
