@@ -35,7 +35,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
         ];
         import_list.on("rowdblclick", function (gp, record) {
             var id = record.get("id");
-            me.getViewModel().set("import_id",id);
+            me.getViewModel().set("import_id", id);
             var store = goods_list.getStore();
             store.setProxy({
                 type: 'ajax',
@@ -59,11 +59,10 @@ Ext.define('erp.view.module.goods.GoodsList', {
             width: 350,
             border: true,
             columns: [
-                {text: '导入单号', dataIndex: 'no', flex: 2},
-                {text: '商品总数', dataIndex: 'goods_num', flex: 1},
-                {text: '未入库数', dataIndex: 'unimport_num', flex: 1},
-                {text: '已入库数', dataIndex: 'import_num', flex: 1}
-
+                {text: '导入单号', dataIndex: 'no', flex:2},
+                {text: '商品总数', dataIndex: 'goods_num', flex:1},
+                {text: '未入库数', dataIndex: 'unimport_num', flex:1},
+                {text: '已入库数', dataIndex: 'import_num', flex:1}
             ],
             store: Ext.create('Ext.data.Store', {
                 fields: ['no', 'id'],
@@ -91,7 +90,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
             flex: 1,
             height: '100%',
             title: '商品列表',
-            reference:'goods_list_grid',
+            reference: 'goods_list_grid',
             tbar: [
                 '->',
                 {
@@ -135,8 +134,8 @@ Ext.define('erp.view.module.goods.GoodsList', {
                     valueField: 'status',
                     fieldLabel: "状态",
                     name: 'status',
-                    bind:{
-                        value:'{status}'
+                    bind: {
+                        value: '{status}'
                     }
                 },
                 {
@@ -166,7 +165,8 @@ Ext.define('erp.view.module.goods.GoodsList', {
                     if (4 == val) return '<b class="text-primary">已出库</b>';
                     if (5 == val) return '<b class="text-primary">待移库</b>';
                 }
-                }
+                },
+                {text:'所在库位',dataIndex:'location_no'}
             ],
             store: 'GoodsListStore',
             bbar: ['->', {

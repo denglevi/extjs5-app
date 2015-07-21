@@ -53,15 +53,22 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
             height: '100%',
             width: 200,
             border: true,
+            enableColumnHide:false,
             sortableColumns:false,
             columns: [
-                {text: '进货单号', dataIndex: 'notice_no', flex: 1}
+                {text: '进货单号', dataIndex: 'notice_no', width:120},
+                {text: '是否验收', dataIndex: 'is_check', width:80,renderer:function(val){
+                    if(1==val) return "<b class='text-primary'>已验收</b>";
+                    return "<b class='text-danger'>未验收</b>";
+                }},
+
             ],
             store: store,
             tbar: [
                 {
                     text: '新增',
-                    glyph: 0xf067,
+                    iconCls:'addIcon',
+                    //glyph: 0xf067,
                     handler: 'addImportGoodsOrder'
                 },
                 //{

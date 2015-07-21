@@ -24,20 +24,18 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
             title:'新增进货单',
             layout:'fit',
             width:600,
-            height:300,
             items:[
                 {
                     xtype: 'form',
-                    border: true,
                     layout: 'column',
-                    bodyPadding: 5,
+                    bodyPadding: 10,
                     method: 'POST',
                     url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/addWarehouseImportGoods',
                     defaults: {
                         anchor: '100%',
                         xtype: 'textfield',
                         allowBlank: false,
-                        margin:'5 5 0 5',
+                        margin:5,
                         columnWidth:0.5
                     },
                     items: [
@@ -57,14 +55,14 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
                             fieldLabel:'渠道',
                             name:'channel'
                         },
-                        {
-                            fieldLabel: '供应商',
-                            name: 'supplier_id',
-                            xtype: 'combo',
-                            editable: false,
-                            displayField: 'name',
-                            valueField: 'id'
-                        },
+                        //{
+                        //    fieldLabel: '供应商',
+                        //    name: 'supplier_id',
+                        //    xtype: 'combo',
+                        //    editable: false,
+                        //    displayField: 'name',
+                        //    valueField: 'id'
+                        //},
                         {
                             fieldLabel: '品牌',
                             name: 'brand_id',
@@ -84,7 +82,9 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
                         {
                             fieldLabel:'摘要',
                             xtype:'textarea',
-                            name:'warehouse_location_id'
+                            name:'warehouse_location_id',
+                            columnWidth:1,
+                            allowBlank:true
                         }
                     ],
                     buttons: [
@@ -104,10 +104,15 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
                                     form.submit({
                                         waitMsg: '正在新增...',
                                         success: function (form, action) {
-                                            Ext.data.StoreManager.lookup("importGoodsStore").load();
+                                            //Ext.data.StoreManager.lookup("importGoodsStore").load();
+                                            if(!action.result.success){
+                                                Ext.Msg.alert('失败', action.result.msg);
+                                                return;
+                                            }
+                                            me.fireEvent("addImportGoodsInfo",action.result);
                                             me.destroy();
                                             //me.down("grid").getStore().load();
-                                            console.log(action.result);
+                                            //console.log(action.result);
                                             //Ext.Msg.alert('系统提示', '新增订单成功');
                                         },
                                         failure: function (form, action) {
@@ -145,10 +150,10 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
                                 fields: ['id', 'storage_name'],
                                 data: res.warehouse
                             }));
-                            form.down("combo[name=supplier_id]").setStore(Ext.create('Ext.data.Store', {
-                                fields: ['id', 'name'],
-                                data: res.supplier
-                            }));
+                            //form.down("combo[name=supplier_id]").setStore(Ext.create('Ext.data.Store', {
+                            //    fields: ['id', 'name'],
+                            //    data: res.supplier
+                            //}));
                         }
                     });
                 }

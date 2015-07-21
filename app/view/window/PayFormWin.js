@@ -36,7 +36,8 @@ Ext.define('erp.view.window.PayFormWin', {
                     disabled: false,
                     margin: 5,
                     columnWidth:0.5,
-                    labelAlign:'right'
+                    labelAlign:'right',
+                    labelWidth:110
                 },
                 items: this.getFieldItems(rate),
                 buttons: this.getBtns(rate)
@@ -51,7 +52,7 @@ Ext.define('erp.view.window.PayFormWin', {
             {xtype:'displayfield',fieldLabel: '收款公司', name: 'receive_money_company', value: record.get("receive_money_company")},
             {xtype:'displayfield',fieldLabel: '公司账号', name: 'company_bank_no', value: record.get("company_bank_no")},
             {xtype:'displayfield',fieldLabel: '开户行', name: 'company_open_bank', value: record.get("company_open_bank")},
-            {xtype:'displayfield',fieldLabel: '付款金额', name: 'money', value: record.get("money")},
+            {xtype:'displayfield',fieldLabel: '付款金额(欧)', name: 'money', value: record.get("money")},
             {xtype:'displayfield',fieldLabel: '最后付款日期', name: 'last_pay_day', value: record.get("last_pay_day")},
             {xtype:'displayfield',fieldLabel: '用途', name: 'pay_function', value: record.get("pay_function")}
         ];
@@ -59,7 +60,7 @@ Ext.define('erp.view.window.PayFormWin', {
         if (this.status == 0) {
             var newFields = [
                 {
-                    fieldLabel: '欧元金额', name: 'EUR', allowBlank: false,xtype:'numberfield',
+                    fieldLabel: '实际付款金额(欧)', name: 'EUR', allowBlank: false,xtype:'numberfield',
                     listeners: {
                         blur: function () {
                             var form = me.down("form"),
@@ -71,7 +72,7 @@ Ext.define('erp.view.window.PayFormWin', {
                     }
                 },
                 {xtype:'displayfield',fieldLabel: '汇率',name: 'rate', value: rate},
-                {fieldLabel: '人民币', editable:true,name: 'RMB', allowBlank: false},
+                {fieldLabel: '人民币', editable:false,name: 'RMB', allowBlank: false},
                 {
                     fieldLabel: '付款凭证',
                     name: 'fileinfo[]',
@@ -81,7 +82,7 @@ Ext.define('erp.view.window.PayFormWin', {
                     disabled: false,
                     editable:true,
                 },
-                {fieldLabel: '备注', name: 'mark', xtype: 'textarea', allowBlank: false,columnWidth:1}
+                {fieldLabel: '备注', name: 'mark', xtype: 'textarea', allowBlank: true,columnWidth:1}
             ];
             return Ext.Array.merge(normal,newFields);
         }
@@ -117,8 +118,8 @@ Ext.define('erp.view.window.PayFormWin', {
                     var form = this.up('form').getForm(),
                         vals = form.getValues();
                     var money = this.up('form').down("displayfield[name=money]").getValue();
-                    if(vals.RMB != money){
-                        Ext.Msg.alert('系统提示', "实际付款金额和申请金额不等!");
+                    if(vals.EUR != money){
+                        Ext.Msg.alert('系统提示', "实际付款金额和申请付款金额不等!");
                         return;
                     }
                     if (form.isValid()) {

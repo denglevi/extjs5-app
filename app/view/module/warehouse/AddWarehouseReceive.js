@@ -54,7 +54,8 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                         columns: [
                             {text: '装箱单号', dataIndex: 'packing_no', flex: 1},
                             {text: '箱号', dataIndex: 'box_no', flex: 1},
-                            {text: '数量', dataIndex: 'num', flex: 1, editor: {xtype: 'numberfield', minValue: 0}},
+                            {text: '发货数', dataIndex: 'send_num', flex: 1},
+                            {text: '收货数', dataIndex: 'num', flex: 1, editor: {xtype: 'numberfield', minValue: 0}},
                             {
                                 text: '差异数', dataIndex: 'diff_num', flex: 1,
                                 renderer: function (val) {

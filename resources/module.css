@@ -168,6 +168,10 @@
     background-size: contain;
     background-image: url("images/scan.png");
 }
+.saveIcon{
+    background-size: contain;
+    background-image: url("images/save.png");
+}
 .columnAction{
     margin-left:5px;
 }

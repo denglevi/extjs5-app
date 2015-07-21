@@ -116,25 +116,41 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
             {fieldLabel: '报关公司', name: 'cu_name',value:record.get("cu_name")},
             {fieldLabel: '报关公司联系人', name: 'cu_contaits',value:record.get("cu_contaits")},
             {fieldLabel: '报关公司联系电话', name: 'cu_tel',value:record.get("cu_tel")},
-            {fieldLabel: '报关公司联系地址', name: 'cu_address',xtype:'textarea',value:record.get("cu_address")}
+            {fieldLabel: '报关公司联系地址', name: 'cu_address',xtype:'textarea',value:record.get("cu_address")},
+            {fieldLabel:'备注',name:'mark',xtype:'textarea',allowBlank:true,editable:true}
         ];
 
         return fields;
     },
     getTabItems:function(){
+        var info = [];
        var items = [
             {
                 title:'操作详情',
-                html:'xxxxxxx'
+                data:info,
+                tpl: new Ext.XTemplate(
+                    '<table class="table table-bordered">',
+                    '<tr><td class="col-md-3 text-right">操作</td><td class="col-md-3">操作人</td><td class="col-md-3">备注</td><td class="col-md-3">操作时间</td></tr>',
+                    '<tpl for=".">',
+                    '<tr><td class="col-md-3 text-right">{supply_color_no}</td><td class="col-md-9">{color}</td></tr>',
+                    '</tpl>',
+                    '</table>'
+                )
             },
+            //{
+            //    title:'关税信息'
+            //},
             {
-                title:'关税信息'
-            },
-            {
-                title:'备注信息'
-            },
-            {
-                title:'文件下载'
+                title:'文件下载',
+                data:info,
+                tpl: new Ext.XTemplate(
+                    '<table class="table table-bordered">',
+                    '<tr><td class="col-md-3 text-right">文件名</td><td class="col-md-9">文件下载地址</td></tr>',
+                    '<tpl for=".">',
+                    '<tr><td class="col-md-3 text-right">{supply_color_no}</td><td class="col-md-9">{color}</td></tr>',
+                    '</tpl>',
+                    '</table>'
+                )
             }
         ];
         return items;
@@ -169,6 +185,7 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                             params:{
                                 id:id,
                                 next_status:status_id,
+                                status:me.record.get('cu_status'),
                                 is_last_status:is_last_status
                             },
                             waitMsg: '正在更新...',

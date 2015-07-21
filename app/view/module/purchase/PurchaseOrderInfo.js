@@ -160,14 +160,16 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             Ext.each(product_info, function (product) {
                 total += parseFloat(product.orderinfo_nprice);
             });
-            Ext.create('erp.view.window.PurchasePayWin', {
+            var win = Ext.create('erp.view.window.PurchasePayWin', {
                 title: next_status.name,
                 status_id: order_info.order_status,
                 order_no: order_info.order_nos,
                 batch_no: batchs[0].batch_no,
                 url: url,
                 total: total
-            }).show();
+            });
+            win.on("beforedestroy",me.changeOrderData,me);
+            win.show();
         } else if ("申请部分货款" == next_status.name) {
             var store = null;
             var win = Ext.create('Ext.window.Window', {
@@ -412,6 +414,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 title: next_status.name,
                 order_no: order_info.order_nos,
                 batch_no: batchs[0].batch_no,
+                order_info:order_info,
                 xtype: "addcheckproductorder",
                 closable: true
             };
@@ -423,6 +426,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 need_notice: need_notice,
                 order_no: order_info.order_nos,
                 batch_no: batchs[0].batch_no,
+                order_info:order_info,
                 url: url
             });
             win.show();

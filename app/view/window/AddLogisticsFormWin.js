@@ -11,6 +11,7 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
         'Ext.form.RadioGroup',
         'Ext.form.field.ComboBox',
         'Ext.form.field.Date',
+        'Ext.form.field.Hidden',
         'Ext.form.field.Text',
         'Ext.form.field.TextArea',
         'Ext.layout.container.Column',
@@ -50,10 +51,10 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
                             res = text.data;
                             console.log(res, this);
                             var form = me.down("form");
-                            form.down("combo[name=supplier_id]").setStore(Ext.create('Ext.data.Store', {
-                                fields: ['id_no', 'name'],
-                                data: res.supplier
-                            }));
+                            //form.down("combo[name=supplier_id]").setStore(Ext.create('Ext.data.Store', {
+                            //    fields: ['id_no', 'name'],
+                            //    data: res.supplier
+                            //}));
                             form.down("combo[name=logistics_company]").setStore(Ext.create('Ext.data.Store', {
                                 fields: ['id', 'name'],
                                 data: res.logistics_company
@@ -66,9 +67,11 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
         this.callParent();
     },
     getFieldItems: function (batch_no,order_no) {
+        var me = this;
         var fields = [
             {fieldLabel: '发货日期', name: 'date', xtype: 'datefield', format: 'Y-m-d', value: new Date(),},
-            {fieldLabel: '供应商', name: 'supplier_id',editable:false, xtype: 'combo',displayField: 'name',valueField: 'id_no'},
+            {fieldLabel: '供应商', name: 'supplier_id', xtype: 'hidden',value:me.order_info.vendor_id},
+            //{fieldLabel: '供应商', name: 'supplier_id',editable:false, xtype: 'combo',displayField: 'name',valueField: 'id_no'},
             {fieldLabel: '供货单号', name: 'batch_no',value:batch_no,editable:false},
             {fieldLabel: '采购单号', name: 'order_no',value:order_no,editable:false},
             {fieldLabel: '物流单号', name: 'logistics_no'},

@@ -58,18 +58,18 @@ Ext.define('erp.view.module.warehouse.WarehouseExhibitGoods', {
                 {text: '上架单号', dataIndex: 'no', flex: 1}
             ],
             store: store,
-            tbar: [
-                {
-                    text: '新增',
-                    glyph: 0xf067,
-                    handler: 'addExhibitGoodsOrder'
-                },
+            //tbar: [
+            //    {
+            //        text: '新增',
+            //        glyph: 0xf067,
+            //        handler: 'addExhibitGoodsOrder'
+            //    },
                 //{
                 //    text: '删除',
                 //    glyph: 0xf1f8,
                 //    handler:'deletePurchaseOrder'
                 //}
-            ],
+            //],
             //bbar: ['->', {
             //    xtype: 'pagingtoolbar',
             //    store: store,

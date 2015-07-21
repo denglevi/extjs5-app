@@ -12,6 +12,7 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
         'Ext.form.field.ComboBox',
         'Ext.form.field.Date',
         'Ext.form.field.File',
+        'Ext.form.field.Hidden',
         'Ext.form.field.Text',
         'Ext.grid.Panel',
         'Ext.layout.container.Anchor',
@@ -21,28 +22,28 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
     initComponent: function () {
         var me = this, res;
         this.layout = 'hbox';
-        this.listeners = {
-            afterrender: function () {
+        //this.listeners = {
+            //afterrender: function () {
                 //getSupplierAndBuyer
-                Ext.Ajax.request({
-                    async: true,
-                    url: apiBaseUrl + '/index.php/Purchasing/Buyer/getSupplierAndBuyer',
-                    success: function (response) {
-                        var text = Ext.decode(response.responseText);
-                        res = text.data;
-                        var form = me.down("form");
-                        form.down("combo[name=buyer]").setStore(Ext.create('Ext.data.Store', {
-                            fields: ['id', 'username'],
-                            data:res.buyer
-                        }));
-                        form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
-                            fields: ['id_no', 'name'],
-                            data:res.supplier
-                        }));
-                    }
-                });
-            }
-        }
+                //Ext.Ajax.request({
+                //    async: true,
+                //    url: apiBaseUrl + '/index.php/Purchasing/Buyer/getSupplierAndBuyer',
+                //    success: function (response) {
+                //        var text = Ext.decode(response.responseText);
+                //        res = text.data;
+                //        var form = me.down("form");
+                //        form.down("combo[name=buyer]").setStore(Ext.create('Ext.data.Store', {
+                //            fields: ['id', 'username'],
+                //            data:res.buyer
+                //        }));
+                //        form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
+                //            fields: ['id_no', 'name'],
+                //            data:res.supplier
+                //        }));
+                //    }
+                //});
+            //}
+        //}
         this.items = [
             {
                 xtype: 'form',
@@ -81,21 +82,26 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                         value:new Date()
                     },
                     {
-                        fieldLabel: '供应商',
-                        name: 'supplier',
-                        xtype: 'combo',
-                        editable: false,
-                        displayField: 'name',
-                        valueField: 'id_no'
+                        xtype:'hidden',
+                        name:'supplier',
+                        value:me.order_info.vendor_id
                     },
-                    {
-                        fieldLabel: '买手',
-                        name: 'buyer',
-                        xtype: 'combo',
-                        editable: false,
-                        displayField: 'username',
-                        valueField: 'id',
-                    },
+                    //{
+                    //    fieldLabel: '供应商',
+                    //    name: 'supplier',
+                    //    xtype: 'combo',
+                    //    editable: false,
+                    //    displayField: 'name',
+                    //    valueField: 'id_no'
+                    //},
+                    //{
+                    //    fieldLabel: '买手',
+                    //    name: 'buyer',
+                    //    xtype: 'combo',
+                    //    editable: false,
+                    //    displayField: 'username',
+                    //    valueField: 'id',
+                    //},
                     {
                         xtype: 'filefield',
                         name: 'excel_file',
@@ -125,7 +131,7 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                                             height: '100%',
                                             sortableColumns: false,
                                             columns:[
-                                                {text:'款号',dataIndex:'no',flex:1},
+                                                {text:'国际款号',dataIndex:'no',flex:1},
                                                 {text:'差异数',dataIndex:'num',flex:1}
                                             ],
                                             store:Ext.create('Ext.data.Store', {

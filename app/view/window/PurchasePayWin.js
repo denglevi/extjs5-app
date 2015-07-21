@@ -106,7 +106,6 @@ Ext.define('erp.view.window.PurchasePayWin',{
                                     },
                                     waitMsg:'正在提交...',
                                     success: function (form, action) {
-                                        console.log(action.result);
                                         me.destroy();
                                     },
                                     failure: function (form, action) {

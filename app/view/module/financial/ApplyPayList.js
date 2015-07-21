@@ -60,6 +60,8 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
                 win.show();
                 win.on("beforedestroy",function(){
                     me.getStore().load();
+                },{
+                    single:true
                 });
             }
         }

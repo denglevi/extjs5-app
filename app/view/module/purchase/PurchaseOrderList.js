@@ -15,6 +15,15 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
     viewModel: {
         type: 'suppliermng'
     },
+    initComponent:function(args){
+        var me = this;
+        this.on("afterrender",function(){me.getStore().load();},{single:true});
+
+        this.callParent(args);
+    },
+    listeners:{
+        rowdblclick:"onPurchaseOrderGridDblClick"
+    },
     sortableColumns:false,
     selModel: 'checkboxmodel',   //选择框
     title: '采购单列表',
@@ -66,11 +75,5 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
         {text: '状态', dataIndex: 'status_name'},
         {text: '提交日期', dataIndex: 'order_time', flex: 2}
     ],
-    store: 'PurchaseOrderListStore',
-    listeners: {
-        afterrender: function () {
-            this.getStore().load();
-        },
-        rowdblclick: 'onPurchaseOrderGridDblClick'
-    }
+    store: 'PurchaseOrderListStore'
 });

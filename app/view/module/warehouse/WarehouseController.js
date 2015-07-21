@@ -44,7 +44,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         if (1 == record.get("status")) {
             title = "查看收货信息";
         } else {
-            title = "导入收货信息";
+            title = "填写收货信息";
         }
         gp.up('tabpanel').setActiveTab({
             xtype: 'addwarehousereceive',
@@ -56,11 +56,13 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
     onWarehouseImportListGridDblClick: function (gp, record) {
         var id = record.get("id"),
             me = this,
+            is_check = record.get("is_check") == 1?true:false,
             batch_no = record.get("order_no"),
             warehouseimportgoods = gp.up("warehouseimportgoods"),
             panel = warehouseimportgoods.down("panel[name=info]"),
             model = warehouseimportgoods.getViewModel();
-        model.set("import_goods_id",id);
+        model.set("import_goods_id", id);
+        model.set("is_check", is_check);
         this.getImportGoodsData(id, batch_no, model);
 
         if (panel.items.items.length > 0) {
@@ -95,13 +97,33 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
 
     },
     addImportGoodsOrder: function (btn) {
-        Ext.create('erp.view.window.AddWarehouseImportGoodsWin').show();
-        return;
-        btn.up("tabpanel").setActiveTab({
-            xtype: 'addimportgoodsorder',
-            title: "新增进货单",
-            closable: true
+        var me = this, warehouseimportgoods = this.getView();
+        var win = Ext.create('erp.view.window.AddWarehouseImportGoodsWin');
+        win.on("addImportGoodsInfo", function (res) {
+            Ext.data.StoreManager.lookup("importGoodsStore").load();
+            //添加进货详单
+            var id = res.data.id,
+                batch_no = res.data.batch_no,
+                panel = warehouseimportgoods.down("panel[name=info]"),
+                model = warehouseimportgoods.getViewModel();
+            model.set("import_goods_id", id);
+            me.getImportGoodsData(id, batch_no, model);
+
+            if (panel.items.items.length > 0) {
+                me.lookupReference("import_goods_info").setStore(model.get("goods_info"));
+                me.lookupReference("purchase_goods_info").setStore(model.get("goods_info_data"));
+                me.lookupReference("import_goods_diff").setStore(model.get("goods_info_diff"));
+                return;
+            }
+
+            var items = me.getDetailItems(id, batch_no, model);
+            panel.add(items);
+            me.lookupReference("import_goods_info").setStore(model.get("goods_info"));
+            me.lookupReference("purchase_goods_info").setStore(model.get("goods_info_data"));
+            me.lookupReference("import_goods_diff").setStore(model.get("goods_info_diff"));
+
         });
+        win.show();
     },
     getImportGoodsData: function (id, batch_no, model) {
 
@@ -114,7 +136,6 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 batch_no: batch_no
             },
             success: function (response) {
-                //myMask.destroy( );
                 res = Ext.decode(response.responseText);
             }
         });
@@ -193,43 +214,20 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             ),
             bbar: [
                 '->', {
-                    text: '进货',
-                    glyph: 0xf067,
+                    text: '入库',
+                    iconCls: 'scanIcon',
+                    bind:{
+                      hidden:'{is_check}'
+                    },
+                    //glyph: 0xf067,
                     handler: function () {
                         var win = Ext.create('Ext.window.Window', {
                             title: '扫货',
                             width: 500,
-                            height: 150,
+                            modal:true,
                             resizable: false,
                             layout: 'anchor',
-                            bodyPadding: 20,
-                            buttons: [
-                                {
-                                    text: '保存',
-                                    handler: function () {
-                                        console.log(nos.length);
-                                        Ext.Ajax.request({
-                                            async: true,
-                                            url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/importGoods',
-                                            params: {
-                                                nos: nos.join(","),
-                                                id: model.get("import_goods_id")
-                                            },
-                                            success: function (response) {
-                                                var text = Ext.decode(response.responseText);
-                                                console.log(text);
-                                                if (!text.success) {
-                                                    Ext.toast(text.msg, "系统提示", 't');
-                                                    return;
-                                                }
-                                                nos = [];
-                                                win.destroy();
-                                                me.getImportGoodsData(id, batch_no, model);
-                                            }
-                                        });
-                                    }
-                                }
-                            ],
+                            bodyPadding: 10,
                             items: [
                                 {
                                     xtype: 'textfield',
@@ -279,6 +277,64 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
 
                         win.show();
                     }
+                },
+                {
+                    text: '保存',
+                    bind:{
+                        hidden:'{is_check}'
+                    },
+                    iconCls: 'saveIcon',
+                    handler: function () {
+                        console.log(nos.length);
+                        Ext.Ajax.request({
+                            async: true,
+                            url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/importGoods',
+                            params: {
+                                nos: nos.join(","),
+                                id: model.get("import_goods_id")
+                            },
+                            success: function (response) {
+                                var text = Ext.decode(response.responseText);
+                                console.log(text);
+                                if (!text.success) {
+                                    Ext.toast(text.msg, "系统提示", 't');
+                                    return;
+                                }
+                                nos = [];
+                                me.getImportGoodsData(id, batch_no, model);
+                                Ext.toast("进货单保存成功", "系统提示");
+                            }
+                        });
+                    }
+                },
+                {
+                    text:'验收',
+                    bind:{
+                        hidden:'{is_check}'
+                    },
+                    handler: function () {
+                        console.log(nos.length);
+                        Ext.Ajax.request({
+                            async: true,
+                            url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/checkImportGoodsOrder',
+                            params: {
+                                nos: nos.join(","),
+                                id: model.get("import_goods_id")
+                            },
+                            success: function (response) {
+                                var text = Ext.decode(response.responseText);
+                                console.log(text);
+                                if (!text.success) {
+                                    Ext.toast(text.msg, "系统提示", 't');
+                                    return;
+                                }
+                                nos = [];
+                                model.set("is_check",true);
+                                me.getImportGoodsData(id, batch_no, model);
+                                Ext.toast("进货单验收成功", "系统提示");
+                            }
+                        });
+                    }
                 }
             ]
         }, {
@@ -302,7 +358,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         {text: '颜色名称', dataIndex: 'color_name'},
                         {text: '国际颜色代码', dataIndex: 'supply_color_no'},
                         {text: '尺码', dataIndex: 'size'},
-                        {text: '单价', dataIndex: 'retail_price', flex: 1}
+                        {text: '吊牌价', dataIndex: 'retail_price', flex: 1}
                     ],
                     //bind: {
                     //    store: '{goods_info}'
@@ -571,7 +627,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         {text: '颜色名称', dataIndex: 'color_name'},
                         {text: '国际颜色代码', dataIndex: 'supply_color_no'},
                         {text: '尺码', dataIndex: 'size'},
-                        {text: '单价', dataIndex: 'retail_price', flex: 1}
+                        {text: '单价', dataIndex: 'retail_price', flex: 1},
+                        {text:'所在库位',dataIndex:'location'}
                     ],
                     bind: {
                         store: '{exhibit_order}'
@@ -588,43 +645,44 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         {text: '颜色名称', dataIndex: 'color_name'},
                         {text: '国际颜色代码', dataIndex: 'supply_color_no'},
                         {text: '尺码', dataIndex: 'size'},
-                        {text: '单价', dataIndex: 'retail_price', flex: 1}
+                        {text: '单价', dataIndex: 'retail_price', flex: 1},
+                        {text:'是否上架',dataIndex:'is_exhibit'}
                     ],
                     bind: {
                         store: '{import_order}'
                     }
                 },
-                {
-                    title: '差异数',
-                    columns: [
-                        {text: '唯一码', dataIndex: 'no', flex: 1, tdCls: 'text-danger'},
-                        {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
-                        {text: '名称', dataIndex: 'name_zh'},
-                        {text: '系统颜色代码', dataIndex: 'color'},
-                        {text: '颜色名称', dataIndex: 'color_name'},
-                        {text: '国际颜色代码', dataIndex: 'supply_color_no'},
-                        {text: '尺码', dataIndex: 'size'},
-                        {text: '单价', dataIndex: 'retail_price', flex: 1}
-                    ],
-                    bind: {
-                        store: '{exhibit_diff}'
-                    }
-                },
                 //{
-                //    title: '操作日志',
-                //    xtype: 'grid',
-                //    name: 'goods_info_log',
-                //    sortableColumns: false,
-                //    scrollable: 'y',
+                //    title: '差异数',
                 //    columns: [
-                //        {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
-                //        {text: '操作', dataIndex: 'orderinfo_name'},
-                //        {text: '操作人', dataIndex: 'orderinfo_color'}
+                //        {text: '唯一码', dataIndex: 'no', flex: 1, tdCls: 'text-danger'},
+                //        {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
+                //        {text: '名称', dataIndex: 'name_zh'},
+                //        {text: '系统颜色代码', dataIndex: 'color'},
+                //        {text: '颜色名称', dataIndex: 'color_name'},
+                //        {text: '国际颜色代码', dataIndex: 'supply_color_no'},
+                //        {text: '尺码', dataIndex: 'size'},
+                //        {text: '单价', dataIndex: 'retail_price', flex: 1}
                 //    ],
                 //    bind: {
-                //        store: '{goods_info_log}'
+                //        store: '{exhibit_diff}'
                 //    }
-                //}
+                //},
+                {
+                    title: '操作日志',
+                    xtype: 'grid',
+                    name: 'goods_info_log',
+                    sortableColumns: false,
+                    scrollable: 'y',
+                    columns: [
+                        {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
+                        {text: '操作', dataIndex: 'orderinfo_name'},
+                        {text: '操作人', dataIndex: 'orderinfo_color'}
+                    ],
+                    bind: {
+                        store: '{goods_info_log}'
+                    }
+                }
             ]
         }]
     },
@@ -655,7 +713,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         model.set("exhibit_info", info);
         var import_order = res.data.import_order;
         var exhibit_order = res.data.exhibit_order;
-        var exhibit_diff = res.data.exhibit_diff;
+        //var exhibit_diff = res.data.exhibit_diff;
         var import_order = Ext.create('Ext.data.Store', {
             fields: [],
             data: import_order
@@ -666,14 +724,14 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             data: exhibit_order
         });
 
-        var exhibit_diff = Ext.create('Ext.data.Store', {
-            fields: [],
-            data: exhibit_diff
-        });
+        //var exhibit_diff = Ext.create('Ext.data.Store', {
+        //    fields: [],
+        //    data: exhibit_diff
+        //});
 
         model.set("import_order", import_order);
         model.set("exhibit_order", exhibit_order);
-        model.set("exhibit_diff", exhibit_diff);
+        //model.set("exhibit_diff", exhibit_diff);
         return true;
     },
     onWarehouseListGridDblClick: function (gp, record) {
@@ -893,22 +951,23 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                     var store = grid.getStore();
                                     var items = store.getData().items;
                                     var goods = [];
-                                    for(var i=0;i<items.length;++i){
+                                    for (var i = 0; i < items.length; ++i) {
                                         var item = items[i];
-                                        if(item.get("mark") !== 0) continue;
+                                        if (item.get("mark") !== 0) continue;
                                         goods.push({
-                                            goods_no:item.get("goods_no"),
-                                            move_in_location:item.get("move_in_location"),
-                                            move_out_location:item.get("move_out_location")
+                                            goods_no: item.get("goods_no"),
+                                            move_in_location: item.get("move_in_location"),
+                                            move_out_location: item.get("move_out_location"),
+                                            move_in_location_id:item.get("move_in_location_id")
                                         });
                                     }
-                                    console.log(goods,id);
+                                    console.log(goods, id);
                                     Ext.Ajax.request({
                                         async: true,
                                         url: apiBaseUrl + '/index.php/Warehouse/Manage/saveMoveLocationGoods',
                                         params: {
                                             id: model.get("move_location_order_id"),
-                                            status:0,
+                                            status: 0,
                                             data: Ext.encode(goods)
                                         },
                                         success: function (response) {
@@ -930,13 +989,13 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                     var store = grid.getStore();
                                     var items = store.getData().items;
                                     var goods = [];
-                                    for(var i=0;i<items.length;++i){
+                                    for (var i = 0; i < items.length; ++i) {
                                         var item = items[i];
-                                        if(item.get("mark") !== 0) continue;
+                                        if (item.get("mark") !== 0) continue;
                                         goods.push({
-                                            goods_no:item.get("goods_no"),
-                                            move_in_location:item.get("move_in_location"),
-                                            move_out_location:item.get("move_out_location"),
+                                            goods_no: item.get("goods_no"),
+                                            move_in_location: item.get("move_in_location"),
+                                            move_out_location: item.get("move_out_location"),
                                         });
                                     }
                                     Ext.Ajax.request({
@@ -944,7 +1003,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                         url: apiBaseUrl + '/index.php/Warehouse/Manage/saveMoveLocationGoods',
                                         params: {
                                             id: model.get("move_location_order_id"),
-                                            status:1,
+                                            status: 1,
                                             data: Ext.encode(goods)
                                         },
                                         success: function (response) {
@@ -955,7 +1014,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                 return;
                                             }
                                             Ext.toast("提交成功", "系统提示", 't');
-                                            model.set("move_location_order_status",1);
+                                            model.set("move_location_order_status", 1);
                                             gp.getStore().load();
                                         }
                                     });
@@ -969,9 +1028,9 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                     title: '移位商品列表',
                     flex: 1,
                     width: '100%',
-                    reference:'move_location_goods_gird',
-                    enableRemoveColumn:false,
-                    sortableColumns:false,
+                    reference: 'move_location_goods_gird',
+                    enableRemoveColumn: false,
+                    sortableColumns: false,
                     columns: [
                         {text: '唯一码', dataIndex: 'goods_no', flex: 1},
                         {text: '移出库位', dataIndex: 'move_out_location'},
@@ -1042,7 +1101,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             }
         });
     },
-    onWarehouseDeliveryGoodsOrderGridDblClick:function(gp,record){
+    onWarehouseDeliveryGoodsOrderGridDblClick: function (gp, record) {
 
         var id = record.get("id"),
             me = this,
@@ -1071,7 +1130,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         panel.add(items);
         //this.lookupReference("goods_delivery_info_grid").setStore(model.get("goods_info"));
     },
-    getWarehouseDeliveryGoodsDetailItems:function(){
+    getWarehouseDeliveryGoodsDetailItems: function () {
         return [{
             xtype: 'panel',
             name: "info",
@@ -1099,10 +1158,10 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 '->', {
                     text: '扫描货品',
                     iconCls: 'scanIcon'
-                },{
-                    text:'保存'
-                },{
-                    text:'提交配货'
+                }, {
+                    text: '保存'
+                }, {
+                    text: '提交配货'
                 }
             ]
         }, {
@@ -1132,7 +1191,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                             {text: '库存数', dataIndex: 'no', flex: 1},
                             {text: '数据状态', dataIndex: 'no', flex: 1}
                         ];
-                    } else if("商品通知信息" == text){
+                    } else if ("商品通知信息" == text) {
                         columns = [
                             {text: '商品代码', dataIndex: 'no', flex: 1},
                             {text: '国际码', dataIndex: 'no', flex: 1},
@@ -1142,7 +1201,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                             {text: '数量', dataIndex: 'no', flex: 1},
                             {text: '库位', dataIndex: 'no', flex: 1}
                         ];
-                    } else if("差异数" == text){
+                    } else if ("差异数" == text) {
                         columns = [
                             {text: '商品代码', dataIndex: 'no', flex: 1},
                             {text: '国际码', dataIndex: 'no', flex: 1},
@@ -1153,7 +1212,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                             {text: '库位', dataIndex: 'no', flex: 1},
                             {text: '差异数', dataIndex: 'no', flex: 1}
                         ];
-                    }else {
+                    } else {
                         columns = [
                             {text: '操作类型', dataIndex: 'no', flex: 1},
                             {text: '操作人', dataIndex: 'no', flex: 1},
