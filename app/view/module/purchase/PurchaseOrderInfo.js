@@ -443,8 +443,10 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             win.show();
         } else if ("完成报关" == next_status.name || "收货确认" == next_status.name || "完成付款" == next_status.name) {
             me.handlerPurchaseOrder(order_info.order_nos, batchs[0].batch_no);
+            me.changeOrderData();
         } else if ("关单" == next_status.name) {
             me.uploadCloseFile(order_info.order_nos);
+            me.changeOrderData();
         }
     },
     changeOrderData:function(){
@@ -568,16 +570,19 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             win.on("beforedestroy",function(){
                 me.destroy();
             });
+            win.on("beforedestroy",me.changeOrderData,me);
             win.show();
         } else if ("申请报关付款" == status_name) {
-            Ext.create('erp.view.window.PurchasePayWin', {
+            var win = Ext.create('erp.view.window.PurchasePayWin', {
                 title: status_name,
                 status_id: bat.batch_status,
                 order_no: bat.order_no,
                 batch_no: bat.batch_no,
                 url: url,
                 total: 0
-            }).show();
+            });
+            win.on("beforedestroy",me.changeOrderData,me);
+            win.show();
         }
     },
     getBarContainer: function (batchs,order_info) {

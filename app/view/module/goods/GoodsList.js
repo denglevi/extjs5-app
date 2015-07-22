@@ -166,6 +166,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
                     if (5 == val) return '<b class="text-primary">待移库</b>';
                 }
                 },
+                {text:'所在仓库',dataIndex:'warehouse_no'},
                 {text:'所在库位',dataIndex:'location_no'}
             ],
             store: 'GoodsListStore',

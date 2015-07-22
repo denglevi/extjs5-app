@@ -18,6 +18,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
         'Ext.layout.container.Anchor',
         'Ext.layout.container.HBox',
         'Ext.panel.Panel',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Toolbar',
         'Ext.window.Window'
     ],
@@ -294,6 +295,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                                                 Ext.toast(no + text.msg, "系统提示", 't');
                                                 return;
                                             }
+                                            store.load();
                                             Ext.toast("保存成功", "系统提示", 't');
                                         }
                                     });
@@ -334,7 +336,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                                             }
                                             Ext.toast("提交成功", "系统提示", 't');
                                             model.set("move_warehouse_notice_status", 1);
-                                            gp.getStore().load();
+                                            store.load();
                                         }
                                     });
                                 }
@@ -352,9 +354,9 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                     sortableColumns: false,
                     columns: [
                         {text: '唯一码', dataIndex: 'goods_no', flex: 1},
-                        {text: '移出仓库', dataIndex: 'move_warehouse_out_warehouse'},
-                        {text: '移出库位', dataIndex: 'move_warehouse_out_location'},
-                        {text: '录入时间', dataIndex: 'create_time', format: 'data(Y-m-d)', flex: 1}
+                        {text: '移出仓库', dataIndex: 'move_out_warehouse'},
+                        {text: '移出库位', dataIndex: 'move_out_location'},
+                        {text: '录入时间', dataIndex: 'import_time',flex: 1}
                     ],
                     listeners: {
                         afterrender: function () {

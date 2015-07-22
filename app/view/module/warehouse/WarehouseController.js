@@ -54,7 +54,9 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         });
     },
     onWarehouseImportListGridDblClick: function (gp, record) {
+        console.log(record);
         var id = record.get("id"),
+            import_warehouse_id = record.get("import_warehouse_id"),
             me = this,
             is_check = record.get("is_check") == 1?true:false,
             batch_no = record.get("order_no"),
@@ -63,20 +65,26 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             model = warehouseimportgoods.getViewModel();
         model.set("import_goods_id", id);
         model.set("is_check", is_check);
+        model.set("import_warehouse_id", import_warehouse_id);
         this.getImportGoodsData(id, batch_no, model);
 
         if (panel.items.items.length > 0) {
-            this.lookupReference("import_goods_info").setStore(model.get("goods_info"));
-            this.lookupReference("purchase_goods_info").setStore(model.get("goods_info_data"));
-            this.lookupReference("import_goods_diff").setStore(model.get("goods_info_diff"));
+            var grid = panel.down("#import_info_grid")
+            store = model.get("goods_info")
+            btn = panel.down("segmentedbutton").down("button");
+            btn.setPressed(true);
+            grid.setStore(store);
+            //this.lookupReference("import_goods_info").setStore(model.get("goods_info"));
+            //this.lookupReference("purchase_goods_info").setStore(model.get("goods_info_data"));
+            //this.lookupReference("import_goods_diff").setStore(model.get("goods_info_diff"));
             return;
         }
 
         var items = this.getDetailItems(id, batch_no, model);
         panel.add(items);
-        this.lookupReference("import_goods_info").setStore(model.get("goods_info"));
-        this.lookupReference("purchase_goods_info").setStore(model.get("goods_info_data"));
-        this.lookupReference("import_goods_diff").setStore(model.get("goods_info_diff"));
+        //this.lookupReference("import_goods_info").setStore(model.get("goods_info"));
+        //this.lookupReference("purchase_goods_info").setStore(model.get("goods_info_data"));
+        //this.lookupReference("import_goods_diff").setStore(model.get("goods_info_diff"));
     },
     onWarehouseExhibitListGridDblClick: function (gp, record) {
         var id = record.get("id"),
@@ -88,7 +96,14 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
 
         if (!res) return;
         var panel = warehouseexhibitgoods.down("panel[name=exhibit_info]");
-        if (panel.items.items.length > 0) return;
+        if (panel.items.items.length > 0) {
+            var grid = panel.down("#exhibit_info_grid")
+            store = model.get("exhibit_order")
+            btn = panel.down("segmentedbutton").down("button");
+            btn.setPressed(true);
+            grid.setStore(store);
+            return;
+        }
 
         var detail = this.getExhibitOrderDetail(id, model, import_goods_order_id);
         panel.add(detail);
@@ -243,7 +258,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                             if (e.keyCode == 13) {
                                                 var no = obj.getValue();
                                                 obj.setValue('');
-                                                var store = me.lookupReference("import_goods_info").getStore();
+                                                var store = model.get("goods_info");
                                                 var res = store.findRecord("no", no);
                                                 if (res !== null) {
                                                     Ext.toast(no + "这件商品已入库", "系统提示", 't');
@@ -291,6 +306,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                             url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/importGoods',
                             params: {
                                 nos: nos.join(","),
+                                import_warehouse_id:model.get("import_warehouse_id"),
                                 id: model.get("import_goods_id")
                             },
                             success: function (response) {
@@ -319,7 +335,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                             url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/checkImportGoodsOrder',
                             params: {
                                 nos: nos.join(","),
-                                id: model.get("import_goods_id")
+                                id: model.get("import_goods_id"),
+                                import_warehouse_id:model.get("import_warehouse_id"),
                             },
                             success: function (response) {
                                 var text = Ext.decode(response.responseText);
@@ -355,14 +372,64 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             }],
             listeners: {
                 toggle: function(container, button, pressed) {
-                    console.log("User toggled the '" + button.text + "' button: " + (pressed ? 'on' : 'off'));
+                    var text = button.getText(),
+                        grid = container.up("warehouseimportgoods").down("#import_info_grid"),columns,store;
+                    grid.setTitle(text);
+                    if("入库信息" == text){
+                        columns = [
+                            {text: '唯一码', dataIndex: 'no', flex: 1},
+                            {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
+                            {text: '名称', dataIndex: 'name_zh'},
+                            {text: '系统颜色代码', dataIndex: 'color'},
+                            {text: '颜色名称', dataIndex: 'color_name'},
+                            {text: '国际颜色代码', dataIndex: 'supply_color_no'},
+                            {text: '尺码', dataIndex: 'size'},
+                            {text: '吊牌价', dataIndex: 'retail_price', flex: 1}
+                        ];
+                        store = model.get("goods_info");
+                    }else if("商品信息" == text){
+                        columns = [
+                            {text: '供应商款号', dataIndex: 'style_no', flex: 1},
+                            {text: '名称', dataIndex: 'product_name', flex: 1},
+                            {text: '产地', dataIndex: 'origin'},
+                            {text: '颜色', dataIndex: 'color'},
+                            {text: '尺码', dataIndex: 'size'},
+                            {text: '数量', dataIndex: 'num', flex: 1}
+                        ];
+                        store = model.get("goods_info_data");
+                    }else if("差异数" == text){
+                        columns = [
+                            {text: '供应商款号', dataIndex: 'style_no', flex: 1},
+                            {text: '颜色', dataIndex: 'color'},
+                            {text: '尺码', dataIndex: 'size'},
+                            {
+                                text: '差异数', dataIndex: 'diff_num', flex: 1, renderer: function (val) {
+                                return '<b class="text-danger">' + val + '</b>';
+                            }
+                            }
+                        ];
+                        store = model.get("goods_info_diff");
+                    }else if("操作日志" == text){
+                        columns = [
+                                {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
+                                {text: '操作', dataIndex: 'orderinfo_name'},
+                                {text: '操作人', dataIndex: 'orderinfo_color'}
+                            ];
+                        store = model.get("goodsfo_log");
+                    }
+
+                    grid.reconfigure(store,columns);
                 }
             }
         },{
           xtype:'grid',
             flex: 1,
             width: '100%',
+            itemId:'import_info_grid',
             title: '入库信息',
+            sortableColumns: false,
+            scrollable: 'y',
+            store:model.get("goods_info"),
             columns: [
                 {text: '唯一码', dataIndex: 'no', flex: 1},
                 {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
@@ -373,78 +440,6 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 {text: '尺码', dataIndex: 'size'},
                 {text: '吊牌价', dataIndex: 'retail_price', flex: 1}
             ],
-        },
-            {
-            xtype: 'tabpanel',
-            flex: 1,
-            width: '100%',
-            defaults: {
-                xtype: 'grid',
-                sortableColumns: false,
-                scrollable: 'y'
-            },
-            items: [
-                {
-                    title: '入库信息',
-                    reference: 'import_goods_info',
-                    columns: [
-                        {text: '唯一码', dataIndex: 'no', flex: 1},
-                        {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
-                        {text: '名称', dataIndex: 'name_zh'},
-                        {text: '系统颜色代码', dataIndex: 'color'},
-                        {text: '颜色名称', dataIndex: 'color_name'},
-                        {text: '国际颜色代码', dataIndex: 'supply_color_no'},
-                        {text: '尺码', dataIndex: 'size'},
-                        {text: '吊牌价', dataIndex: 'retail_price', flex: 1}
-                    ],
-                    //bind: {
-                    //    store: '{goods_info}'
-                    //}
-                },
-                {
-                    title: '商品信息',
-                    reference: 'purchase_goods_info',
-                    columns: [
-                        {text: '供应商款号', dataIndex: 'style_no', flex: 1},
-                        {text: '名称', dataIndex: 'product_name', flex: 1},
-                        {text: '产地', dataIndex: 'origin'},
-                        {text: '颜色', dataIndex: 'color'},
-                        {text: '尺码', dataIndex: 'size'},
-                        {text: '数量', dataIndex: 'num', flex: 1}
-                    ],
-                    //bind: {
-                    //    store: '{goods_info_data}'
-                    //}
-                },
-                {
-                    title: '差异数',
-                    reference: 'import_goods_diff',
-                    columns: [
-                        {text: '供应商款号', dataIndex: 'style_no', flex: 1},
-                        {text: '颜色', dataIndex: 'color'},
-                        {text: '尺码', dataIndex: 'size'},
-                        {
-                            text: '差异数', dataIndex: 'diff_num', flex: 1, renderer: function (val) {
-                            return '<b class="text-danger">' + val + '</b>';
-                        }
-                        }
-                    ],
-                    //bind: {
-                    //    store: '{goods_info_diff}'
-                    //}
-                },
-                //{
-                //    title: '操作日志',
-                //    columns: [
-                //        {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
-                //        {text: '操作', dataIndex: 'orderinfo_name'},
-                //        {text: '操作人', dataIndex: 'orderinfo_color'}
-                //    ],
-                //    bind: {
-                //        store: '{goods_info_log}'
-                //    }
-                //}
-            ]
         }]
     },
     getExhibitOrderDetail: function (id, model, import_goods_order_no) {
@@ -513,13 +508,13 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                         return;
                                                     }
                                                     obj.setValue('');
-                                                    var store = me.lookupReference("import_order_info").getStore();
+                                                    var store = model.get("import_order");
                                                     var res = store.findRecord("no", no);
                                                     if (res === null) {
                                                         Ext.toast(no + "这件商品未入库,或不在此进货单中", "系统提示", 't');
                                                         return;
                                                     }
-                                                    var store = me.lookupReference("exhibit_order_info").getStore();
+                                                    var store = model.get("exhibit_order");
                                                     var res = store.findRecord("no", no);
                                                     if (res !== null) {
                                                         Ext.toast(no + "这件商品已上架,请重新扫描!", "系统提示", 't');
@@ -642,85 +637,84 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 //    }
                 //}
             ]
-        }, {
-            xtype: 'tabpanel',
+        },{
+            xtype:'segmentedbutton',
+            bodyPadding:10,
+            defaults:{
+                margin:5
+            },
+            items: [{
+                text: '上架信息',
+                pressed:true
+            },{
+                text: '进货信息'
+            },{
+                text: '操作日志'
+            }],
+            listeners: {
+                toggle: function(container, button, pressed) {
+                    var text = button.getText(),
+                        grid = container.up("warehouseexhibitgoods").down("#exhibit_info_grid"),columns,store;
+                    grid.setTitle(text);
+                    if("上架信息" == text){
+                        columns = [
+                            {text: '唯一码', dataIndex: 'no', flex: 1},
+                            {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
+                            {text: '名称', dataIndex: 'name_zh'},
+                            {text: '系统颜色代码', dataIndex: 'color'},
+                            {text: '颜色名称', dataIndex: 'color_name'},
+                            {text: '国际颜色代码', dataIndex: 'supply_color_no'},
+                            {text: '尺码', dataIndex: 'size'},
+                            {text: '单价', dataIndex: 'retail_price', flex: 1},
+                            {text:'所在库位',dataIndex:'location'}
+                        ];
+                        store = model.get("exhibit_order");
+                    }else if("进货信息" == text){
+                        columns = [
+                            {text: '唯一码', dataIndex: 'no', flex: 1},
+                            {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
+                            {text: '名称', dataIndex: 'name_zh'},
+                            {text: '系统颜色代码', dataIndex: 'color'},
+                            {text: '颜色名称', dataIndex: 'color_name'},
+                            {text: '国际颜色代码', dataIndex: 'supply_color_no'},
+                            {text: '尺码', dataIndex: 'size'},
+                            {text: '单价', dataIndex: 'retail_price', flex: 1},
+                            {text:'是否上架',dataIndex:'is_exhibit'}
+                        ];
+                        store = model.get("import_order");
+                    }else if("操作日志" == text){
+                        columns = [
+                            {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
+                            {text: '操作', dataIndex: 'orderinfo_name'},
+                            {text: '操作人', dataIndex: 'orderinfo_color'}
+                        ];
+                        console.log(store);
+                        //store = model.get("goodsfo_log");
+                    }
+
+                    grid.reconfigure(store,columns);
+                }
+            }
+        },{
+            xtype:'grid',
             flex: 1,
             width: '100%',
-            defaults: {
-                xtype: 'grid',
-                sortableColumns: false,
-                scrollable: 'y'
-            },
-            items: [
-                {
-                    title: '上架信息',
-                    reference: 'exhibit_order_info',
-                    itemId: 'exhibit_order_info',
-                    columns: [
-                        {text: '唯一码', dataIndex: 'no', flex: 1},
-                        {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
-                        {text: '名称', dataIndex: 'name_zh'},
-                        {text: '系统颜色代码', dataIndex: 'color'},
-                        {text: '颜色名称', dataIndex: 'color_name'},
-                        {text: '国际颜色代码', dataIndex: 'supply_color_no'},
-                        {text: '尺码', dataIndex: 'size'},
-                        {text: '单价', dataIndex: 'retail_price', flex: 1},
-                        {text:'所在库位',dataIndex:'location'}
-                    ],
-                    bind: {
-                        store: '{exhibit_order}'
-                    }
-                },
-                {
-                    title: '进货信息',
-                    reference: 'import_order_info',
-                    columns: [
-                        {text: '唯一码', dataIndex: 'no', flex: 1},
-                        {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
-                        {text: '名称', dataIndex: 'name_zh'},
-                        {text: '系统颜色代码', dataIndex: 'color'},
-                        {text: '颜色名称', dataIndex: 'color_name'},
-                        {text: '国际颜色代码', dataIndex: 'supply_color_no'},
-                        {text: '尺码', dataIndex: 'size'},
-                        {text: '单价', dataIndex: 'retail_price', flex: 1},
-                        {text:'是否上架',dataIndex:'is_exhibit'}
-                    ],
-                    bind: {
-                        store: '{import_order}'
-                    }
-                },
-                //{
-                //    title: '差异数',
-                //    columns: [
-                //        {text: '唯一码', dataIndex: 'no', flex: 1, tdCls: 'text-danger'},
-                //        {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
-                //        {text: '名称', dataIndex: 'name_zh'},
-                //        {text: '系统颜色代码', dataIndex: 'color'},
-                //        {text: '颜色名称', dataIndex: 'color_name'},
-                //        {text: '国际颜色代码', dataIndex: 'supply_color_no'},
-                //        {text: '尺码', dataIndex: 'size'},
-                //        {text: '单价', dataIndex: 'retail_price', flex: 1}
-                //    ],
-                //    bind: {
-                //        store: '{exhibit_diff}'
-                //    }
-                //},
-                {
-                    title: '操作日志',
-                    xtype: 'grid',
-                    name: 'goods_info_log',
-                    sortableColumns: false,
-                    scrollable: 'y',
-                    columns: [
-                        {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
-                        {text: '操作', dataIndex: 'orderinfo_name'},
-                        {text: '操作人', dataIndex: 'orderinfo_color'}
-                    ],
-                    bind: {
-                        store: '{goods_info_log}'
-                    }
-                }
-            ]
+            itemId:'exhibit_info_grid',
+            title: '上架信息',
+            sortableColumns: false,
+            scrollable: 'y',
+            store:model.get("exhibit_order"),
+            columns: [
+                {text: '唯一码', dataIndex: 'no', flex: 1},
+                {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
+                {text: '名称', dataIndex: 'name_zh'},
+                {text: '系统颜色代码', dataIndex: 'color'},
+                {text: '颜色名称', dataIndex: 'color_name'},
+                {text: '国际颜色代码', dataIndex: 'supply_color_no'},
+                {text: '尺码', dataIndex: 'size'},
+                {text: '单价', dataIndex: 'retail_price', flex: 1},
+                {text:'所在库位',dataIndex:'location'}
+            ],
         }]
     },
     getExhibitOrderData: function (id, model, import_goods_order_id) {
