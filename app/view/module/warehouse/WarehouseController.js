@@ -338,6 +338,43 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 }
             ]
         }, {
+            xtype:'segmentedbutton',
+            bodyPadding:10,
+            defaults:{
+                margin:5
+            },
+            items: [{
+                text: '入库信息',
+                pressed:true
+            },{
+                text: '商品信息'
+            },{
+                text: '差异数'
+            },{
+                text: '操作日志'
+            }],
+            listeners: {
+                toggle: function(container, button, pressed) {
+                    console.log("User toggled the '" + button.text + "' button: " + (pressed ? 'on' : 'off'));
+                }
+            }
+        },{
+          xtype:'grid',
+            flex: 1,
+            width: '100%',
+            title: '入库信息',
+            columns: [
+                {text: '唯一码', dataIndex: 'no', flex: 1},
+                {text: '供应商款号', dataIndex: 'supply_style_no', flex: 1},
+                {text: '名称', dataIndex: 'name_zh'},
+                {text: '系统颜色代码', dataIndex: 'color'},
+                {text: '颜色名称', dataIndex: 'color_name'},
+                {text: '国际颜色代码', dataIndex: 'supply_color_no'},
+                {text: '尺码', dataIndex: 'size'},
+                {text: '吊牌价', dataIndex: 'retail_price', flex: 1}
+            ],
+        },
+            {
             xtype: 'tabpanel',
             flex: 1,
             width: '100%',

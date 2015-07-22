@@ -8,7 +8,7 @@ Ext.define('erp.store.WarehouseListStore', {
         autoLoad:false,
         proxy: {
             type: 'ajax',
-            url: apiBaseUrl+'/index.php/Warehouse/Index/getLocation',
+            url: apiBaseUrl+'/index.php/Warehouse/Index/getWarehouseList',
             reader: {
                 type: 'json',
                 rootProperty: 'data',

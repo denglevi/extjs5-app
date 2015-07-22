@@ -51,12 +51,13 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
         var import_list_grid = Ext.create('Ext.grid.Panel', {
             title: '进货单列表',
             height: '100%',
-            width: 200,
+            width: 300,
             border: true,
             enableColumnHide:false,
             sortableColumns:false,
             columns: [
                 {text: '进货单号', dataIndex: 'notice_no', width:120},
+                {text:'进货日期',dataIndex:'date',width:100},
                 {text: '是否验收', dataIndex: 'is_check', width:80,renderer:function(val){
                     if(1==val) return "<b class='text-primary'>已验收</b>";
                     return "<b class='text-danger'>未验收</b>";

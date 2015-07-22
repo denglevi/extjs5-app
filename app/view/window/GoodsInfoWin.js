@@ -83,12 +83,25 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                             url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
                             items:[{
                                 xtype:'fileuploadfield',
-                                name:"goods_pic",
-                                value:newVal
+                                name:"goods_pic"
                             }]
                         });
+                        form.down("fileuploadfield").setRawValue(newVal);
+                        Ext.Ajax.request({
+                            url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
+                            form:form.getEl(),
+                            isUpload:true,
+                            success: function(response, opts) {
+                                var obj = Ext.decode(response.responseText);
+                                console.dir(obj);
+                            },
+                            failure: function(response, opts) {
+                                console.log('server-side failure with status code ' + response.status);
+                            }
+                        });
+
+                        return;
                         console.log(form.down("fileuploadfield").getValue());
-                        console.log(form,Ext.getDom(form.down("fileuploadfield")),form.down("fileuploadfield").getEl());
                         form.submit({
                             waitMsg:'正在上传图片...',
                             url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',

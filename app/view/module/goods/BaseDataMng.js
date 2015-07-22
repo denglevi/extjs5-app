@@ -10,8 +10,11 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
         'Ext.data.proxy.Ajax',
         'Ext.data.reader.Json',
         'Ext.form.Panel',
+        'Ext.form.field.ComboBox',
+        'Ext.form.field.Hidden',
         'Ext.form.field.Text',
         'Ext.grid.Panel',
+        'Ext.layout.container.Anchor',
         'Ext.layout.container.Column',
         'Ext.layout.container.HBox',
         'Ext.window.Window',
@@ -39,7 +42,8 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                 tbar: [
                     {
                         text: '新增',
-                        glyph: 0xf1f8,
+                        //glyph: 0xf1f8,
+                        iconCls:'addIcon',
                         handler: function (btn) {
                             var win = Ext.create('Ext.window.Window', {
                                 width:450,
@@ -103,10 +107,55 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                             });
                             win.show();
                         }
-                    },
+                    }
                     //{
                     //    text: '删除',
-                    //    glyph: 0xf1f8
+                    //    iconCls:'delIcon',
+                    //    handler:function(del_btn){
+                    //        var sel = del_btn.up('grid').getSelection(), ids = [], names = [];
+                    //        if (sel.length == 0) {
+                    //            Ext.Msg.alert('系统提示', '请选择要删除的基础资料');
+                    //            return;
+                    //        }
+                    //        Ext.each(sel, function (record) {
+                    //            ids.push(record.get("id"));
+                    //            names.push(record.get("name"));
+                    //        });
+                    //
+                    //        Ext.Msg.show({
+                    //            title: '系统消息',
+                    //            message: '你确定要删除以下基础资料吗？<br>' + names.join('<br>'),
+                    //            buttons: Ext.Msg.YESNO,
+                    //            icon: Ext.Msg.QUESTION,
+                    //            fn: function (btn) {
+                    //                if (btn === 'yes') {
+                    //                    Ext.getBody().mask("正在删除...");
+                    //                    Ext.Ajax.request({
+                    //                        url: apiBaseUrl + '/index.php/Commodity/Public/delBaseData',
+                    //                        params: {
+                    //                            ids: ids.join(',')
+                    //                        },
+                    //                        success: function (data) {
+                    //                            var res = Ext.decode(data.responseText);
+                    //                            Ext.getBody().unmask();
+                    //                            console.log(res);return;
+                    //                            if (!res.success) {
+                    //                                Ext.Msg.alert('系统提示', res.msg);
+                    //                                return;
+                    //                            }
+                    //                            Ext.getBody().unmask();
+                    //                            del_btn.up('grid').getStore().load();
+                    //                        },
+                    //                        failure: function (data) {
+                    //                            Ext.getBody().unmask();
+                    //                            Ext.Msg.alert('系统提示', "请求网络错误,请检查网络,重试!");
+                    //                        }
+                    //                    })
+                    //                }
+                    //            }
+                    //        });
+                    //    }
+                    //    //glyph: 0xf1f8
                     //}
                 ],
                 columns: [
@@ -137,11 +186,14 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                 flex:1,
                 height:'100%',
                 border:true,
+                sortableColumns: false,
+                enableColumnHide: false,
                 selModel:'checkboxmodel',
                 tbar: [
                     {
                         text: '新增',
-                        glyph: 0xf1f8,
+                        iconCls:'addIcon',
+                        //glyph: 0xf1f8,
                         handler: me.addGoodsBaseDataValue,
                         scope:me
                     },
@@ -151,6 +203,7 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                     //},
                     {
                         text:'修改',
+                        iconCls:'editIcon',
                         handler:me.editGoodBaseDataValue,
                         scope:me
                     }
@@ -253,6 +306,19 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                 value:record.get(field.mark)
             });
         }
+        formFields.push({
+            fieldLabel:"是否停用",
+            name:"status",
+            displayField:'name',
+            xtype:'combo',
+            value:record.get('status'),
+            editable:false,
+            valueField:'val',
+            store:Ext.create("Ext.data.Store",{
+                fields:[],
+                data:[{name:'是',val:1},{name:'否',val:0}]
+            })
+        });
         form.removeAll();
         form.add(formFields);
         me.getViewModel().set('isHidden',false);
@@ -286,6 +352,15 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
                     flex:1
                 });
             }
+        columns.push({
+            text:'是否停用',
+            dataIndex:'status',
+            renderer:function(val){
+                if(1 == val) return "停用";
+                return "启用";
+            },
+            flex:1
+        });
         valueList.setTitle(name+"列表");
         valueList.reconfigure(store,columns);
     },
