@@ -219,7 +219,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                             }
                         },
                         {
-                            xtype: 'displayfield', fieldLabel: '要移入的仓库', flex: 2,
+                            xtype: 'displayfield', fieldLabel: '移入仓库', flex: 2,
                             bind: {
                                 value: '{move_warehouse_notice_warehouse}'
                             }
@@ -234,7 +234,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                         items: [
                             '->',
                             {
-                                text: '录入移库商品',
+                                text: '出库',
                                 handler: function () {
                                     var win = Ext.create('Ext.window.Window', {
                                         title: '扫描商品',
@@ -302,7 +302,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                                 }
                             },
                             {
-                                text: '提交',
+                                text: '发出',
                                 handler: function () {
                                     var grid = me.lookupReference("move_warehouse_notice_goods_gird");
                                     var store = grid.getStore();
@@ -502,7 +502,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                             }
                         },
                         {
-                            xtype: 'displayfield', fieldLabel: '要移入的仓库', flex: 2,
+                            xtype: 'displayfield', fieldLabel: '移入仓库', flex: 2,
                             bind: {
                                 value: '{move_warehouse_order_warehouse}'
                             }
@@ -517,7 +517,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                         items: [
                             '->',
                             {
-                                text: '录入移库商品',
+                                text: '入库',
                                 handler: function () {
                                     var win = Ext.create('Ext.window.Window', {
                                         title: '扫描商品',
@@ -593,7 +593,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                                 }
                             },
                             {
-                                text: '提交',
+                                text: '验收',
                                 handler: function () {
                                     var grid = me.lookupReference("move_warehouse_order_goods_gird");
                                     var store = grid.getStore();

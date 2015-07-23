@@ -126,7 +126,8 @@ Ext.define('erp.view.module.goods.GoodsList', {
                             {"status": "1", "name": "已入库"},
                             {"status": "2", "name": "已上架"},
                             {"status": "3", "name": "已下架"},
-                            {"status": "4", "name": "已出库"}
+                            {"status": "4", "name": "已出库"},
+                            {"status": "5", "name": "待移库"}
                         ]
                     }),
                     queryMode: 'local',

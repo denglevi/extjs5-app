@@ -55,10 +55,11 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
             border: true,
             enableColumnHide:false,
             sortableColumns:false,
+            selModel:'checkboxmodel',
             columns: [
-                {text: '进货单号', dataIndex: 'notice_no', width:120},
-                {text:'进货日期',dataIndex:'date',width:100},
-                {text: '是否验收', dataIndex: 'is_check', width:80,renderer:function(val){
+                {text: '进货单号', dataIndex: 'notice_no', width:110},
+                {text:'进货日期',dataIndex:'date',width:90},
+                {text: '是否验收', dataIndex: 'is_check', width:100,renderer:function(val){
                     if(1==val) return "<b class='text-primary'>已验收</b>";
                     return "<b class='text-danger'>未验收</b>";
                 }},
@@ -72,11 +73,12 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
                     //glyph: 0xf067,
                     handler: 'addImportGoodsOrder'
                 },
-                //{
-                //    text: '删除',
-                //    glyph: 0xf1f8,
-                //    handler:'deletePurchaseOrder'
-                //}
+                {
+                    text: '删除',
+                    iconCls:'delIcon',
+                    //glyph: 0xf1f8,
+                    handler:'delImportGoodsOrder'
+                }
             ],
             //bbar: ['->', {
             //    xtype: 'pagingtoolbar',

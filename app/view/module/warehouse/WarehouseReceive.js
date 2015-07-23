@@ -19,11 +19,11 @@ Ext.define('erp.view.module.warehouse.WarehouseReceive', {
     store:'WarehouseReceiveStore',
     sortableColumns:false,
     tbar: [
-        {
-            text:'新增',
-            glyph:0xf067,
-            //handler:'addPurchaseOrder'
-        },
+        //{
+        //    text:'新增',
+        //    glyph:0xf067,
+        //    //handler:'addPurchaseOrder'
+        //},
         //{
         //    text:'删除',
         //    glyph:0xf1f8
@@ -61,7 +61,8 @@ Ext.define('erp.view.module.warehouse.WarehouseReceive', {
             return "未定义";
         }},
         {text:'联系人',dataIndex:'contact',flex:1},
-        {text:'提交日期',dataIndex:'date'},
+        {text:'收货日期',dataIndex:'date'},
+        {text:'收货人',dataIndex:'date'},
         {text:'状态',dataIndex:'status',renderer:function(val){
             if(1 == val) return "已收货";
 

@@ -6,6 +6,7 @@ Ext.define('erp.view.window.GoodsInfoWin', {
     requires: [
         'Ext.Ajax',
         'Ext.Img',
+        'Ext.button.Button',
         'Ext.container.Container',
         'Ext.form.field.Display',
         'Ext.form.field.File',
@@ -17,53 +18,54 @@ Ext.define('erp.view.window.GoodsInfoWin', {
     ],
     xtype: 'goodsinfo',
     layout: {
-        type:'vbox',
-        stretch:true
+        type: 'vbox',
+        stretch: true
     },
     //bodyPadding: 10,
     width: 650,
     height: 600,
+    modal:true,
     initComponent: function () {
         var me = this;
 
-        var info = me.info;
+        var info = me.info, image = '/resources/images/logo.png';
+        console.log(info);
+        if (info.images != null && info.images.length > 0) {
+            image = apiBaseUrl + '/../' + info.images[0].image_src
+        }
         this.tbar = [
             '->',
             {
-                xtype:'form',
-                items:[
+                xtype: 'form',
+                hidden: true,
+                items: [
                     {
-                        buttonOnly:true,
-                        hideLabel: true,
-                        width:82,
-                        buttonConfig:{
-                            text: '上传图片',
-                            iconCls: 'importIcon',
-                            margin:'5 0 0 0',
-                            ui:'default',
-                            cls:'btn-default'
-                        },
-                        xtype:'fileuploadfield',
-                        name:'goods_pic',
-                        listeners:{
-                            change:function(btn,val){
+                        xtype: 'fileuploadfield',
+                        id: 'upload_goods_pic_field',
+                        buttonOnly: true,
+                        name: 'good_pic[]',
+                        listeners: {
+                            change: function (btn, val) {
                                 var form = this.up("form").getForm();
                                 form.submit({
-                                    waitMsg:'正在上传图片...',
-                                    url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
-                                    method:'POST',
-                                    success:function(form,action){
-                                        if(!action.result.success){
-                                            Ext.toast(action.result.msg,"系统提示");
+                                    waitMsg: '正在上传图片...',
+                                    url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/uploadGoodsPic',
+                                    method: 'POST',
+                                    params: {
+                                        id: info.no_id
+                                    },
+                                    success: function (form, action) {
+                                        if (!action.result.success) {
+                                            Ext.toast(action.result.msg, "系统提示");
                                             return;
                                         }
                                     },
-                                    failure:function(form,action){
-                                        if(action.response.status == 200){
-                                            Ext.toast(action.result.msg,"系统提示");
+                                    failure: function (form, action) {
+                                        if (action.response.status == 200) {
+                                            Ext.toast(action.result.msg, "系统提示");
                                             return;
                                         }
-                                        Ext.toast("服务请求错误,请重试!","系统提示");
+                                        Ext.toast("服务请求错误,请重试!", "系统提示");
                                     }
                                 });
                             }
@@ -72,62 +74,22 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                 ]
             },
             {
-                xtype:'filebutton',
-                text:'1111',
-                listeners:{
-                    change:function(field,val,newVal){
-                        console.log(field,newVal);
+                text: '上传图片',
+                iconCls: 'importIcon',
+                handler: function () {
+                    var dom = Ext.get("upload_goods_pic_field");
+                    var input = dom.select("input").last();
+                    console.log(input.dom,input);
+                    input.dom.multiple=true;
+                    input.dom.click();
 
-                        var form = Ext.create('Ext.form.Panel',{
-                            waitMsg:'正在上传图片...',
-                            url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
-                            items:[{
-                                xtype:'fileuploadfield',
-                                name:"goods_pic"
-                            }]
-                        });
-                        form.down("fileuploadfield").setRawValue(newVal);
-                        Ext.Ajax.request({
-                            url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
-                            form:form.getEl(),
-                            isUpload:true,
-                            success: function(response, opts) {
-                                var obj = Ext.decode(response.responseText);
-                                console.dir(obj);
-                            },
-                            failure: function(response, opts) {
-                                console.log('server-side failure with status code ' + response.status);
-                            }
-                        });
-
-                        return;
-                        console.log(form.down("fileuploadfield").getValue());
-                        form.submit({
-                            waitMsg:'正在上传图片...',
-                            url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
-                            method:'POST',
-                            success:function(form,action){
-                                if(!action.result.success){
-                                    Ext.toast(action.result.msg,"系统提示");
-                                    return;
-                                }
-                            },
-                            failure:function(form,action){
-                                if(action.response.status == 200){
-                                    Ext.toast(action.result.msg,"系统提示");
-                                    return;
-                                }
-                                Ext.toast("服务请求错误,请重试!","系统提示");
-                            }
-                        });
-                    }
                 }
             },
             //{
             //    text: '修改'
             //},
             {
-                text:'打印吊牌'
+                text: '打印吊牌'
             }
         ];
         this.items = [
@@ -137,38 +99,38 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                 layout: 'hbox',
                 items: [
                     {
-                        xtype:'image',
-                        src:info.image_src||'/resources/images/logo.png',
-                        width:200
+                        xtype: 'image',
+                        src: image,
+                        width: 200
                     },
                     {
-                        xtype:'container',
-                        layout:'vbox',
-                        flex:1,
+                        xtype: 'container',
+                        layout: 'vbox',
+                        flex: 1,
                         defaults: {
                             labelAlign: 'right',
                             editable: false
                         },
-                        items:[
+                        items: [
                             {
                                 xtype: 'displayfield',
                                 fieldLabel: '唯一码',
-                                value:info.no
+                                value: info.no
                             },
                             {
                                 xtype: 'displayfield',
                                 fieldLabel: '系统款号',
-                                value:info.system_style_no
+                                value: info.system_style_no
                             },
                             {
                                 xtype: 'displayfield',
                                 fieldLabel: '商品名称',
-                                value:info.name_zh
+                                value: info.name_zh
                             },
                             {
                                 xtype: 'displayfield',
                                 fieldLabel: '供应商款号',
-                                value:info.supply_style_no
+                                value: info.supply_style_no
                             }
                         ]
                     }
@@ -177,11 +139,11 @@ Ext.define('erp.view.window.GoodsInfoWin', {
             {
                 xtype: 'tabpanel',
                 flex: 1,
-                width:'100%',
+                width: '100%',
                 items: [
                     {
                         title: '款号属性',
-                        data:info,
+                        data: info,
                         tpl: new Ext.XTemplate(
                             '<table class="table table-bordered">',
                             '<tr><td class="col-md-3 text-right">大类</td><td class="col-md-9">{large_class}</td></tr>',
@@ -197,7 +159,7 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                     },
                     {
                         title: '颜色',
-                        data:info,
+                        data: info,
                         tpl: new Ext.XTemplate(
                             '<table class="table table-bordered">',
                             '<tr><td class="col-md-3 text-right">供应商颜色代码</td><td class="col-md-9">名称</td></tr>',
@@ -209,7 +171,7 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                     },
                     {
                         title: '尺码',
-                        data:info,
+                        data: info,
                         tpl: new Ext.XTemplate(
                             '<table class="table table-bordered">',
                             '<tr><td class="col-md-3 text-right">代码</td><td class="col-md-9">名称</td></tr>',
@@ -217,6 +179,24 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                             '<tr><td class="col-md-3 text-right">{size}</td><td class="col-md-9">{size}</td></tr>',
                             '</tpl>',
                             '</table>'
+                        )
+                    },
+                    {
+                        title: '商品图片',
+                        data: info,
+                        tpl: new Ext.XTemplate(
+                            '<div class="row">',
+                            '<tpl for="images">',
+                            '<div class="col-xs-6 col-md-3" style="margin:5px;">',
+                            '<a href="#" class="thumbnail">{[this.getImg(values.image_src)]}</a>',
+                            '</div>',
+                            '</tpl>',
+                            '</div>',
+                            {
+                                getImg: function (src) {
+                                    return '<div class="thumbnail"><img src="' + apiBaseUrl + '/../' + src + '" /></div>';
+                                }
+                            }
                         )
                     }
                 ]

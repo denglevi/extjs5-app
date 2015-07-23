@@ -60,7 +60,8 @@ Ext.define('erp.view.window.PurchasePayWin',{
                     {
                         fieldLabel: '用途',
                         name: 'pay_function',
-                        xtype: 'textarea'
+                        xtype: 'textarea',
+                        allowBlank:true
                     },
                     {
                         fieldLabel: '选择付款人',

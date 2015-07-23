@@ -49,7 +49,12 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
                         },
                         {
                             fieldLabel:'供应商单号',
-                            name:'batch_no'
+                            xtype:'combo',
+                            valueField:'batch_no',
+                            editable: false,
+                            displayField:'batch_no',
+                            name:'batch_no',
+                            disabled:true
                         },
                         {
                             fieldLabel:'渠道',
@@ -63,14 +68,14 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
                         //    displayField: 'name',
                         //    valueField: 'id'
                         //},
-                        {
-                            fieldLabel: '品牌',
-                            name: 'brand_id',
-                            xtype: 'combo',
-                            editable: false,
-                            displayField: 'name_en',
-                            valueField: 'id',
-                        },
+                        //{
+                        //    fieldLabel: '品牌',
+                        //    name: 'brand_id',
+                        //    xtype: 'combo',
+                        //    editable: false,
+                        //    displayField: 'name_en',
+                        //    valueField: 'id',
+                        //},
                         {
                             fieldLabel: '仓库',
                             name: 'warehouse_id',
@@ -78,6 +83,7 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
                             editable: false,
                             displayField: 'storage_name',
                             valueField: 'id',
+                            disabled:true
                         },
                         {
                             fieldLabel:'摘要',
@@ -128,12 +134,10 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
             ],
             listeners:{
                 afterrender: function () {
-                    //getSupplierAndBuyer
                     Ext.Ajax.request({
                         async: true,
-                        url: apiBaseUrl + '/index.php/Purchasing/Buyer/getBrandSupplierWarehouse',
+                        url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/getSupplyNoAndWarehouse',
                         success: function (response) {
-                            //myMask.destroy( );
                             var text = Ext.decode(response.responseText);
                             var res = text.data;
                             console.log(res);
@@ -142,14 +146,20 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
                                 return;
                             }
                             var form = me.down("form");
-                            form.down("combo[name=brand_id]").setStore(Ext.create('Ext.data.Store', {
-                                fields: ['id', 'name_en'],
-                                data: res.brand
-                            }));
+                            //form.down("combo[name=brand_id]").setStore(Ext.create('Ext.data.Store', {
+                            //    fields: ['id', 'name_en'],
+                            //    data: res.brand
+                            //}));
                             form.down("combo[name=warehouse_id]").setStore(Ext.create('Ext.data.Store', {
                                 fields: ['id', 'storage_name'],
                                 data: res.warehouse
                             }));
+                            form.down("combo[name=batch_no]").setStore(Ext.create('Ext.data.Store', {
+                                fields: ['batch_no'],
+                                data: res.batch_no
+                            }));
+                            form.down("combo[name=batch_no]").setDisabled(false);
+                            form.down("combo[name=warehouse_id]").setDisabled(false);
                             //form.down("combo[name=supplier_id]").setStore(Ext.create('Ext.data.Store', {
                             //    fields: ['id', 'name'],
                             //    data: res.supplier
