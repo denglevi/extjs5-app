@@ -899,15 +899,23 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
     },
     delMoveLocationOrder: function (btn) {
         var grid = this.lookupReference("move_location_grid");
-        var sel = grid.getSelection(), ids = [], nos = [];
+        var sel = grid.getSelection(), ids = [], nos = [],mark=0;
         if (sel.length == 0) {
             Ext.Msg.alert('系统提示', '请选择要删除的订单');
             return;
         }
         Ext.each(sel, function (record) {
+            if(record.get("status") == 1){
+                mark = 1
+                return;
+            }
             ids.push(record.get("id"));
             nos.push(record.get("move_no"));
         });
+        if (mark == 1) {
+            Ext.Msg.alert('系统提示', '已提交的移位单不能删除!请重试!');
+            return;
+        }
         Ext.Msg.show({
             title: '系统消息',
             message: '你确定要删除以下移位单吗？<br>' + nos.join('<br>'),
@@ -953,16 +961,42 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         model.set("move_location_order_status", status == 1 ? true : false);
         model.set("move_location_order_warehouse", warehouse);
         if (info !== null) {
-            var store = info.down("grid").getStore();
-            store.setProxy({
-                type: 'ajax',
+            var grid = info.down("grid"),
+            data,store;
+            Ext.Ajax.request({
+               async:false,
                 url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveLocationGoods?id=' + id,
-                reader: {
-                    type: 'json',
-                    rootProperty: 'data'
+                success:function(res){
+                    var json = Ext.decode(res.responseText);
+                    if(!json.success){
+                        Ext.toast(json.msg,"系统提示");
+                        return;
+                    }
+                    data = json.data;
+                },
+                failure:function(res){
+                    Ext.toast(json.msg,"系统提示");
+
                 }
             });
-            store.load();
+
+            store = Ext.create('Ext.data.Store',{
+                fields:[],
+                data:data
+            });
+            model.set("move_location_goods_info_store",store);
+            grid.setStore(store);
+            var btn = info.down("segmentedbutton").down("button");
+            btn.setPressed(true);
+            //store.setProxy({
+            //    type: 'ajax',
+            //    url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveLocationGoods?id=' + id,
+            //    reader: {
+            //        type: 'json',
+            //        rootProperty: 'data'
+            //    }
+            //});
+            //store.load();
             return;
         }
         container.add({
@@ -1177,10 +1211,47 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                     }]
                 },
                 {
+                    xtype: 'segmentedbutton',
+                    margin: 10,
+                    items: [{
+                        text: '移位商品信息',
+                        pressed: true
+                    },{
+                        text: '操作日志'
+                    }],
+                    listeners: {
+                        toggle: function (container, button, pressed) {
+                            var text = button.getText(),
+                                grid = container.up("panel").down("#move_location_goods_gird"), columns, store;
+                            grid.setTitle(text);
+                            if ("移位商品信息" == text) {
+                                columns = [
+                                    {text: '唯一码', dataIndex: 'goods_no', flex: 1},
+                                    {text: '移出库位', dataIndex: 'move_out_location'},
+                                    {text: '移入库位', dataIndex: 'move_in_location'},
+                                    {text: '移位时间', dataIndex: 'create_time', format: 'data(Y-m-d)', flex: 1}
+                                ];
+                                store = model.get("move_location_goods_info_store");
+                            } else if ("操作日志" == text) {
+                                columns = [
+                                    {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
+                                    {text: '操作', dataIndex: 'orderinfo_name'},
+                                    {text: '操作人', dataIndex: 'orderinfo_color'}
+                                ];
+                                console.log(store);
+                                //store = model.get("goodsfo_log");
+                            }
+
+                            grid.reconfigure(store, columns);
+                        }
+                    }
+                },
+                {
                     xtype: 'grid',
                     title: '移位商品列表',
                     flex: 1,
                     width: '100%',
+                    itemId:"move_location_goods_gird",
                     reference: 'move_location_goods_gird',
                     enableRemoveColumn: false,
                     sortableColumns: false,
@@ -1204,6 +1275,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                     }
                                 }
                             });
+                            model.set("move_location_goods_info_store",store);
                             this.setStore(store);
                         }
                     }
@@ -1315,6 +1387,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                     text: '保存'
                 }, {
                     text: '发出'
+                },{
+                    text: '终止'
                 }
             ]
         }, {

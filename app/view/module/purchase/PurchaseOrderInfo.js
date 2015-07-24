@@ -291,7 +291,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                     data: data
                                                 });
                                                 //me.down("grid").setStore(store);
-                                                //Ext.Msg.alert('系统提示', "导入成功");
+                                                Ext.toast("导入成功",'系统提示');
                                             },
                                             failure: function (form, action) {
                                                 switch (action.failureType) {
@@ -389,6 +389,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             win.on("beforedestroy",me.changeOrderData,me);
             win.show();
         } else if ("申请报关付款" == next_status.name) {
+            console.log(batchs);
             var win = Ext.create('erp.view.window.PurchasePayWin', {
                 title: next_status.name,
                 status_id: order_info.order_status,
@@ -544,6 +545,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 title: status_name,
                 order_no: bat.order_no,
                 batch_no: bat.batch_no,
+                order_info:me.res.order_info,
                 xtype: "addcheckproductorder",
                 closable: true
             };
@@ -554,7 +556,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 title: status_name,
                 need_notice: need_notice,
                 order_no: bat.order_no,
-                batch_no: bat.batch_no
+                batch_no: bat.batch_no,
+                order_info:me.res.order_info
             });
             win.show();
             win.on("beforedestroy",function(){

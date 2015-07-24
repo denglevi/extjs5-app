@@ -17,6 +17,7 @@ Ext.define('erp.view.window.PurchasePayWin',{
     modal:true,
     initComponent:function(){
         var me = this;
+        console.log(me.batch_no);
         me.items=[
             {
                 xtype:'form',

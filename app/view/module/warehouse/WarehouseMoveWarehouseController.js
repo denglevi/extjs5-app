@@ -8,6 +8,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
     requires: [
         'Ext.Ajax',
         'Ext.String',
+        'Ext.button.Segmented',
         'Ext.data.Store',
         'Ext.data.proxy.Ajax',
         'Ext.data.reader.Json',
@@ -132,15 +133,23 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
     },
     delMoveWarehouseOrder: function () {
         var grid = this.lookupReference("move_warehouse_grid");
-        var sel = grid.getSelection(), ids = [], nos = [];
+        var sel = grid.getSelection(), ids = [], nos = [],mark=0;
         if (sel.length == 0) {
             Ext.Msg.alert('系统提示', '请选择要删除的移库单');
             return;
         }
         Ext.each(sel, function (record) {
+            if(record.get("notice_status" != 2)){
+                mark = 1;
+                return;
+            }
             ids.push(record.get("id"));
             nos.push(record.get("move_no"));
         });
+        if (mark == 1) {
+            Ext.Msg.alert('系统提示', '只有移库通知终止的移库单才能才能删除!请重新选择!');
+            return;
+        }
         Ext.Msg.show({
             title: '系统提示',
             message: '你确定要删除以下移库单吗？<br>' + nos.join('<br>'),
@@ -189,17 +198,47 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
         model.set("move_warehouse_notice_warehouse", warehouse);
         model.set("move_warehouse_notice_warehouse_id", warehouse_id);
         if (info !== null) {
-            var store = info.down("grid").getStore();
-            store.setProxy({
-                type: 'ajax',
+
+            var grid = info.down("grid"),
+                data,store;
+            Ext.Ajax.request({
+                async:false,
                 url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveWarehouseNoticeGoods?id=' + id,
-                reader: {
-                    type: 'json',
-                    rootProperty: 'data'
+                success:function(res){
+                    var json = Ext.decode(res.responseText);
+                    if(!json.success){
+                        Ext.toast(json.msg,"系统提示");
+                        return;
+                    }
+                    data = json.data;
+                },
+                failure:function(res){
+                    Ext.toast(json.msg,"系统提示");
+
                 }
             });
-            store.load();
+
+            store = Ext.create('Ext.data.Store',{
+                fields:[],
+                data:data
+            });
+            model.set("move_warehouse_notice_goods_info_store",store);
+            grid.setStore(store);
+            var btn = info.down("segmentedbutton").down("button");
+            btn.setPressed(true);
+
             return;
+            //var store = info.down("grid").getStore();
+            //store.setProxy({
+            //    type: 'ajax',
+            //    url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveWarehouseNoticeGoods?id=' + id,
+            //    reader: {
+            //        type: 'json',
+            //        rootProperty: 'data'
+            //    }
+            //});
+            //store.load();
+            //return;
         }
         container.add({
             xtype: 'panel',
@@ -340,15 +379,92 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                                         }
                                     });
                                 }
+                            },
+                            {
+                                text:"终止",
+                                handler:function(){
+                                    var grid = me.lookupReference("move_warehouse_notice_goods_gird");
+                                    var store = grid.getStore();
+                                    var items = store.getData().items;
+                                    var goods = [];
+                                    for (var i = 0; i < items.length; ++i) {
+                                        var item = items[i];
+                                        if (item.get("mark") !== 0) continue;
+                                        goods.push({
+                                            goods_no: item.get("goods_no")
+                                        });
+                                    }
+
+                                    //console.log(goods);
+                                    //return;
+                                    Ext.Ajax.request({
+                                        async: true,
+                                        url: apiBaseUrl + '/index.php/Warehouse/Manage/saveMoveWarehouseNoticeGoods',
+                                        params: {
+                                            id: model.get("move_warehouse_notice_id"),
+                                            status: 2,
+                                            warehouse_id: model.get("move_warehouse_notice_warehouse_id"),
+                                            data: Ext.encode(goods)
+                                        },
+                                        success: function (response) {
+                                            var text = Ext.decode(response.responseText);
+                                            console.log(text);
+                                            if (!text.success) {
+                                                Ext.toast(no + text.msg, "系统提示", 't');
+                                                return;
+                                            }
+                                            Ext.toast("提交成功", "系统提示", 't');
+                                            model.set("move_warehouse_notice_status", 1);
+                                            store.load();
+                                        }
+                                    });
+                                }
                             }
                         ]
                     }]
                 },
                 {
+                    xtype: 'segmentedbutton',
+                    margin: 10,
+                    items: [{
+                        text: '待移库商品信息',
+                        pressed: true
+                    },{
+                        text: '操作日志'
+                    }],
+                    listeners: {
+                        toggle: function (container, button, pressed) {
+                            var text = button.getText(),
+                                grid = container.up("panel").down("#move_warehouse_notice_goods_gird"), columns, store;
+                            grid.setTitle(text);
+                            if ("待移库商品信息" == text) {
+                                columns = [
+                                    {text: '唯一码', dataIndex: 'goods_no', flex: 1},
+                                    {text: '移出仓库', dataIndex: 'move_out_warehouse'},
+                                    {text: '移出库位', dataIndex: 'move_out_location'},
+                                    {text: '录入时间', dataIndex: 'import_time',flex: 1}
+                                ];
+                                store = model.get("move_location_goods_info_store");
+                            } else if ("操作日志" == text) {
+                                columns = [
+                                    {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
+                                    {text: '操作', dataIndex: 'orderinfo_name'},
+                                    {text: '操作人', dataIndex: 'orderinfo_color'}
+                                ];
+                                console.log(store);
+                                //store = model.get("goodsfo_log");
+                            }
+
+                            grid.reconfigure(store, columns);
+                        }
+                    }
+                },
+                {
                     xtype: 'grid',
-                    title: '待移库商品列表',
+                    title: '待移库商品信息',
                     flex: 1,
                     width: '100%',
+                    itemId:"move_warehouse_notice_goods_gird",
                     reference: 'move_warehouse_notice_goods_gird',
                     enableRemoveColumn: false,
                     sortableColumns: false,
@@ -372,6 +488,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                                     }
                                 }
                             });
+                            model.set("move_warehouse_notice_goods_info_store",store);
                             this.setStore(store);
                         }
                     }
@@ -459,6 +576,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
         var me = this;
         var id = record.get("id"),
             no = record.get("move_no"),
+            notice_no = record.get("notice_no"),
             warehouse = record.get("no"),
             notice_id = record.get("notice_id"),
             status = record.get("status");
@@ -469,19 +587,52 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
         model.set("move_warehouse_order_id", id);
         model.set("move_warehouse_order_notice_id", notice_id);
         model.set("move_warehouse_order_no", no);
+        model.set("move_warehouse_notice_no", notice_no);
         model.set("move_warehouse_order_status", status == 1 ? true : false);
         model.set("move_warehouse_order_warehouse", warehouse);
         if (info !== null) {
-            var store = info.down("grid").getStore();
-            store.setProxy({
-                type: 'ajax',
+            var grid = info.down("grid"),
+                data,store;
+            Ext.Ajax.request({
+                async:false,
                 url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveWarehouseOrderGoods?id=' + id,
-                reader: {
-                    type: 'json',
-                    rootProperty: 'data'
+                success:function(res){
+                    var json = Ext.decode(res.responseText);
+                    if(!json.success){
+                        Ext.toast(json.msg,"系统提示");
+                        return;
+                    }
+                    data = json.data;
+                },
+                failure:function(res){
+                    Ext.toast(json.msg,"系统提示");
+
                 }
             });
-            store.load();
+
+            var goods = Ext.create('Ext.data.Store',{
+                fields:[],
+                data:data.goods
+            });
+            var notice_goods = Ext.create('Ext.data.Store',{
+                fields:[],
+                data:data.notice_goods
+            });
+            model.set("move_warehouse_goods_info_store",goods);
+            model.set("move_warehouse_notice_goods_info_store",notice_goods);
+            var btn = info.down("segmentedbutton").down("button");
+            btn.setPressed(true);
+            //grid.setStore(goods);
+            //var store = info.down("grid").getStore();
+            //store.setProxy({
+            //    type: 'ajax',
+            //    url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveWarehouseOrderGoods?id=' + id,
+            //    reader: {
+            //        type: 'json',
+            //        rootProperty: 'data'
+            //    }
+            //});
+            //store.load();
             return;
         }
         container.add({
@@ -499,6 +650,12 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                             xtype: 'displayfield', fieldLabel: '移库单号', flex: 1,
                             bind: {
                                 value: '{move_warehouse_order_no}'
+                            }
+                        },
+                        {
+                            xtype: 'displayfield', fieldLabel: '通知单号', flex: 1,
+                            bind: {
+                                value: '{move_warehouse_notice_no}'
                             }
                         },
                         {
@@ -635,10 +792,57 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                     }]
                 },
                 {
+                    xtype: 'segmentedbutton',
+                    margin: 10,
+                    items: [{
+                        text: '移库商品信息',
+                        pressed: true
+                    },{
+                        text:'通知单商品信息'
+                    },{
+                        text: '操作日志'
+                    }],
+                    listeners: {
+                        toggle: function (container, button, pressed) {
+                            var text = button.getText(),
+                                grid = container.up("panel").down("#move_warehouse_goods_gird"), columns, store;
+                            grid.setTitle(text);
+                            if ("移库商品信息" == text) {
+                                columns = [
+                                    {text: '唯一码', dataIndex: 'goods_no', flex: 1},
+                                    {text: '移入库位', dataIndex: 'move_warehouse_in_location'},
+                                    {text: '移库时间', dataIndex: 'create_time', format: 'data(Y-m-d)', flex: 1}
+                                ];
+                                store = model.get("move_location_goods_info_store");
+                            } else if ("通知单商品信息" == text) {
+                                columns = [
+                                    {text: '唯一码', dataIndex: 'goods_no', flex: 1},
+                                    {text: '移出仓库', dataIndex: 'move_out_warehouse'},
+                                    {text: '移出库位', dataIndex: 'move_out_location'},
+                                    {text: '录入时间', dataIndex: 'import_time',flex: 1},
+                                    {text:'是否移库',dataIndex:'is_moved'}
+                                ];
+                                store = model.get("move_warehouse_notice_goods_info_store");
+                            }else if ("操作日志" == text) {
+                                columns = [
+                                    {text: '时间', dataIndex: 'orderinfo_style', flex: 1},
+                                    {text: '操作', dataIndex: 'orderinfo_name'},
+                                    {text: '操作人', dataIndex: 'orderinfo_color'}
+                                ];
+                                console.log(store);
+                                //store = model.get("goodsfo_log");
+                            }
+
+                            grid.reconfigure(store, columns);
+                        }
+                    }
+                },
+                {
                     xtype: 'grid',
-                    title: '移库商品列表',
+                    title: '移库商品信息',
                     flex: 1,
                     width: '100%',
+                    itemId:"move_warehouse_goods_gird",
                     reference: 'move_warehouse_order_goods_gird',
                     enableRemoveColumn: false,
                     sortableColumns: false,
@@ -649,19 +853,47 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                     ],
                     listeners: {
                         afterrender: function () {
-                            var store = Ext.create('Ext.data.Store', {
-                                fields: [],
-                                autoLoad: true,
-                                proxy: {
-                                    type: 'ajax',
-                                    url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveWarehouseOrderGoods?id=' + id,
-                                    reader: {
-                                        type: 'json',
-                                        rootProperty: 'data'
+                            //var store = Ext.create('Ext.data.Store', {
+                            //    fields: [],
+                            //    autoLoad: true,
+                            //    proxy: {
+                            //        type: 'ajax',
+                            //        url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveWarehouseOrderGoods?id=' + id,
+                            //        reader: {
+                            //            type: 'json',
+                            //            rootProperty: 'data'
+                            //        }
+                            //    }
+                            //});
+                            var data;
+                            Ext.Ajax.request({
+                                async:false,
+                                url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveWarehouseOrderGoods?id=' + id,
+                                success:function(res){
+                                    var json = Ext.decode(res.responseText);
+                                    if(!json.success){
+                                        Ext.toast(json.msg,"系统提示");
+                                        return;
                                     }
+                                    data = json.data;
+                                },
+                                failure:function(res){
+                                    Ext.toast(json.msg,"系统提示");
+
                                 }
                             });
-                            this.setStore(store);
+
+                            var goods = Ext.create('Ext.data.Store',{
+                                fields:[],
+                                data:data.goods
+                            });
+                            var notice_goods = Ext.create('Ext.data.Store',{
+                                fields:[],
+                                data:data.notice_goods
+                            });
+                            model.set("move_warehouse_goods_info_store",goods);
+                            model.set("move_warehouse_notice_goods_info_store",notice_goods);
+                            this.setStore(goods);
                         }
                     }
                 }
