@@ -104,7 +104,8 @@ Ext.define('erp.view.window.PurchasePayWin',{
                                     params:{
                                         status_id:me.status_id,
                                         order_no:me.order_no,
-                                        batch_no:me.batch_no
+                                        batch_no:me.batch_no,
+                                        pay_type:me.title
                                     },
                                     waitMsg:'正在提交...',
                                     success: function (form, action) {

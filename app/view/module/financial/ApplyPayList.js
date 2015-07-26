@@ -22,8 +22,9 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
 
         me.columns = [
             {
-                text: '付款类型', dataIndex: 'pay_type', renderer: function () {
-                return "采购付款";
+                text: '付款类型', dataIndex: 'pay_type', renderer: function (val) {
+                if(val == "") return "采购付款";
+                return val;
             }
             },
             {text: '收款公司', dataIndex: 'receive_money_company', flex: 1},

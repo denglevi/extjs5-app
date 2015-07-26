@@ -111,6 +111,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                         '->',{
                             bind:{
                                 text:'{nextStatusText}',
+                                disabled:'{statusBtn}'
                             },
                             handler:me.onNextStatusBtnClick,
                             scope:this
@@ -147,12 +148,15 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         me.callParent();
     },
     onNextStatusBtnClick:function(){
+        //现货状态
         var me = this,
+            model = me.getViewModel(),
             next_status = me.res.next_status,
             order_info = me.res.order_info,
             product_info = me.res.product_info,
             batchs = me.res.batchs;
         if (next_status === null) return;
+        model.set("statusBtn",true);
         var url = next_status.action == '' ? '/Purchasing/Buyer/purchasingAction' : next_status.action;
 
         if ('申请付款' == next_status.name) {
@@ -336,14 +340,15 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                             params: {
                                                 products: Ext.encode(me.products),
                                                 order_no: order_info.order_nos,
-                                                status_id: order_info.order_status
+                                                status_id: order_info.order_status,
+                                                pay_type:next_status.name
                                             },
                                             success: function (form, action) {
                                                 Ext.toast("提交成功","系统提示");
                                                 console.log(action.result);
                                                 win.destroy();
                                                 var data = action.result.product;
-                                                me.down("#bar_container").add({
+                                                me.down("segmentedbutton").add({
                                                     text:action.result.batch_no
                                                 });
                                                 var store = Ext.StoreManager.lookup("PurchaseOrderListStore");
@@ -399,7 +404,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 total: total
             });
             win.on("beforedestroy",me.changeOrderData,me);
-        win.show();
+            win.show();
         } else if ("申请定金" == next_status.name) {
             var win = Ext.create('erp.view.window.PurchasePayWin', {
                 title: next_status.name,
@@ -447,7 +452,6 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             me.changeOrderData();
         } else if ("关单" == next_status.name) {
             me.uploadCloseFile(order_info.order_nos);
-            me.changeOrderData();
         }
     },
     changeOrderData:function(){
@@ -464,6 +468,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 me.res = res;
                 var model = me.getViewModel();
                 model.set("purchaseOrderStatus",res.status);
+                model.set("statusBtn",false);
                 if(res.next_status !== null){
                     var hidden = res.next_status.mark == 1 || res.next_status.other_action == 1 ? true : false;
                     model.set("btnIsHidden",hidden);
@@ -509,6 +514,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         }
     },
     batchOrderStatusBtnClick: function (btn) {
+        //期货状态
         var me = this, batch_no = btn.up("grid").getTitle(), batchs = me.res.batchs, len = batchs.length, bat;
         for (var i = 0; i < len; i++) {
             if (batchs[i].batch_no == batch_no) {
@@ -541,15 +547,27 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 }
             });
         } else if ("验货" == status_name) {
+            btn.setDisabled(true);
+            var tabpanel = me.up("tabpanel");
             var tab = {
                 title: status_name,
                 order_no: bat.order_no,
                 batch_no: bat.batch_no,
                 order_info:me.res.order_info,
                 xtype: "addcheckproductorder",
-                closable: true
+                closable: true,
+                listeners:{
+                    beforedestroy:function(){
+                        var info = tabpanel.down("purchaseorderinfo");
+                        console.log(info);
+                        if(info == null) return;
+                        me.changeOrderData();
+                        var btn = me.down("segmentedbutton").down("button");
+                        btn.setPressed(true);
+                    }
+                }
             };
-            me.up("tabpanel").setActiveTab(tab);
+            tabpanel.setActiveTab(tab);
         } else if ("提货" == status_name || "发货到仓库" == status_name) {
             var need_notice = "提货" == status_name ? 0 : 1;
             var win = Ext.create('erp.view.window.AddLogisticsFormWin', {
@@ -591,7 +609,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
     getBarContainer: function (batchs,order_info) {
         var me = this;
         var items = [
-            {itemId: 'goods_info', text: '商品信息', disabled: true},
+            {itemId: 'goods_info', text: '商品信息',itemId:'goods_info',pressed:true},
             {itemId: 'log', text: '操作日志'}
         ];
         if('spot_purchase_order' != order_info.order_state){
@@ -601,16 +619,21 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             }
         }
         return {
-            xtype: 'container',
-            layout: 'hbox',
-            itemId: 'bar_container',
-            defaultType: 'button',
-            defaults: {
-                margin: '0 0 0 5',
-                scope: this,
-                handler: me.onGridTopBtnClick
-            },
-            items: items
+            xtype: 'segmentedbutton',
+            margin:10,
+            //layout: 'hbox',
+            //itemId: 'bar_container',
+            //defaultType: 'button',
+            //defaults: {
+            //    margin: '0 0 0 5',
+            //    scope: this,
+            //    handler: me.onGridTopBtnClick
+            //},
+            items: items,
+            listeners: {
+                toggle: me.onGridTopBtnClick,
+                scope:this
+            }
         };
     },
     setBtnDisabled: function () {
@@ -619,11 +642,11 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             item.setDisabled(false);
         });
     },
-    onGridTopBtnClick: function (btn) {
+    onGridTopBtnClick: function (container,btn,pressed) {
         var grid = this.down("grid"),
             text = btn.getText(), columns, data, me = this;
-        me.setBtnDisabled();
-        btn.setDisabled(true);
+        //me.setBtnDisabled();
+        //btn.setDisabled(true);
         grid.setTitle(text);
         var item = grid.getDockedItems('toolbar[dock="top"]');
         if ("操作日志" == text) {
@@ -821,7 +844,6 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                             var data = action.result.data;
                                             Ext.toast("操作成功","系统提示");
                                             win.destroy();
-                                            me.destroy();
                                         },
                                         failure: function (form, action) {
                                             switch (action.failureType) {
@@ -842,6 +864,10 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     ]
                 }
             ]
-        }).show();
+        });
+        win.show();
+        win.on("beforedestroy",function(){
+            me.destroy();
+        });
     }
 });
