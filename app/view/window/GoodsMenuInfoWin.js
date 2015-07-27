@@ -71,7 +71,7 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
                             '<tr><td class="col-md-3 text-right">大类</td><td class="col-md-9">{large_class}</td></tr>',
                             '<tr><td class="col-md-3 text-right">季节</td><td>{year_season}</td></tr>',
                             '<tr><td class="col-md-3 text-right">品牌</td><td>{brand}</td></tr>',
-                            '<tr><td class="col-md-3 text-right">中类</td><td>{middle_class}</td></tr>',
+                            //'<tr><td class="col-md-3 text-right">中类</td><td>{middle_class}</td></tr>',
                             '<tr><td class="col-md-3 text-right">小类</td><td>{small_class}</td></tr>',
                             '<tr><td class="col-md-3 text-right">性别</td><td>{sex}</td></tr>',
                             '<tr><td class="col-md-3 text-right">执行标准</td><td>{execute_standard}</td></tr>',

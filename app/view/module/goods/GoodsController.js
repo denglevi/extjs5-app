@@ -20,6 +20,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
         'Ext.form.field.Date',
         'Ext.form.field.Display',
         'Ext.form.field.File',
+        'Ext.form.field.Hidden',
         'Ext.form.field.Text',
         'Ext.grid.Panel',
         'Ext.layout.container.Anchor',
@@ -109,7 +110,141 @@ Ext.define('erp.view.module.goods.GoodsController', {
             info: res.data
         }).show();
     },
+    viewGoodsMenu:function(grid, rowIndex, colIndex, item, e, record, row){
+        var menu_id = record.get("id"), res;
+        console.log(menu_id);
+        Ext.Ajax.request({
+            async: false,
+            method: 'POST',
+            url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/getGoodsMenuInfo',
+            params: {
+                id: menu_id
+            },
+            success: function (response) {
+                res = Ext.decode(response.responseText);
+            }
+        });
+        if (!res.success) return;
+        console.log(res.data);
+        Ext.create('erp.view.window.GoodsMenuInfoWin', {
+            title: "款号详情",
+            info: res.data
+        }).show();
+    },
+    editGoodsMenu:function(grid, rowIndex, colIndex, item, e, record, row){
+        var menu_id = record.get("id"), res;
+        console.log(menu_id);
+        Ext.Ajax.request({
+            async: false,
+            method: 'POST',
+            url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/getGoodsMenuInfoAndProperty',
+            params: {
+                id: menu_id
+            },
+            success: function (response) {
+                res = Ext.decode(response.responseText);
+            }
+        });
+        if (!res.success) return;
+        console.log(res.data);
+        var style = res.data.style,win,
+            season = res.data.season;
+        if(season.length == 0){
+            Ext.toast("获取季节失败,请重试!","系统提示");
+            return;
+        }
+        var seasonStore = Ext.create("Ext.data.Store",{
+           fields:[],
+            data:season
+        });
+        var form = Ext.create('Ext.form.Panel',{
+           layout:'column',
+            bodyPadding:10,
+            width: 650,
+            height: 280,
+            url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/editGoodsMenuInfo',
+            defaults:{
+                xtype:'textfield',
+                columnWidth:0.5,
+                anchor:'100%',
+                allowBlank:true,
+                labelAlign:'right',
+                labelWidth:70,
+                margin:5
+            },
+            items:[
+                {xtype:'hidden',name:'id',value:style.id},
+                {fieldLabel:'系统款号',name:'system_style_no',allowBlank:false,value:style.system_style_no},
+                {fieldLabel:'商品名称',name:'name_zh',allowBlank:false,value:style.name_zh},
+                {fieldLabel:'供应商款号',name:'supply_style_no',allowBlank:false,value:style.supply_style_no},
+                {fieldLabel:'大类',name:'large_class',value:style.large_class},
+                {fieldLabel:'季节',name:'year_season',allowBlank:false,value:style.year_season,xtype:'combo',displayField:'name',valueField:'val',store:seasonStore,editable:false},
+                {fieldLabel:'品牌',name:'brand',allowBlank:false,value:style.brand},
+                //{fieldLabel:'中类',name:''},
+                {fieldLabel:'小类',name:'small_class',value:style.small_class},
+                {fieldLabel:'性别',name:'sex',value:style.sex},
+                {fieldLabel:'执行标准',name:'execute_standard',value:style.execute_standard},
+                {fieldLabel:'安全级别',name:'safety_level',value:style.safety_level},
+                {fieldLabel:'等级',name:'level',value:style.level}
+            ],
+            buttons:[
+                {
+                    text:'保存',
+                    formBind: true,
+                    disabled: true,
+                    handler: function () {
+                        var form = this.up('form').getForm();
+                        if (form.isValid()) {
+                            form.submit({
+                                waitMsg:'正在保存...',
+                                success: function (form, action) {
+                                    win.destroy();
+                                    var store = Ext.StoreManager.lookup("GoodsMenuStore");
+                                    if(store != null) store.load();
+                                },
+                                failure: function (form, action) {
+                                    console.log(action);
+                                    if(action.result.msg == null){
+                                        Ext.Msg.alert('失败', "网络请求错误,请检查网络重试!");
+                                        return;
+                                    }
+                                    Ext.Msg.alert('失败', action.result.msg);
+                                }
+                            });
+                        }
+                    }
+                }
+            ]
+        });
+        win = Ext.create('Ext.window.Window', {
+            title: "修改款号详情",
+            layout:'fit',
+            items:[form]
+            //info: res.data
+        });
+        win.show();
+    },
     onGoodListGridDblClick: function (gp, record) {
+        var id = record.get("id"), res;
+        Ext.Ajax.request({
+            async: false,
+            method: 'POST',
+            url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/getGoodsInfo',
+            params: {
+                id: id
+            },
+            success: function (response) {
+                //myMask.destroy( );
+                res = Ext.decode(response.responseText);
+            }
+        });
+        if (!res.success) return;
+        Ext.create('erp.view.window.GoodsInfoWin', {
+            title: "商品详情",
+            info: res.data
+        }).show();
+    },
+    viewGoodsInfo:function(grid, rowIndex, colIndex, item, e, record, row){
         var id = record.get("id"), res;
         Ext.Ajax.request({
             async: false,

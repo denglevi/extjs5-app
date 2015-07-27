@@ -10,7 +10,8 @@ Ext.define('erp.Application', {
         'Ext.form.Panel',
         'Ext.layout.container.Fit',
         'erp.view.login.Login',
-        'erp.view.main.Main'
+        'erp.view.main.Main',
+        'Ext.window.Toast'
     ],
 
     name: 'erp',

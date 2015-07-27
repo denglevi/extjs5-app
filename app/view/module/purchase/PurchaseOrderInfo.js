@@ -8,6 +8,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
     requires: [
         'Ext.Ajax',
         'Ext.Array',
+        'Ext.button.Segmented',
         'Ext.container.Container',
         'Ext.data.Store',
         'Ext.data.StoreManager',
@@ -144,7 +145,12 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             barContainer,
             infoGrid
         ];
-
+        me.listeners = {
+            beforedestroy:function(){
+                var store = Ext.StoreManager.lookup("PurchaseOrderListStore");
+                if(store != null) store.load();
+            }
+        };
         me.callParent();
     },
     onNextStatusBtnClick:function(){
@@ -590,8 +596,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             });
             win.on("beforedestroy",function(){
                 me.destroy();
-            });
-            win.on("beforedestroy",me.changeOrderData,me);
+            },me);
             win.show();
         } else if ("申请报关付款" == status_name) {
             var win = Ext.create('erp.view.window.PurchasePayWin', {
@@ -602,7 +607,9 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 url: url,
                 total: 0
             });
-            win.on("beforedestroy",me.changeOrderData,me);
+            win.on("beforedestroy",function(){
+                me.destroy();
+            },me);
             win.show();
         }
     },

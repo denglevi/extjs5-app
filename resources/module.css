@@ -175,3 +175,7 @@
 .columnAction{
     margin-left:5px;
 }
+
+.goods_pic{
+    background-size: contain;
+}

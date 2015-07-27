@@ -11,6 +11,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
         'Ext.form.field.ComboBox',
         'Ext.form.field.Text',
         'Ext.grid.Panel',
+        'Ext.grid.column.Action',
         'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.goods.GoodsController',
@@ -168,7 +169,24 @@ Ext.define('erp.view.module.goods.GoodsList', {
                 }
                 },
                 {text:'所在仓库',dataIndex:'warehouse_no'},
-                {text:'所在库位',dataIndex:'location_no'}
+                {text:'所在库位',dataIndex:'location_no'},
+                {
+                    text: '操作',
+                    xtype: 'actioncolumn',
+                    flex: 1,
+                    items: [
+                        {
+                            iconCls: 'viewIcon columnAction',
+                            tooltip: '查看',
+                            handler: "viewGoodsInfo"
+                        },
+                        {
+                            iconCls: 'editIcon columnAction',
+                            tooltip: '修改',
+                            handler: "viewGoodsInfo"
+                        }
+                    ]
+                }
             ],
             store: 'GoodsListStore',
             bbar: ['->', {

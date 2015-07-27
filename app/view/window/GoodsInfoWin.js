@@ -29,10 +29,10 @@ Ext.define('erp.view.window.GoodsInfoWin', {
         var me = this;
 
         var info = me.info, image = '/resources/images/logo.png';
-        console.log(info);
         if (info.images != null && info.images.length > 0) {
             image = apiBaseUrl + '/../' + info.images[0].image_src
         }
+        var images = info.images;
         this.tbar = [
             '->',
             {
@@ -59,6 +59,12 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                                             Ext.toast(action.result.msg, "系统提示");
                                             return;
                                         }
+                                        var imgs = action.result.data;
+                                        if(image == '/resources/images/logo.png' && imgs.length < 1) return;
+                                        var pic_image = me.down("image");
+                                        pic_image.setSrc(apiBaseUrl + '/../' + imgs[0].image_src);
+                                        me.down("#goods_pic").setData(imgs);
+                                        console.log(action);
                                     },
                                     failure: function (form, action) {
                                         if (action.response.status == 200) {
@@ -77,9 +83,8 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                 text: '上传图片',
                 iconCls: 'importIcon',
                 handler: function () {
-                    var dom = Ext.get("upload_goods_pic_field");
-                    var input = dom.select("input").last();
-                    console.log(input.dom,input);
+                    var dom = Ext.get("upload_goods_pic_field"),
+                        input = dom.select("input").last();
                     input.dom.multiple=true;
                     input.dom.click();
 
@@ -101,7 +106,9 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                     {
                         xtype: 'image',
                         src: image,
-                        width: 200
+                        width: 150,
+                        height:150,
+                        imgCls:'goods_info'
                     },
                     {
                         xtype: 'container',
@@ -183,10 +190,11 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                     },
                     {
                         title: '商品图片',
-                        data: info,
+                        data: images,
+                        itemId:'goods_pic',
                         tpl: new Ext.XTemplate(
                             '<div class="row">',
-                            '<tpl for="images">',
+                            '<tpl for=".">',
                             '<div class="col-xs-6 col-md-3" style="margin:5px;">',
                             '<a href="#" class="thumbnail">{[this.getImg(values.image_src)]}</a>',
                             '</div>',

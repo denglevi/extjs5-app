@@ -7,6 +7,7 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
 
     requires: [
         'Ext.Ajax',
+        'Ext.panel.Panel',
         'erp.view.module.purchase.AddPurchaseOrder',
         'erp.view.module.purchase.CheckProductOrderInfo',
         'erp.view.module.purchase.PurchaseOrderInfo'
@@ -64,8 +65,9 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
         });
     },
     onPurchaseOrderGridDblClick:function(gp,record){
-        var order_id = record.get("id");
+        var order_id = record.get("id"),res;
         Ext.getBody().mask("请稍等,正在获取数据...");
+
         Ext.Ajax.request({
             async: true,
             url: apiBaseUrl + '/index.php/Purchasing/Buyer/getPurchaseOrderInfo',
@@ -81,12 +83,12 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
                     title:'订单详情',
                     closable:true,
                     order_id:order_id,
-                    res:res,
-                    listeners:{
-                        beforedestroy:function(){
-                            gp.getStore().load();
-                        }
-                    }
+                    res:res
+                    //listeners:{
+                        //beforedestroy:function(){
+                        //    gp.getStore().load();
+                        //}
+                    //}
                 });
             }
         });

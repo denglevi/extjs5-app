@@ -203,7 +203,12 @@ Ext.define('erp.view.main.MainController', {
             },
             failure:function(res){
                 Ext.getBody().unmask();
-                Ext.toast("网络请求错误,请检查网络!重试","系统提示");
+                localStorage.removeItem("is_login");
+                localStorage.removeItem("user");
+                //history.go(0);
+                me.getView().up("viewport").destroy();
+                Ext.widget("login");
+                //Ext.toast("网络请求错误,请检查网络!重试","系统提示");
             }
         })
     }
