@@ -17,6 +17,7 @@ Ext.define('erp.view.window.AddMoveLocationWin', {
     ],
     resizable: false,
     title: '新增移位单',
+    modal:true,
     initComponent: function (args) {
         var me = this;
         Ext.Ajax.request({
@@ -85,7 +86,7 @@ Ext.define('erp.view.window.AddMoveLocationWin', {
                                 Ext.toast(no + text.msg, "系统提示", 't');
                                 return;
                             }
-                            me.fireEvent("refresh_move_location_grid");
+                            me.fireEvent("refresh_move_location_grid",text.data);
                             me.destroy();
                         }
                     });

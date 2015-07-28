@@ -49,7 +49,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
             });
             store.load();
         }, this);
-        goods_list.on("rowdblclick", "onGoodListGridDblClick");
+        //goods_list.on("rowdblclick", "onGoodListGridDblClick");
 
         me.callParent();
     },
@@ -92,6 +92,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
             height: '100%',
             title: '商品列表',
             reference: 'goods_list_grid',
+            sortableColumns:false,
             tbar: [
                 '->',
                 {
@@ -146,20 +147,20 @@ Ext.define('erp.view.module.goods.GoodsList', {
                     handler: 'searchGoods'
                 }],
             columns: [
+                //{
+                //    text: '商品图片', dataIndex: 'image_src', flex: 1, renderer: function (val) {
+                //    var src = val || '/resources/images/logo.png';
+                //    return '<img height=50 src="' + src + '" alt="" class="img-thumbnail" />';
+                //}
+                //},
+                {text: '唯一码', dataIndex: 'no',width:170},
+                {text: '名称', dataIndex: 'name_zh',width:100},
+                {text: '颜色代码', dataIndex: 'supply_color_no',width:70},
+                {text: '颜色名称', dataIndex: 'color',width:70},
+                {text: '尺码', dataIndex: 'size',width:70},
+                {text: '单价', dataIndex: 'retail_price',width:70},
                 {
-                    text: '商品图片', dataIndex: 'image_src', flex: 1, renderer: function (val) {
-                    var src = val || '/resources/images/logo.png';
-                    return '<img height=50 src="' + src + '" alt="" class="img-thumbnail" />';
-                }
-                },
-                {text: '唯一码', dataIndex: 'no', flex: 1},
-                {text: '名称', dataIndex: 'name_zh'},
-                {text: '颜色代码', dataIndex: 'supply_color_no'},
-                {text: '颜色名称', dataIndex: 'color'},
-                {text: '尺码', dataIndex: 'size'},
-                {text: '单价', dataIndex: 'retail_price'},
-                {
-                    text: '商品状态', dataIndex: 'status', renderer: function (val) {
+                    text: '商品状态', dataIndex: 'status',width:70, renderer: function (val) {
                     if (0 == val) return '<b class="text-danger">未入库</b>';
                     if (1 == val) return '<b class="text-success">已入库</b>';
                     if (2 == val) return '<b class="text-info">已上架</b>';
@@ -168,8 +169,8 @@ Ext.define('erp.view.module.goods.GoodsList', {
                     if (5 == val) return '<b class="text-primary">待移库</b>';
                 }
                 },
-                {text:'所在仓库',dataIndex:'warehouse_no'},
-                {text:'所在库位',dataIndex:'location_no'},
+                {text:'所在仓库',dataIndex:'warehouse_no',width:70},
+                {text:'所在库位',dataIndex:'location_no',width:70},
                 {
                     text: '操作',
                     xtype: 'actioncolumn',
@@ -180,11 +181,11 @@ Ext.define('erp.view.module.goods.GoodsList', {
                             tooltip: '查看',
                             handler: "viewGoodsInfo"
                         },
-                        {
-                            iconCls: 'editIcon columnAction',
-                            tooltip: '修改',
-                            handler: "viewGoodsInfo"
-                        }
+                        //{
+                        //    iconCls: 'editIcon columnAction',
+                        //    tooltip: '修改',
+                        //    handler: "viewGoodsInfo"
+                        //}
                     ]
                 }
             ],

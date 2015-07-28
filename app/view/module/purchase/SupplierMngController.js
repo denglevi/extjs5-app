@@ -93,6 +93,30 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
             }
         });
     },
+    viewPurchaseOrderInfo:function(grid, rowIndex, colIndex, item, e, record, row){
+        var order_id = record.get("id"),res;
+        Ext.getBody().mask("请稍等,正在获取数据...");
+
+        Ext.Ajax.request({
+            async: true,
+            url: apiBaseUrl + '/index.php/Purchasing/Buyer/getPurchaseOrderInfo',
+            params: {
+                id: order_id
+            },
+            success: function (response) {
+                Ext.getBody().unmask();
+                var text = Ext.decode(response.responseText);
+                res = text.data;
+                grid.up('tabpanel').setActiveTab({
+                    xtype:'purchaseorderinfo',
+                    title:'订单详情',
+                    closable:true,
+                    order_id:order_id,
+                    res:res
+                });
+            }
+        });
+    },
     onCheckProductOrderGridDblClick:function(gp,record){
         var batch_no = record.get("batch_no");
         gp.up('tabpanel').setActiveTab({

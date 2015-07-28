@@ -62,27 +62,27 @@ Ext.define('erp.view.window.AddPassCustomPayWin',{
                         name: 'pay_function',
                         xtype: 'textarea'
                     },
-                    {
-                        fieldLabel: '选择付款人',
-                        name: 'payer',
-                        xtype: 'combo',
-                        editable: false,
-                        displayField: 'username',
-                        valueField: 'id',
-                        //queryMode:'local',
-                        store:Ext.create('Ext.data.Store',{
-                            //autoLoad:true,
-                            fields:['id','username'],
-                            proxy: {
-                                type: 'ajax',
-                                url: apiBaseUrl+'/index.php/Purchasing/Buyer/getPayer',
-                                reader: {
-                                    type: 'json',
-                                    rootProperty: 'data'
-                                }
-                            }
-                        })
-                    }
+                    //{
+                    //    fieldLabel: '选择付款人',
+                    //    name: 'payer',
+                    //    xtype: 'combo',
+                    //    editable: false,
+                    //    displayField: 'username',
+                    //    valueField: 'id',
+                    //    //queryMode:'local',
+                    //    store:Ext.create('Ext.data.Store',{
+                    //        //autoLoad:true,
+                    //        fields:['id','username'],
+                    //        proxy: {
+                    //            type: 'ajax',
+                    //            url: apiBaseUrl+'/index.php/Purchasing/Buyer/getPayer',
+                    //            reader: {
+                    //                type: 'json',
+                    //                rootProperty: 'data'
+                    //            }
+                    //        }
+                    //    })
+                    //}
                 ],
                 buttons: [
                     {

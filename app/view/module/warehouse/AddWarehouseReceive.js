@@ -87,8 +87,12 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                         plugins: this.getGridPlugins(),
                         listeners: {
                             edit: function (gp, e) {
-                                var record = e.record;
-                                record.set("diff_num", record.get("num") + record.get("diff_num"));
+                                var record = e.record,
+                                    num = record.get("num");
+                                if(num == "" || num == null){
+                                    num = 0;
+                                }
+                                record.set("diff_num", parseInt(num) + parseInt(record.get("diff_num")));
                             }
                         }
                     }

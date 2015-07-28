@@ -1,4 +1,7 @@
-Ext.define('erp.view.window.PurchasePayWin',{
+/**
+ * Created by Administrator on 2015-07-28.
+ */
+Ext.define('erp.view.window.ApplyPassCustomPayWin',{
     extend:'Ext.window.Window',
     requires: [
         'Ext.data.Store',
@@ -12,19 +15,18 @@ Ext.define('erp.view.window.PurchasePayWin',{
         'Ext.form.field.TextArea',
         'Ext.layout.container.Anchor'
     ],
-    xtype:'purchasepaywin',
+    xtype:'applypasscustompaywin',
     layout:'anchor',
     modal:true,
     initComponent:function(){
         var me = this;
-        console.log(me.batch_no);
         Ext.Ajax.request({
-           async:true,
+            async:true,
             method:'POST',
             params:{
                 order_no:me.order_no
             },
-            url:apiBaseUrl+'/index.php/Purchasing/buyer/getSupplierInfo',
+            url:apiBaseUrl+'/index.php/Purchasing/buyer/getCustomCompanyInfo',
             success:function(res){
                 var json = Ext.decode(res.responseText);
                 if(!json.success){
@@ -34,15 +36,13 @@ Ext.define('erp.view.window.PurchasePayWin',{
                 }
                 console.log(json.data);
                 var company = me.down("textfield[name=receive_money_company]"),
-                    bank_no = me.down("textfield[name=company_bank_no]"),
-                    bank_name = me.down("textfield[name=company_open_bank]");
-                company.setValue(json.data.name);
-                bank_no.setValue(json.data.bank_no);
-                bank_name.setValue(json.data.bank_name);
+                    store = Ext.create("Ext.data.Store",{
+                        fields:[],
+                        data:json.data
+                    });
+                company.setStore(store);
 
                 company.setDisabled(false);
-                bank_no.setDisabled(false);
-                bank_name.setDisabled(false);
             },
             failure:function(){
                 Ext.alert("系统提示","网络请求错误,请重试!");
@@ -63,8 +63,30 @@ Ext.define('erp.view.window.PurchasePayWin',{
                 bodyPadding:10,
                 items:[
                     {
-                        fieldLabel: '收款公司',
+                        fieldLabel: '报关公司',
                         name: 'receive_money_company',
+                        xtype:'combo',
+                        displayField:'name',
+                        valueField:'name',
+                        editable:false,
+                        listeners:{
+                            change:function(obj,newVal,oldVal){
+                                var items = obj.getStore().getData().items,len=items.length;
+                                for(var i=0;i<len;++i){
+                                    if(newVal == items[i].get("name")){
+                                        var no =me.down("textfield[name=company_bank_no]"),
+                                            bank = me.down("textfield[name=company_open_bank]");
+                                        no.setValue(items[i].get("bank_account"));
+                                        bank.setValue(items[i].get("open_bank"));
+
+                                        no.setDisabled(false);
+                                        bank.setDisabled(false);
+                                        break;
+                                    }
+                                }
+
+                            }
+                        },
                         disabled:true
                     },
                     {

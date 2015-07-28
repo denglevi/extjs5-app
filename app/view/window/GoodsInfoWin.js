@@ -67,7 +67,7 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                                         console.log(action);
                                     },
                                     failure: function (form, action) {
-                                        if (action.response.status == 200) {
+                                        if (action.result.msg != null) {
                                             Ext.toast(action.result.msg, "系统提示");
                                             return;
                                         }
@@ -82,12 +82,12 @@ Ext.define('erp.view.window.GoodsInfoWin', {
             {
                 text: '上传图片',
                 iconCls: 'importIcon',
+                tooltip:"只允许上传常见后缀名的图片(jpg,gif,png,jpeg)",
                 handler: function () {
                     var dom = Ext.get("upload_goods_pic_field"),
                         input = dom.select("input").last();
                     input.dom.multiple=true;
                     input.dom.click();
-
                 }
             },
             //{
@@ -156,7 +156,7 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                             '<tr><td class="col-md-3 text-right">大类</td><td class="col-md-9">{large_class}</td></tr>',
                             '<tr><td class="col-md-3 text-right">年份</td><td>{year_season}</td></tr>',
                             '<tr><td class="col-md-3 text-right">品牌</td><td>{brand}</td></tr>',
-                            '<tr><td class="col-md-3 text-right">中类</td><td>{middle_class}</td></tr>',
+                            //'<tr><td class="col-md-3 text-right">中类</td><td>{middle_class}</td></tr>',
                             '<tr><td class="col-md-3 text-right">小类</td><td>{small_class}</td></tr>',
                             '<tr><td class="col-md-3 text-right">性别</td><td>{sex}</td></tr>',
                             '<tr><td class="col-md-3 text-right">执行标准</td><td>{execute_standard}</td></tr>',

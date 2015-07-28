@@ -36,6 +36,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         'erp.view.module.purchase.SupplierMngModel',
         'erp.view.window.AddLogisticsFormWin',
         'erp.view.window.AddPassCustomWin',
+        'erp.view.window.ApplyPassCustomPayWin',
         'erp.view.window.PurchasePayWin'
     ],
     //controller: 'suppliermng',
@@ -401,7 +402,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             win.show();
         } else if ("申请报关付款" == next_status.name) {
             console.log(batchs);
-            var win = Ext.create('erp.view.window.PurchasePayWin', {
+            var win = Ext.create('erp.view.window.ApplyPassCustomPayWin', {
                 title: next_status.name,
                 status_id: order_info.order_status,
                 order_no: order_info.order_nos,

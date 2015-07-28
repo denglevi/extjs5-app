@@ -35,8 +35,8 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
             {text: '最后付款日期', dataIndex: 'last_pay_day'},
             {text: '付款日期', dataIndex: 'pay_day'},
             {text: '状态', dataIndex: 'status', flex: 1,renderer:function(val){
-                if(val == 1) return "已付款";
-                return "待付款";
+                if(val == 1) return "<b class='text-info'>已付款</b>";
+                return "<b class='text-danger'>待付款</b>";
             }}
         ];
         me.store = Ext.create('Ext.data.Store', {

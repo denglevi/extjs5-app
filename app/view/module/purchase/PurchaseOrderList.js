@@ -6,6 +6,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
     alias: "widget.purchaseorderlist",
     requires: [
         'Ext.form.field.Text',
+        'Ext.grid.column.Action',
         'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.purchase.SupplierMngController',
@@ -73,7 +74,19 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
             return '期货';
         }},
         {text: '状态', dataIndex: 'status_name'},
-        {text: '提交日期', dataIndex: 'order_time', flex: 2}
+        {text: '提交日期', dataIndex: 'order_time', flex: 2},
+        {
+            text: '操作',
+            xtype: 'actioncolumn',
+            flex: 1,
+            items: [
+                {
+                    iconCls: 'viewIcon columnAction',
+                    tooltip: '查看',
+                    handler: "viewPurchaseOrderInfo"
+                }
+            ]
+        }
     ],
     store: 'PurchaseOrderListStore'
 });

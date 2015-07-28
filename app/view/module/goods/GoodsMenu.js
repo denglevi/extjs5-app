@@ -97,7 +97,7 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
     listeners: {
         afterrender: function () {
             this.getStore().load();
-        },
-        rowdblclick: 'onGoodsMenuGridDblClick'
+        }
+        //rowdblclick: 'onGoodsMenuGridDblClick'
     }
 });

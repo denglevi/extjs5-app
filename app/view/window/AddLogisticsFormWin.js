@@ -48,17 +48,23 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
                         url: apiBaseUrl + '/index.php/Purchasing/Buyer/getSupplierAndBuyer',
                         success: function (response) {
                             var text = Ext.decode(response.responseText);
-                            res = text.data;
-                            console.log(res, this);
+                            me.res = text.data;
                             var form = me.down("form");
                             //form.down("combo[name=supplier_id]").setStore(Ext.create('Ext.data.Store', {
                             //    fields: ['id_no', 'name'],
                             //    data: res.supplier
                             //}));
-                            form.down("combo[name=logistics_company]").setStore(Ext.create('Ext.data.Store', {
+                            var company = form.down("combo[name=logistics_company]"),
+                                contact = form.down("textfield[name=contact]"),
+                                phone = form.down("textfield[name=mobile_phone]");
+                            company.setStore(Ext.create('Ext.data.Store', {
                                 fields: ['id', 'name'],
-                                data: res.logistics_company
+                                data: me.res.logistics_company
                             }));
+
+                            company.setDisabled(false);
+                            contact.setDisabled(false);
+                            phone.setDisabled(false);
                         }
                     });
                 }
@@ -69,15 +75,26 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
     getFieldItems: function (batch_no,order_no) {
         var me = this;
         var fields = [
-            {fieldLabel: '发货日期', name: 'date', xtype: 'datefield', format: 'Y-m-d', value: new Date(),},
+            {fieldLabel: '发货日期', name: 'date', xtype: 'datefield', format: 'Y-m-d', value: new Date(),editable:false},
             {fieldLabel: '供应商', name: 'supplier_id', xtype: 'hidden',value:me.order_info.vendor_id},
             //{fieldLabel: '供应商', name: 'supplier_id',editable:false, xtype: 'combo',displayField: 'name',valueField: 'id_no'},
             {fieldLabel: '供货单号', name: 'batch_no',value:batch_no,editable:false},
             {fieldLabel: '采购单号', name: 'order_no',value:order_no,editable:false},
             {fieldLabel: '物流单号', name: 'logistics_no'},
-            {fieldLabel: '物流公司', name: 'logistics_company',editable:false, xtype: 'combo',displayField: 'name',valueField: 'id'},
-            {fieldLabel: '联系人', name: 'contact'},
-            {fieldLabel: '手机', name: 'mobile_phone'},
+            {fieldLabel: '物流公司', name: 'logistics_company',disabled:true,editable:false, xtype: 'combo',displayField: 'name',valueField: 'id',listeners:{
+                change:function(obj,newValue,oldValue){
+                    var companys = me.res.logistics_company,len = companys.length;
+                    for(var i=0;i<len;++i){
+                        if(newValue == companys[i].id){
+                            me.down("form").down("textfield[name=contact]").setValue(companys[i].contact);
+                            me.down("form").down("textfield[name=mobile_phone]").setValue(companys[i].phone);
+                            break;
+                        }
+                    }
+                }
+            }},
+            {fieldLabel: '联系人', name: 'contact',disabled:true},
+            {fieldLabel: '手机', name: 'mobile_phone',disabled:true},
             {
                 xtype: 'radiogroup',
                 fieldLabel: '物流类型',
