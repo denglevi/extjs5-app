@@ -62,7 +62,7 @@ Ext.define('erp.view.module.goods.GoodsDeliveryOrder', {
             enableColumnHide: false,
             tbar: [
                 {text: '新增', iconCls: 'addIcon', handler: "addGoodsDeliveryNotice"},
-                {text: '删除', iconCls: 'delIcon'}
+                {text: '删除', iconCls: 'delIcon',handler:"delGoodsDeliveryNotice"}
             ],
             selModel: 'checkboxmodel',
             columns: [{text: '通知单号', dataIndex: 'notice_no', flex: 1}],

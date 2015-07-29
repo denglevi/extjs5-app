@@ -110,7 +110,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
             info: res.data
         }).show();
     },
-    viewGoodsMenu:function(grid, rowIndex, colIndex, item, e, record, row){
+    viewGoodsMenu: function (grid, rowIndex, colIndex, item, e, record, row) {
         var menu_id = record.get("id"), res;
         console.log(menu_id);
         Ext.Ajax.request({
@@ -131,7 +131,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
             info: res.data
         }).show();
     },
-    editGoodsMenu:function(grid, rowIndex, colIndex, item, e, record, row){
+    editGoodsMenu: function (grid, rowIndex, colIndex, item, e, record, row) {
         var menu_id = record.get("id"), res;
         console.log(menu_id);
         Ext.Ajax.request({
@@ -147,64 +147,74 @@ Ext.define('erp.view.module.goods.GoodsController', {
         });
         if (!res.success) return;
         console.log(res.data);
-        var style = res.data.style,win,
+        var style = res.data.style, win,
             season = res.data.season;
-        if(season.length == 0){
-            Ext.toast("获取季节失败,请重试!","系统提示");
+        if (season.length == 0) {
+            Ext.toast("获取季节失败,请重试!", "系统提示");
             return;
         }
-        var seasonStore = Ext.create("Ext.data.Store",{
-           fields:[],
-            data:season
+        var seasonStore = Ext.create("Ext.data.Store", {
+            fields: [],
+            data: season
         });
-        var form = Ext.create('Ext.form.Panel',{
-           layout:'column',
-            bodyPadding:10,
+        var form = Ext.create('Ext.form.Panel', {
+            layout: 'column',
+            bodyPadding: 10,
             width: 650,
             height: 280,
             url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/editGoodsMenuInfo',
-            defaults:{
-                xtype:'textfield',
-                columnWidth:0.5,
-                anchor:'100%',
-                allowBlank:true,
-                labelAlign:'right',
-                labelWidth:70,
-                margin:5
+            defaults: {
+                xtype: 'textfield',
+                columnWidth: 0.5,
+                anchor: '100%',
+                allowBlank: true,
+                labelAlign: 'right',
+                labelWidth: 70,
+                margin: 5
             },
-            items:[
-                {xtype:'hidden',name:'id',value:style.id},
-                {fieldLabel:'系统款号',name:'system_style_no',allowBlank:false,value:style.system_style_no},
-                {fieldLabel:'商品名称',name:'name_zh',allowBlank:false,value:style.name_zh},
-                {fieldLabel:'供应商款号',name:'supply_style_no',allowBlank:false,value:style.supply_style_no},
-                {fieldLabel:'大类',name:'large_class',value:style.large_class},
-                {fieldLabel:'季节',name:'year_season',allowBlank:false,value:style.year_season,xtype:'combo',displayField:'name',valueField:'val',store:seasonStore,editable:false},
-                {fieldLabel:'品牌',name:'brand',allowBlank:false,value:style.brand},
-                //{fieldLabel:'中类',name:''},
-                {fieldLabel:'小类',name:'small_class',value:style.small_class},
-                {fieldLabel:'性别',name:'sex',value:style.sex},
-                {fieldLabel:'执行标准',name:'execute_standard',value:style.execute_standard},
-                {fieldLabel:'安全级别',name:'safety_level',value:style.safety_level},
-                {fieldLabel:'等级',name:'level',value:style.level}
-            ],
-            buttons:[
+            items: [
+                {xtype: 'hidden', name: 'id', value: style.id},
+                {fieldLabel: '系统款号', name: 'system_style_no', allowBlank: false, value: style.system_style_no},
+                {fieldLabel: '商品名称', name: 'name_zh', allowBlank: false, value: style.name_zh},
+                {fieldLabel: '供应商款号', name: 'supply_style_no', allowBlank: false, value: style.supply_style_no},
+                {fieldLabel: '大类', name: 'large_class', value: style.large_class},
                 {
-                    text:'保存',
+                    fieldLabel: '季节',
+                    name: 'year_season',
+                    allowBlank: false,
+                    value: style.year_season,
+                    xtype: 'combo',
+                    displayField: 'name',
+                    valueField: 'val',
+                    store: seasonStore,
+                    editable: false
+                },
+                {fieldLabel: '品牌', name: 'brand', allowBlank: false, value: style.brand},
+                //{fieldLabel:'中类',name:''},
+                {fieldLabel: '小类', name: 'small_class', value: style.small_class},
+                {fieldLabel: '性别', name: 'sex', value: style.sex},
+                {fieldLabel: '执行标准', name: 'execute_standard', value: style.execute_standard},
+                {fieldLabel: '安全级别', name: 'safety_level', value: style.safety_level},
+                {fieldLabel: '等级', name: 'level', value: style.level}
+            ],
+            buttons: [
+                {
+                    text: '保存',
                     formBind: true,
                     disabled: true,
                     handler: function () {
                         var form = this.up('form').getForm();
                         if (form.isValid()) {
                             form.submit({
-                                waitMsg:'正在保存...',
+                                waitMsg: '正在保存...',
                                 success: function (form, action) {
                                     win.destroy();
                                     var store = Ext.StoreManager.lookup("GoodsMenuStore");
-                                    if(store != null) store.load();
+                                    if (store != null) store.load();
                                 },
                                 failure: function (form, action) {
                                     console.log(action);
-                                    if(action.result.msg == null){
+                                    if (action.result.msg == null) {
                                         Ext.Msg.alert('失败', "网络请求错误,请检查网络重试!");
                                         return;
                                     }
@@ -218,8 +228,8 @@ Ext.define('erp.view.module.goods.GoodsController', {
         });
         win = Ext.create('Ext.window.Window', {
             title: "修改款号详情",
-            layout:'fit',
-            items:[form]
+            layout: 'fit',
+            items: [form]
             //info: res.data
         });
         win.show();
@@ -244,7 +254,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
             info: res.data
         }).show();
     },
-    viewGoodsInfo:function(grid, rowIndex, colIndex, item, e, record, row){
+    viewGoodsInfo: function (grid, rowIndex, colIndex, item, e, record, row) {
         var id = record.get("id"), res;
         Ext.Ajax.request({
             async: false,
@@ -444,31 +454,134 @@ Ext.define('erp.view.module.goods.GoodsController', {
         });
         win.show();
     },
+    delGoodsDeliveryNotice:function(del_btn){
+        var sel = del_btn.up('grid').getSelection(), ids = [], names = [], mark = 0;
+        if (sel.length == 0) {
+            Ext.Msg.alert('系统提示', '请选择要删除的配货通知单');
+            return;
+        }
+        Ext.each(sel, function (record) {
+            //if (record.get("is_check") == 1) {
+            //    mark = 1;
+            //    return;
+            //}
+            ids.push(record.get("id"));
+            names.push(record.get("notice_no"));
+        });
+
+        //if (1 == mark) {
+        //    Ext.Msg.alert('系统提示', '已经验收的进货单不允许删除!');
+        //    return;
+        //}
+        Ext.Msg.show({
+            title: '系统消息',
+            message: '你确定要删除以下配货通知单吗？<br>' + names.join('<br>'),
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn === 'yes') {
+                    Ext.getBody().mask("正在删除...");
+                    Ext.Ajax.request({
+                        url: apiBaseUrl + '/index.php/Commodity/Distribution/delDeliveryNotice',
+                        params: {
+                            ids: ids.join(',')
+                        },
+                        success: function (data) {
+                            var res = Ext.decode(data.responseText);
+                            if (!res.success) {
+                                Ext.Msg.alert('系统提示', res.msg);
+                                return;
+                            }
+                            Ext.getBody().unmask();
+                            del_btn.up('grid').getStore().load();
+                        },
+                        failure: function (data) {
+                            Ext.getBody().unmask();
+                            Ext.Msg.alert('系统提示', "请求网络错误,请检查网络,重试!");
+                        }
+                    })
+                }
+            }
+        });
+    },
     getNoticeDetailItems: function () {
         var id = this.getViewModel().get("goods_delivery_notice_id");
         this.products = [];
         this.logs = [];
         var me = this;
-        var productStore = Ext.create("Ext.data.Store",{
-            fields:[],
-            autoLoad:true,
-            storeId:'delivery_goods_notice_store',
-            proxy:{
-                type:'ajax',
-                url:apiBaseUrl + '/index.php/Commodity/Distribution/getDeliveryNoticeGoods?id='+id,
-                reader:{
-                    type:'json',
-                    rootProperty:'data'
+        var productStore = Ext.create("Ext.data.Store", {
+            fields: [],
+            autoLoad: true,
+            storeId: 'delivery_goods_notice_store',
+            proxy: {
+                type: 'ajax',
+                url: apiBaseUrl + '/index.php/Commodity/Distribution/getDeliveryNoticeGoods?id=' + id,
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data'
                 }
             }
         });
         return [{
+            xtype: 'form',
+            hidden: true,
+            items: [
+                {
+                    buttonOnly: true,
+                    //buttonConfig:{
+                    //    text: '导入数据',
+                    //    margin:'5 0 0 0',
+                    //    iconCls: 'importIcon',
+                    //    ui:'default'
+                    //},
+                    xtype: 'fileuploadfield',
+                    id: "delivery_upload_file",
+                    name: 'delivery_file',
+                    listeners: {
+                        change: function (btn, val) {
+                            var form = this.up("form").getForm();
+                            form.submit({
+                                waitMsg: '正在导入商品信息...',
+                                url: apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
+                                method: 'POST',
+                                success: function (form, action) {
+                                    if (!action.result.success) {
+                                        Ext.toast(action.result.msg, "系统提示");
+                                        return;
+                                    }
+                                    var data = action.result.data;
+                                        //len = data.length,
+                                        //tmp_arr = [];
+                                    //for (var i = 0; i < len; i++) {
+                                    //    var product = data[i];
+                                    //    product.mark = 1;
+                                    //    tmp_arr.push(product);
+                                    //}
+
+                                    //me.products = me.products.concat(tmp_arr);
+                                    var store = me.lookupReference('goods_delivery_info_grid').getStore();
+                                    store.setData(data);
+                                    //store.insert(0, tmp_arr);
+                                },
+                                failure: function (form, action) {
+                                    if (action.response.status == 200) {
+                                        Ext.toast(action.result.msg, "系统提示");
+                                        return;
+                                    }
+                                    Ext.toast("服务请求错误,请重试!", "系统提示");
+                                }
+                            });
+                        }
+                    }
+                }
+            ]
+        }, {
             xtype: 'panel',
             name: "info",
             bind: {
                 data: '{notice_info}'
             },
-            margin: '30 30 0 30',
+            margin: '30 30 10 30',
             tpl: new Ext.XTemplate(
                 '<div class="col-md-12">',
                 '<div class="col-md-4">通知单号：{notice_no}</div>',
@@ -489,77 +602,31 @@ Ext.define('erp.view.module.goods.GoodsController', {
                 '<div class="col-md-4">渠道：{challne}</div>',
                 '</div>'
             ),
-            dockedItems:{
-                dock:'bottom',
-                items:[
+            dockedItems: {
+                dock: 'bottom',
+                items: [
                     {
-                        xtype:"toolbar",
-                        bind:{
-                            hidden:'{notice_status}'
+                        xtype: "toolbar",
+                        bind: {
+                            hidden: '{notice_status}'
                         },
-                        items:[
-                            '->',
-                            {
-                                xtype:'form',
-                                items:[
-                                    {
-                                        buttonOnly:true,
-                                        hideLabel: true,
-                                        width:82,
-                                        buttonConfig:{
-                                            text: '导入数据',
-                                            margin:'5 0 0 0',
-                                            iconCls: 'importIcon',
-                                            ui:'default'
-                                        },
-                                        xtype:'fileuploadfield',
-                                        name:'delivery_file',
-                                        listeners:{
-                                            change:function(btn,val){
-                                                var form = this.up("form").getForm();
-                                                form.submit({
-                                                    waitMsg:'正在导入商品信息...',
-                                                    url:apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
-                                                    method:'POST',
-                                                    success:function(form,action){
-                                                        if(!action.result.success){
-                                                            Ext.toast(action.result.msg,"系统提示");
-                                                            return;
-                                                        }
-                                                        var data = action.result.data,
-                                                            len = data.length,
-                                                            tmp_arr = [];
-                                                        for(var i=0;i<len;i++){
-                                                            var product = data[i];
-                                                            product.mark = 1;
-                                                            tmp_arr.push(product);
-                                                        }
-
-                                                        me.products = me.products.concat(tmp_arr);
-                                                        var store = me.lookupReference('goods_delivery_info_grid').getStore();
-                                                        store.insert(0,tmp_arr);
-                                                    },
-                                                    failure:function(form,action){
-                                                        if(action.response.status == 200){
-                                                            Ext.toast(action.result.msg,"系统提示");
-                                                            return;
-                                                        }
-                                                        Ext.toast("服务请求错误,请重试!","系统提示");
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                    ,{
-                                text:'保存',
-                                handler:me.saveDeliveryGoodsNotice,
-                                scope:me
-                            },{
-                                text:'申请配货',
-                                handler:me.saveDeliveryGoodsNotice,
-                                scope:me
+                        items: [
+                            '->', {
+                                text:"导入数据",
+                                iconCls: 'importIcon',
+                                handler:function(){
+                                    var dom = Ext.get("delivery_upload_file"),
+                                        input = dom.select("input").last();
+                                    input.dom.click();
+                                }
+                            }, {
+                                text: '保存',
+                                handler: me.saveDeliveryGoodsNotice,
+                                scope: me
+                            }, {
+                                text: '申请配货',
+                                handler: me.saveDeliveryGoodsNotice,
+                                scope: me
                             }
                         ]
                     }
@@ -572,7 +639,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
             },
             items: [
                 {text: '商品详细信息', pressed: true},
-                //{text: '操作日志'}
+                {text: '操作日志'}
             ],
             listeners: {
                 toggle: function (container, button, pressed) {
@@ -582,8 +649,8 @@ Ext.define('erp.view.module.goods.GoodsController', {
                     if ("商品详细信息" == text) {
                         store = Ext.data.StoreManager.lookup("delivery_goods_notice_store");
                         columns = [
-                            {text: '商品代码', dataIndex: 'system_style_no', flex: 1},
-                            {text: '国际码', dataIndex: 'supply_style_no', flex: 1},
+                            {text: '系统款号', dataIndex: 'system_style_no', flex: 1},
+                            {text: '国际款号', dataIndex: 'supply_style_no', flex: 1},
                             {text: '名称', dataIndex: 'name', flex: 1},
                             {text: '颜色', dataIndex: 'color', flex: 1},
                             {text: '尺码', dataIndex: 'size', flex: 1},
@@ -608,10 +675,10 @@ Ext.define('erp.view.module.goods.GoodsController', {
             title: '商品详细信息',
             sortableColumns: false,
             enableColumnHide: false,
-            store:productStore,
+            store: productStore,
             columns: [
-                {text: '商品代码', dataIndex: 'system_style_no', flex: 1},
-                {text: '国际码', dataIndex: 'supply_style_no', flex: 1},
+                {text: '系统款号', dataIndex: 'system_style_no', flex: 1},
+                {text: '国际款号', dataIndex: 'supply_style_no', flex: 1},
                 {text: '名称', dataIndex: 'name', flex: 1},
                 {text: '颜色', dataIndex: 'color', flex: 1},
                 {text: '尺码', dataIndex: 'size', flex: 1},
@@ -630,7 +697,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
             panel = order.down("#info_panel"),
             model = order.getViewModel();
         model.set("goods_delivery_notice_id", id);
-        model.set("notice_status", notice_status==1?true:false);
+        model.set("notice_status", notice_status == 1 ? true : false);
 
         model.set("notice_info", {
             notice_no: record.get("notice_no"),
@@ -649,11 +716,12 @@ Ext.define('erp.view.module.goods.GoodsController', {
             var store = Ext.StoreManager.lookup("delivery_goods_notice_store");
             store.setProxy({
                 type: 'ajax',
-                url:apiBaseUrl + '/index.php/Commodity/Distribution/getDeliveryNoticeGoods?id='+id,
+                url: apiBaseUrl + '/index.php/Commodity/Distribution/getDeliveryNoticeGoods?id=' + id,
                 reader: {
                     type: 'json',
                     rootProperty: 'data'
-                }});
+                }
+            });
             store.load();
             //this.lookupReference("goods_delivery_info_grid").setStore(model.get("goods_info"));
             return;
@@ -662,36 +730,48 @@ Ext.define('erp.view.module.goods.GoodsController', {
         panel.add(items);
         //this.lookupReference("goods_delivery_info_grid").setStore(model.get("goods_info"));
     },
-    saveDeliveryGoodsNotice:function(btn){
+    saveDeliveryGoodsNotice: function (btn) {
         var me = this,
             id = this.getViewModel().get("goods_delivery_notice_id");
-        console.log(me.products);
-        var status = btn.getText()=="申请配货"?1:0;
-        var tmp = [];
-        for(var i=0;i<me.products.length;i++){
-            tmp.push(me.products[i]);
+        var store = me.lookupReference('goods_delivery_info_grid').getStore(),
+            data = store.getData(),items = data.items,len = items.length,tmp=[];
+        if(len == 0) return;
+        for(var i=0;i<len;i++){
+            var item = items[i];
+            tmp.push({
+                supply_style_no:item.get("supply_style_no"),
+                system_style_no:item.get("system_style_no"),
+                name:item.get("name"),
+                color:item.get("color"),
+                size:item.get("size"),
+                num:item.get("num")
+            });
         }
+        var status = btn.getText() == "申请配货" ? 1 : 0;
         Ext.Ajax.request({
-            async:true,
-            method:'POST',
-            url:apiBaseUrl + '/index.php/Commodity/Distribution/saveDeliveryGoodsNotice',
-            params:{
-                products:Ext.encode(tmp),
-                id:id,
-                status:status
+            async: true,
+            method: 'POST',
+            url: apiBaseUrl + '/index.php/Commodity/Distribution/saveDeliveryGoodsNotice',
+            params: {
+                products: Ext.encode(tmp),
+                id: id,
+                status: status
             },
-            success:function(res){
+            success: function (res) {
                 var json = Ext.decode(res.responseText);
-                if(!json.success){
-                    Ext.toast(json.msg,"系统提示");
+                if (!json.success) {
+                    Ext.toast(json.msg, "系统提示");
                     return;
                 }
-                Ext.toast(btn.getText()+"成功!","系统提示");
-                if(1 == status) me.getViewModel().set("notice_status",true);
+                Ext.toast(btn.getText() + "成功!", "系统提示");
+                if (1 == status) {
+                    me.getViewModel().set("notice_status", true);
+                    Ext.StoreManager.lookup("GoodsDeliveryNoticeStore").load();
+                }
             },
-            failure:function(){
-                Ext.toast("网络链接错误,请检查网络,稍后再试!","系统提示");
+            failure: function () {
+                Ext.toast("网络链接错误,请检查网络,稍后再试!", "系统提示");
             }
-        })
+        });
     }
 });

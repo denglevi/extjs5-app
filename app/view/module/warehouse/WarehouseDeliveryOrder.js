@@ -45,16 +45,23 @@ Ext.define("erp.view.module.warehouse.WarehouseDeliveryOrder",{
     getDeliveryOrderListGrid: function () {
         var grid = Ext.create('Ext.grid.Panel', {
             title: '配货单列表',
-            width: 200,
+            width: 240,
             border:true,
             sortableColumns: false,
             enableColumnHide: false,
             tbar: [
                 {text: '新增', iconCls: 'addIcon', handler: "addWarehouseDeliveryGoodsOrder"},
-                {text: '删除', iconCls: 'delIcon'}
+                {text: '删除', iconCls: 'delIcon',handler:"delWarehouseDeliveryGoodsOrder"}
             ],
             selModel: 'checkboxmodel',
-            columns: [{text: '配货单号', dataIndex: 'noder_no', flex: 1}],
+            columns: [
+                {text: '配货单号', dataIndex: 'noder_no', width:130},
+                {text: '状态', dataIndex: 'status',flex:1, renderer:function(val){
+                    if(0 == val) return '<b>未发出</b>';
+                    if(1 == val) return '<b class="text-info">已发出</b>';
+                    if(2 == val) return '<b class="text-danger">已终止</b>';
+                }}
+            ],
             store: 'WarehouseDeliveryOrderStore'
         });
 

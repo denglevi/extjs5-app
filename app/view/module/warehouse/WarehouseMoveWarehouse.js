@@ -45,14 +45,19 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouse', {
         var import_list_grid = Ext.create('Ext.grid.Panel', {
             title: '移库单列表',
             height: '100%',
-            width: 200,
+            width: 240,
             reference:'move_warehouse_grid',
             border: true,
             sortableColumns:false,
             selModel:'checkboxmodel',
             enableRemoveColumn:false,
             columns: [
-                {text: '移库单号', dataIndex: 'move_no', flex: 1}
+                {text: '移库单号', dataIndex: 'move_no', width:130},
+                {text: '状态', dataIndex: 'status', flex: 1,renderer:function(val){
+                    if(0==val) return '<b>未发出</b>';
+                    if(1==val) return '<b class="text-info">已发出</b>';
+                    if(2==val) return '<b class="text-danger">已验收</b>';
+                }}
             ],
             store: store,
             tbar: [

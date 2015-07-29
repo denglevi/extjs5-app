@@ -91,15 +91,22 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
     },
     delMoveWarehouseNotice: function () {
         var grid = this.lookupReference("move_warehouse_notice_grid");
-        var sel = grid.getSelection(), ids = [], nos = [];
+        var sel = grid.getSelection(), ids = [], nos = [],mark=0;
         if (sel.length == 0) {
             Ext.Msg.alert('系统提示', '请选择要删除的移库通知单');
             return;
         }
         Ext.each(sel, function (record) {
+            if(1==record.get("status")){
+                mark = 1;
+            }
             ids.push(record.get("id"));
             nos.push(record.get("notice_no"));
         });
+        if (mark == 1) {
+            Ext.Msg.alert('系统提示', '已经发出的通知单不能删除,请重新选择!');
+            return;
+        }
         Ext.Msg.show({
             title: '系统提示',
             message: '你确定要删除以下移库通知单吗？<br>' + nos.join('<br>'),
@@ -194,6 +201,19 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
 
         model.set("move_warehouse_notice_id", id);
         model.set("move_warehouse_notice_no", no);
+        if(0 == status){
+            model.set("status0",false);
+            model.set("status1",false);
+            model.set("status2",false);
+        }else if(1 == status){
+            model.set("status0",true);
+            model.set("status1",true);
+            model.set("status2",false);
+        }else if(2 == status){
+            model.set("status0",true);
+            model.set("status1",true);
+            model.set("status2",true);
+        }
         model.set("move_warehouse_notice_status", status == 1 ? true : false);
         model.set("move_warehouse_notice_warehouse", warehouse);
         model.set("move_warehouse_notice_warehouse_id", warehouse_id);
@@ -214,7 +234,6 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                 },
                 failure:function(res){
                     Ext.toast(json.msg,"系统提示");
-
                 }
             });
 
@@ -223,22 +242,12 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                 data:data
             });
             model.set("move_warehouse_notice_goods_info_store",store);
+            model.set("move_warehouse_notice_goods_num",data.length);
             grid.setStore(store);
             var btn = info.down("segmentedbutton").down("button");
             btn.setPressed(true);
 
             return;
-            //var store = info.down("grid").getStore();
-            //store.setProxy({
-            //    type: 'ajax',
-            //    url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveWarehouseNoticeGoods?id=' + id,
-            //    reader: {
-            //        type: 'json',
-            //        rootProperty: 'data'
-            //    }
-            //});
-            //store.load();
-            //return;
         }
         container.add({
             xtype: 'panel',
@@ -258,22 +267,28 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                             }
                         },
                         {
-                            xtype: 'displayfield', fieldLabel: '移入仓库', flex: 2,
+                            xtype: 'displayfield', fieldLabel: '移入仓库', flex: 1,
                             bind: {
                                 value: '{move_warehouse_notice_warehouse}'
+                            }
+                        },
+                        {
+                            xtype: 'displayfield', fieldLabel: '移库数量', flex: 1,
+                            bind: {
+                                value: '{move_warehouse_notice_goods_num}'
                             }
                         }
                     ],
                     dockedItems: [{
                         xtype: 'toolbar',
                         dock: 'bottom',
-                        bind: {
-                            hidden: '{move_warehouse_notice_status}'
-                        },
                         items: [
                             '->',
                             {
                                 text: '出库',
+                                bind: {
+                                    hidden: '{status0}'
+                                },
                                 handler: function () {
                                     var win = Ext.create('Ext.window.Window', {
                                         title: '扫描商品',
@@ -305,6 +320,9 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                             },
                             {
                                 text: '保存',
+                                bind: {
+                                    hidden: '{status0}'
+                                },
                                 handler: function () {
                                     var grid = me.lookupReference("move_warehouse_notice_goods_gird");
                                     var store = grid.getStore();
@@ -342,6 +360,9 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                             },
                             {
                                 text: '发出',
+                                bind: {
+                                    hidden: '{status1}'
+                                },
                                 handler: function () {
                                     var grid = me.lookupReference("move_warehouse_notice_goods_gird");
                                     var store = grid.getStore();
@@ -382,6 +403,9 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                             },
                             {
                                 text:"终止",
+                                bind: {
+                                    hidden: '{status2}'
+                                },
                                 handler:function(){
                                     var grid = me.lookupReference("move_warehouse_notice_goods_gird");
                                     var store = grid.getStore();
@@ -488,6 +512,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                                     }
                                 }
                             });
+                            model.set("move_warehouse_notice_goods_num",store.getData().items.length);
                             model.set("move_warehouse_notice_goods_info_store",store);
                             this.setStore(store);
                         }

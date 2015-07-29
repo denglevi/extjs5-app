@@ -168,7 +168,7 @@ Ext.define('erp.view.window.PayFormWin', {
                     name: 'fileinfo',
                     value: info.fileinfo,
                     renderer: function (val) {
-                        return '<a href="' + apiBaseUrl + val + '">付款凭证</a>';
+                        return '<a target="_blank" href="' + apiBaseUrl + val + '">付款凭证</a>';
                     }
                 },
                 {xtype: 'displayfield', fieldLabel: '备注', name: 'mark', value: info.mark, columnWidth: 1}
