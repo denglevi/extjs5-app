@@ -126,6 +126,7 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                             packing_no:item.get("packing_no"),
                             box_no:item.get("box_no"),
                             num:item.get("num"),
+                            send_num:item.get("send_num"),
                             diff_num:item.get("diff_num")
                         });
                     });

@@ -528,12 +528,6 @@ Ext.define('erp.view.module.goods.GoodsController', {
             items: [
                 {
                     buttonOnly: true,
-                    //buttonConfig:{
-                    //    text: '导入数据',
-                    //    margin:'5 0 0 0',
-                    //    iconCls: 'importIcon',
-                    //    ui:'default'
-                    //},
                     xtype: 'fileuploadfield',
                     id: "delivery_upload_file",
                     name: 'delivery_file',
@@ -550,18 +544,9 @@ Ext.define('erp.view.module.goods.GoodsController', {
                                         return;
                                     }
                                     var data = action.result.data;
-                                        //len = data.length,
-                                        //tmp_arr = [];
-                                    //for (var i = 0; i < len; i++) {
-                                    //    var product = data[i];
-                                    //    product.mark = 1;
-                                    //    tmp_arr.push(product);
-                                    //}
 
-                                    //me.products = me.products.concat(tmp_arr);
                                     var store = me.lookupReference('goods_delivery_info_grid').getStore();
                                     store.setData(data);
-                                    //store.insert(0, tmp_arr);
                                 },
                                 failure: function (form, action) {
                                     if (action.response.status == 200) {

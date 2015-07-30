@@ -27,6 +27,7 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
                 return val;
             }
             },
+            {text: '付款申请人', dataIndex: 'applier_name', flex: 1},
             {text: '收款公司', dataIndex: 'receive_money_company', flex: 1},
             {text: '公司账号', dataIndex: 'company_bank_no', flex: 1},
             {text: '开户行', dataIndex: 'company_open_bank', flex: 1},

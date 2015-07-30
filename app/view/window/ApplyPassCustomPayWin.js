@@ -77,7 +77,7 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                                         var no =me.down("textfield[name=company_bank_no]"),
                                             bank = me.down("textfield[name=company_open_bank]");
                                         no.setValue(items[i].get("bank_account"));
-                                        bank.setValue(items[i].get("open_bank"));
+                                        bank.setValue(items[i].get("address"));
 
                                         no.setDisabled(false);
                                         bank.setDisabled(false);

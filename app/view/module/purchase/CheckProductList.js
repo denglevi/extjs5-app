@@ -6,6 +6,7 @@ Ext.define('erp.view.module.purchase.CheckProductList', {
     alias:"widget.checkproductlist",
     requires: [
         'Ext.form.field.Text',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.purchase.SupplierMngController',
         'erp.view.module.purchase.SupplierMngModel'
@@ -22,15 +23,16 @@ Ext.define('erp.view.module.purchase.CheckProductList', {
     sortableColumns:false,
     store:'CheckProductListStore',
     tbar: [
-        {
-            text:'新增',
-            glyph:0xf067,
-            handler:'addPurchaseOrder'
-        },
-        {
-            text:'删除',
-            glyph:0xf1f8
-        },'->',
+        //{
+        //    text:'新增',
+        //    glyph:0xf067,
+        //    handler:'addPurchaseOrder'
+        //},
+        //{
+        //    text:'删除',
+        //    glyph:0xf1f8
+        //},
+        '->',
         {
             xtype: 'textfield',
             fieldLabel: "采购订单号",

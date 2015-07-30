@@ -78,7 +78,7 @@ Ext.define('erp.view.window.PurchasePayWin',{
                         disabled:true
                     },
                     {
-                        fieldLabel: '付款金额',
+                        fieldLabel: '付款金额(欧)',
                         xtype:'numberfield',
                         name: 'money',
                         value:me.total

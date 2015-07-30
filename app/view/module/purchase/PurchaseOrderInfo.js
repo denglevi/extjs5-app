@@ -241,7 +241,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                 name: 'company_open_bank',
                             },
                             {
-                                fieldLabel: '付款金额',
+                                fieldLabel: '付款金额(欧)',
                                 name: 'money',
                                 value: me.total,
                                 xtype: 'numberfield'
@@ -836,9 +836,10 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     items: [
                         {
                             xtype: 'filefield',
-                            name: 'excel_file',
+                            name: 'excel_file[]',
                             buttonText: '上传文件',
                             allowBlank: true,
+                            id:"upload_close_purchase_order_doc_field",
                             listeners: {
                                 change: function () {
                                     var val = this.getValue();
@@ -866,6 +867,11 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                             }
                                         }
                                     });
+                                },
+                                afterrender:function(){
+                                    var dom = this.el,
+                                        input = dom.select("input").last();
+                                    input.dom.multiple=true;
                                 }
                             }
                         }

@@ -55,6 +55,7 @@ Ext.define('erp.view.window.PayFormWin', {
             pay_money = {xtype: 'displayfield', fieldLabel: '申请付款金额(欧)', name: 'money', value: record.get("money")};
         }
         var normal = [
+            {xtype: 'displayfield', fieldLabel: '付款申请人', name: 'applier', value: record.get("applier_name")},
             {
                 xtype: 'displayfield',
                 fieldLabel: '收款公司',
@@ -152,7 +153,7 @@ Ext.define('erp.view.window.PayFormWin', {
                     name: 'fileinfo',
                     value: info.fileinfo,
                     renderer: function (val) {
-                        return '<a href="' + apiBaseUrl + val + '">付款凭证</a>';
+                        return '<a target="_blank" href="' + apiBaseUrl + val + '">付款凭证</a>';
                     }
                 },
                 {xtype: 'displayfield', fieldLabel: '备注', name: 'mark', value: info.mark, columnWidth: 1}
@@ -168,7 +169,7 @@ Ext.define('erp.view.window.PayFormWin', {
                     name: 'fileinfo',
                     value: info.fileinfo,
                     renderer: function (val) {
-                        return '<a target="_blank" href="' + apiBaseUrl + val + '">付款凭证</a>';
+                        return '<a target="_blank" href="http://192.168.16.22' + val + '">付款凭证</a>';
                     }
                 },
                 {xtype: 'displayfield', fieldLabel: '备注', name: 'mark', value: info.mark, columnWidth: 1}

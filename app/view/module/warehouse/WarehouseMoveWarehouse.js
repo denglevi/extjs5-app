@@ -55,8 +55,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouse', {
                 {text: '移库单号', dataIndex: 'move_no', width:130},
                 {text: '状态', dataIndex: 'status', flex: 1,renderer:function(val){
                     if(0==val) return '<b>未发出</b>';
-                    if(1==val) return '<b class="text-info">已发出</b>';
-                    if(2==val) return '<b class="text-danger">已验收</b>';
+                    if(1==val) return '<b class="text-info">已验收</b>';
                 }}
             ],
             store: store,
