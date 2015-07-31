@@ -120,9 +120,11 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             //添加进货详单
             console.log('=====res data====>',res.data);
             var id = res.data.id,
+                import_warehouse_id = res.data.import_warehouse_id,
                 batch_no = res.data.batch_no,
                 panel = warehouseimportgoods.down("panel[name=info]"),
                 model = warehouseimportgoods.getViewModel();
+            model.set("import_warehouse_id", import_warehouse_id);
             model.set("import_goods_id", id);
             me.getImportGoodsData(id, batch_no, model);
 

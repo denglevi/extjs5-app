@@ -20,6 +20,7 @@ Ext.define("erp.view.main.region.Left", {
         var menu = [];
         var i = 0;
         Ext.Array.each(menus, function (m) {
+            if(m.hidden) return;
             var items = {
                 title: m.text,
                 //glyph: m.glyph,

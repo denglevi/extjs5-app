@@ -32,12 +32,14 @@ Ext.define('erp.view.module.warehouse.WarehouseReceive', {
         {
             xtype: 'textfield',
             fieldLabel: "物流单号",
-            name: 'logistic_no'
+            name: 'logistic_no',
+            labelAlign:'right'
         },
         {
             xtype: 'textfield',
             fieldLabel: "采购批次号",
-            name: 'batch_no'
+            name: 'batch_no',
+            labelAlign:'right'
         },
         {
             text: '搜索',

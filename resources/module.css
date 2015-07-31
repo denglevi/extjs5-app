@@ -179,3 +179,10 @@
 .goods_pic{
     background-size: contain;
 }
+
+.x-btn-default-toolbar-small{
+    border-radius:0px !important;
+}
+.x-btn-default-small{
+    border-radius:0px !important;
+}

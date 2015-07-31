@@ -12,6 +12,7 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
         'Ext.grid.Panel',
         'Ext.layout.container.Anchor',
         'Ext.layout.container.HBox',
+        'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.purchase.SupplierMngController',
         'erp.view.module.purchase.SupplierMngModel'
@@ -57,13 +58,15 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                     {
                         xtype: 'textfield',
                         fieldLabel: "供应商编号",
-                        name: 'supllier_no'
+                        name: 'supllier_no',
+                        labelAlign:'right'
                     }, '',
                     {
                         xtype: 'textfield',
                         fieldLabel: "供应商名称",
-                        name: 'supllier_name'
-                    }, '->',
+                        name: 'supllier_name',
+                        labelAlign:'right'
+                    },
                     {
                         text: '搜索',
                         glyph: 0xf002

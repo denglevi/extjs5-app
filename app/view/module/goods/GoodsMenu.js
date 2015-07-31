@@ -45,12 +45,14 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
         {
             xtype: 'textfield',
             fieldLabel: "系统款号",
-            name: 'system_style_no'
+            name: 'system_style_no',
+            labelAlign:'right'
         },
         {
             xtype: 'textfield',
             fieldLabel: "供应商款号",
-            name: 'supply_style_no'
+            name: 'supply_style_no',
+            labelAlign:'right'
         },
         {
             text: '搜索',

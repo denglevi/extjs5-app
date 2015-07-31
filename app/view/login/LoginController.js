@@ -32,6 +32,7 @@
                         localStorage.setItem("user",val.username);
                         me.getView().destroy();
                         Ext.widget("main",{username:val.username});
+
                         //var win = Ext.gui.Window.get()
                         //win.setResizable(true);
                         //win.maximize();

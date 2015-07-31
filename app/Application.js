@@ -43,13 +43,13 @@ Ext.define('erp.Application', {
         //        this.close(true);
         //    });
         //}
-        //var ipc = require('ipc');
-        //ipc.send("close-splash-screen","ping");
-        if(localStorage.getItem("is_login") == 1){
-            var username = localStorage.getItem("user")
-            Ext.widget("main",{username:username});
-            return;
-        }
+        var ipc = require('ipc');
+        ipc.send("close-splash-screen","ping");
+        //if(localStorage.getItem("is_login") == 1){
+        //    var username = localStorage.getItem("user");
+        //    Ext.widget("main",{username:username});
+        //    return;
+        //}
         Ext.widget("login");
     }
 });

@@ -31,7 +31,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseNotice', {
         var store = Ext.create('Ext.data.Store', {
             fields: [],
             autoLoad: false,
-            storeId:'moveLocationStore',
+            storeId:'moveWarehouseNoticeStore',
             proxy: {
                 type: 'ajax',
                 url: apiBaseUrl + '/index.php/Warehouse/Manage/getWarehouseMoveWarehouseNoticeList',

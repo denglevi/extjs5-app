@@ -36,12 +36,14 @@ Ext.define('erp.view.module.purchase.CheckProductList', {
         {
             xtype: 'textfield',
             fieldLabel: "采购订单号",
-            name: 'purchase_no'
+            name: 'purchase_no',
+            labelAlign:'right'
         },
         {
             xtype: 'textfield',
             fieldLabel: "采购批次号",
-            name: 'batch_no'
+            name: 'batch_no',
+            labelAlign:'right'
         },
         {
             text: '搜索',

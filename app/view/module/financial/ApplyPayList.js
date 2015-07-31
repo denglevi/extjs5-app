@@ -117,13 +117,15 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
             {
                 xtype: 'textfield',
                 fieldLabel: "收款公司",
-                name: 'receive_money_company'
+                name: 'receive_money_company',
+                labelAlign:'right'
             },
             {
                 xtype: 'datefield',
                 fieldLabel: "付款日期",
                 editable:false,
-                name: 'date'
+                name: 'date',
+                labelAlign:'right'
             },
             {
                 text: '搜索',
