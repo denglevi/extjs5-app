@@ -210,8 +210,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                             {
                                 xtype: 'displayfield',
                                 fieldLabel: '订单号',
-                                value: order_info.order_nos,
-                                columnWidth: 1
+                                columnWidth:1,
+                                value: order_info.order_nos
                             },
                             {
                                 xtype: 'combo',
@@ -220,14 +220,31 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                 disabled: true,
                                 displayField: 'name',
                                 valueField: 'id_no',
-                                editable: false
+                                editable: false,
+                                columnWidth:0.5,
+                                listeners:{
+                                    change:function(){
+                                        var form = this.up("form"),supplier = form.down("combo[name=supplier]"),val = this.getValue().split('|');
+                                        var items = supplier.getStore().getData().items,len = items.length;
+                                        console.log(items,val[0]);
+                                        for(var i=0;i<len;i++){
+                                            var item = items[i];
+                                            if(val[0] == item.get("id")){
+                                                form.down("textfield[name=receive_money_company]").setValue(item.get("name"));
+                                                form.down("textfield[name=company_bank_no]").setValue(item.get("bank_no"));
+                                                form.down("textfield[name=company_open_bank]").setValue(item.get("bank_name"));
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
                             },
-                            {
-                                xtype: 'combo', fieldLabel: '买手', name: 'buyer', disabled: true,
-                                displayField: 'username',
-                                valueField: 'id',
-                                editable: false
-                            },
+                            //{
+                            //    xtype: 'combo', fieldLabel: '买手', name: 'buyer', disabled: true,
+                            //    displayField: 'username',
+                            //    valueField: 'id',
+                            //    editable: false
+                            //},
                             {
                                 fieldLabel: '收款公司',
                                 name: 'receive_money_company'
@@ -241,51 +258,11 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                 name: 'company_open_bank',
                             },
                             {
-                                fieldLabel: '付款金额(欧)',
-                                name: 'money',
-                                value: me.total,
-                                xtype: 'numberfield'
-                            },
-                            {
-                                fieldLabel: '最后付款日期',
-                                name: 'last_pay_day',
-                                xtype: 'datefield',
-                                editable: false,
-                                format: 'Y-m-d',
-                                value: new Date()
-
-                            },
-                            {
-                                fieldLabel: '用途',
-                                name: 'pay_function',
-                                xtype: 'textarea'
-                            },
-                            {
-                                fieldLabel: '选择付款人',
-                                name: 'payer',
-                                xtype: 'combo',
-                                editable: false,
-                                displayField: 'username',
-                                valueField: 'id',
-                                //queryMode:'local',
-                                store: Ext.create('Ext.data.Store', {
-                                    //autoLoad:true,
-                                    fields: ['id', 'username'],
-                                    proxy: {
-                                        type: 'ajax',
-                                        url: apiBaseUrl + '/index.php/Purchasing/Buyer/getPayer',
-                                        reader: {
-                                            type: 'json',
-                                            rootProperty: 'data'
-                                        }
-                                    }
-                                })
-                            },
-                            {
                                 xtype: 'filefield',
                                 name: 'excel_file',
                                 buttonText: '导入商品',
                                 allowBlank: true,
+                                columnWidth:1,
                                 listeners: {
                                     change: function () {
                                         var val = this.getValue();
@@ -297,6 +274,11 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                 var data = action.result.data;
                                                 console.log(data);
                                                 me.products = data;
+                                                var total = 0;
+                                                for(var i=0;i<data.length;i++){
+                                                    total += parseFloat(data[i].orderinfo_nprice);
+                                                }
+                                                win.down("textfield[name=money]").setValue(total);
                                                 store = Ext.create('Ext.data.Store', {
                                                     fields: ["style_no", "name", 'color', 'size', 'num', 'batch_price', 'total_price', 'retail_price'],
                                                     data: data
@@ -319,7 +301,49 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         });
                                     }
                                 }
-                            }
+                            },
+                            {
+                                fieldLabel: '付款金额(欧)',
+                                name: 'money',
+                                value: me.total,
+                                xtype: 'numberfield'
+                            },
+                            {
+                                fieldLabel: '最后付款日期',
+                                name: 'last_pay_day',
+                                xtype: 'datefield',
+                                editable: false,
+                                format: 'Y-m-d',
+                                value: new Date()
+
+                            },
+                            {
+                                fieldLabel: '用途',
+                                name: 'pay_function',
+                                xtype: 'textarea',
+                                columnWidth:1
+                            },
+                            //{
+                            //    fieldLabel: '选择付款人',
+                            //    name: 'payer',
+                            //    xtype: 'combo',
+                            //    editable: false,
+                            //    displayField: 'username',
+                            //    valueField: 'id',
+                            //    //queryMode:'local',
+                            //    store: Ext.create('Ext.data.Store', {
+                            //        //autoLoad:true,
+                            //        fields: ['id', 'username'],
+                            //        proxy: {
+                            //            type: 'ajax',
+                            //            url: apiBaseUrl + '/index.php/Purchasing/Buyer/getPayer',
+                            //            reader: {
+                            //                type: 'json',
+                            //                rootProperty: 'data'
+                            //            }
+                            //        }
+                            //    })
+                            //},
                         ],
                         buttons: [
                             {
@@ -385,16 +409,16 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     }
                     res = text.data;
                     var form = win.down("form");
-                    form.down("combo[name=buyer]").setStore(Ext.create('Ext.data.Store', {
-                        fields: ['id', 'username'],
-                        data: res.buyer
-                    }));
+                    //form.down("combo[name=buyer]").setStore(Ext.create('Ext.data.Store', {
+                    //    fields: ['id', 'username'],
+                    //    data: res.buyer
+                    //}));
                     form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
-                        fields: ['id_no', 'name'],
+                        fields: [],
                         data: res.supplier
                     }));
 
-                    form.down("combo[name=buyer]").setDisabled(false);
+                    //form.down("combo[name=buyer]").setDisabled(false);
                     form.down("combo[name=supplier]").setDisabled(false);
                 }
             });

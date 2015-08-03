@@ -64,17 +64,17 @@ Ext.define('erp.view.main.MainModel', {
             }
         ],
         systemMngMenus:[
-            {text: "用户管理", leaf: true, view: null},
-            {text: "日志管理", leaf: true,view: null},
-            {text: "模块管理", leaf: true,view: null},
+            {text: "用户管理", leaf: true, view: 'usermng'},
+            {text: "日志管理", leaf: true,view: 'systemlogmng'},
+            {text: "模块管理", leaf: true,view: 'modulemng'},
             {
                 text: "权限管理", leaf: false, children: [
-                {text: "权限设置", leaf: true, view:  null},
-                {text: "分配权限", leaf: true,view: null}
+                {text: "权限设置", leaf: true, view:  'authoritymng'},
+                {text: "分配权限", leaf: true,view: 'authoritysetting'}
             ]
             },
-            {text: "部门管理", leaf: true,view: null},
-            {text: "角色管理", leaf: true,view: null}
+            {text: "部门管理", leaf: true,view: 'groupmng'},
+            {text: "角色管理", leaf: true,view: 'rolemng'}
         ],
         purchaseMngMenus:[
             {text: "供应商管理", leaf: true,view: 'suppliermng',iconCls:'userIcon'},

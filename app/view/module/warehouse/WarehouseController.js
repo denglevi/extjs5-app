@@ -1699,12 +1699,12 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         this.getWarehouseDeliverGoodsOrderData(model,id);
         model.set("order_info", {
             noder_no: record.get("noder_no"),
-            store: record.get("store"),
-            storage: record.get("storage"),
+            store: record.get("shop_name"),
+            storage: record.get("warehouse"),
             order_nos: record.get("order_nos"),
             price_select: record.get("price_select"),
             discounts: record.get("discounts"),
-            id_brand: record.get("id_brand"),
+            id_brand: record.get("brand_name"),
             ditch: record.get("ditch")
         });
 

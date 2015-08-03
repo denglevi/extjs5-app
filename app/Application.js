@@ -26,7 +26,8 @@ Ext.define('erp.Application', {
         'SellerListStore','ResultAllotListStore','PaymentMethodStore','BundledSalesListStore',
         'VIPCardListStore','VIPCardOpenLimitStore','VIPCardUpdateLimitStore','VIPCardPutLimitStore',
         'CustomerMngStore','VIPCardListStore','GiftCardInfoStore','GiftCardReturnStandardStore',
-        'GiftCardSaleStore','GiftCardPutLimitStore','VIPListStore','GoodsDeliveryNoticeStore','WarehouseDeliveryOrderStore'
+        'GiftCardSaleStore','GiftCardPutLimitStore','VIPListStore','GoodsDeliveryNoticeStore','WarehouseDeliveryOrderStore',
+        'GroupStore','RoleStore','ModuleStore','UserStore','SystemLogStore','AuthorityStore'
         // TODO: add global / shared stores here
     ],
     //views:['erp.view.login.Login','erp.view.main.Main'],
@@ -43,13 +44,20 @@ Ext.define('erp.Application', {
         //        this.close(true);
         //    });
         //}
-        var ipc = require('ipc');
-        ipc.send("close-splash-screen","ping");
-        //if(localStorage.getItem("is_login") == 1){
-        //    var username = localStorage.getItem("user");
-        //    Ext.widget("main",{username:username});
-        //    return;
-        //}
+        /*
+            桌面版代码注释
+         var ipc = require('ipc');
+         ipc.send("close-splash-screen","ping");
+         */
+
+        /*
+            WEB版代码注释
+         */
+        if(localStorage.getItem("is_login") == 1){
+            var username = localStorage.getItem("user");
+            Ext.widget("main",{username:username});
+            return;
+        }
         Ext.widget("login");
     }
 });

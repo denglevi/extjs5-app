@@ -19,7 +19,7 @@ Ext.define('erp.view.main.region.Bottom', {
                     html: '欢迎使用COSCIA ERP系统'
                 }, '->',
                 {
-                    text: '寇莎国际品牌管理有限公司'
+                    text: '蔻莎国际品牌管理有限公司'
                 }, '->',
                 {
                     text: '登录用户：' + username,
@@ -27,10 +27,10 @@ Ext.define('erp.view.main.region.Bottom', {
                     iconCls: 'userIcon'
                 }, '->',
                 {
-                    text: '寇莎国际品牌管理有限公司 @版权所有'
+                    text: '蔻莎国际品牌管理有限公司 @版权所有'
                 }, '',
                 {
-                    text: 'version 0.1'
+                    text: 'version 0.5.1'
                 }, '->'
             ]
         });

@@ -57,6 +57,13 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.member.GiftCardSale',
         'erp.view.module.member.GiftCardPutLimit',
         'erp.view.module.member.VIPCardList',
+        'erp.view.module.system.GroupMng',
+        'erp.view.module.system.RoleMng',
+        'erp.view.module.system.ModuleMng',
+        'erp.view.module.system.SystemLogMng',
+        'erp.view.module.system.AuthorityMng',
+        'erp.view.module.system.AuthoritySetting',
+        'erp.view.module.system.UserMng'
     ],
     onMainMenu: function (el) {
         //点击不同菜单之后，左边栏显示不同的菜单
