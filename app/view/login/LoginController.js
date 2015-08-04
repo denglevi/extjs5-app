@@ -30,6 +30,7 @@
                         }
                         localStorage.setItem("is_login",1);
                         localStorage.setItem("user",val.username);
+                        localStorage.setItem("userInfo",Ext.encode(action.result.data));
                         me.getView().destroy();
                         Ext.widget("main",{username:val.username});
 

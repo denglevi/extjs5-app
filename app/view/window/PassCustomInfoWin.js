@@ -130,9 +130,9 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                 data:info,
                 tpl: new Ext.XTemplate(
                     '<table class="table table-bordered">',
-                    '<tr><td class="col-md-3 text-right">操作</td><td class="col-md-3">操作人</td><td class="col-md-3">备注</td><td class="col-md-3">操作时间</td></tr>',
+                    '<tr><td class="col-md-3">操作</td><td class="col-md-3">操作人</td><td class="col-md-3">备注</td><td class="col-md-3">操作时间</td></tr>',
                     '<tpl for=".">',
-                    '<tr><td class="col-md-3 text-right">{supply_color_no}</td><td class="col-md-9">{color}</td></tr>',
+                    '<tr><td class="col-md-3">{supply_color_no}</td><td class="col-md-9">{color}</td></tr>',
                     '</tpl>',
                     '</table>'
                 )

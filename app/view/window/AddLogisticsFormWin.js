@@ -18,7 +18,7 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
         'Ext.layout.container.Fit'
     ],
     layout: 'fit',
-    bodyPadding: 10,
+    margin: 10,
     initComponent: function () {
         var me = this;
         Ext.apply(me, {

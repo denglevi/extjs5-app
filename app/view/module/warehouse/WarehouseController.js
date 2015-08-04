@@ -1294,6 +1294,29 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             }
         });
     },
+    getMoveLocationData:function(){
+        var data,model = this.getViewModel(),id = model.get("move_location_order_id");
+        Ext.Ajax.request({
+            async: false,
+            url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveLocationGoods?id=' + id,
+            success: function (res) {
+                var json = Ext.decode(res.responseText);
+                if (!json.success) {
+                    Ext.toast(json.msg, "系统提示");
+                    return;
+                }
+                data = json.data;
+            },
+            failure: function (res) {
+                Ext.toast(json.msg, "系统提示");
+            }
+        });
+        var store = Ext.create('Ext.data.Store', {
+            fields: [],
+            data: data
+        });
+        model.set("move_location_goods_info_store", store);
+    },
     onMoveLocationGridDblClick: function (gp, record) {
         var me = this;
         var id = record.get("id"), no = record.get("move_no"), warehouse = record.get("storage_name"), status = record.get("status"),
@@ -1307,43 +1330,15 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         model.set("move_location_order_no", no);
         model.set("move_location_order_status", status == 1 ? true : false);
         model.set("move_location_order_warehouse", warehouse);
+        me.getMoveLocationData();
         if (info !== null) {
-            var grid = info.down("grid"),
-                data, store;
-            Ext.Ajax.request({
-                async: false,
-                url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveLocationGoods?id=' + id,
-                success: function (res) {
-                    var json = Ext.decode(res.responseText);
-                    if (!json.success) {
-                        Ext.toast(json.msg, "系统提示");
-                        return;
-                    }
-                    data = json.data;
-                },
-                failure: function (res) {
-                    Ext.toast(json.msg, "系统提示");
+            var grid = info.down("grid"), store;
 
-                }
-            });
-
-            store = Ext.create('Ext.data.Store', {
-                fields: [],
-                data: data
-            });
-            model.set("move_location_goods_info_store", store);
+            store = model.get("move_location_goods_info_store");
+            //model.set("move_location_goods_info_store", store);
             grid.setStore(store);
             var btn = info.down("segmentedbutton").down("button");
             btn.setPressed(true);
-            //store.setProxy({
-            //    type: 'ajax',
-            //    url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveLocationGoods?id=' + id,
-            //    reader: {
-            //        type: 'json',
-            //        rootProperty: 'data'
-            //    }
-            //});
-            //store.load();
             return;
         }
         container.add({
@@ -1427,8 +1422,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                                     return;
                                                                 }
 
-                                                                var grid = me.lookupReference("move_location_goods_gird");
-                                                                var store = grid.getStore();
+                                                                //var grid = me.lookupReference("move_location_goods_gird");
+                                                                var store = model.get("move_location_goods_info_store");
                                                                 var items = store.getData().items;
                                                                 var goods = [];
                                                                 for (var i = 0; i < items.length; ++i) {
@@ -1437,8 +1432,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                                     goods.push({
                                                                         goods_no: item.get("goods_no"),
                                                                         move_in_location: location,
-                                                                        move_out_location: item.get("move_out_location"),
-                                                                        move_in_location_id: item.get("move_in_location_id")
+                                                                        move_out_location: item.get("move_out_location")
                                                                     });
                                                                 }
                                                                 console.log(goods, id);
@@ -1461,6 +1455,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                                         }
                                                                         Ext.toast("移位成功", "系统提示", 't');
                                                                         me.nos = [];
+                                                                        me.getMoveLocationData();
+                                                                        //store = model.get("move_location_goods_info_store");
                                                                         //obj.setValue("");
                                                                         ////win.destroy();
                                                                         //me.getExhibitOrderData(id, model, import_goods_order_no);
@@ -1609,24 +1605,25 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         {text: '移入库位', dataIndex: 'move_in_location'},
                         {text: '移位时间', dataIndex: 'create_time', format: 'data(Y-m-d)', flex: 1}
                     ],
-                    listeners: {
-                        afterrender: function () {
-                            var store = Ext.create('Ext.data.Store', {
-                                fields: [],
-                                autoLoad: true,
-                                proxy: {
-                                    type: 'ajax',
-                                    url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveLocationGoods?id=' + id,
-                                    reader: {
-                                        type: 'json',
-                                        rootProperty: 'data'
-                                    }
-                                }
-                            });
-                            model.set("move_location_goods_info_store", store);
-                            this.setStore(store);
-                        }
-                    }
+                    store:model.get("move_location_goods_info_store")
+                    //listeners: {
+                    //    afterrender: function () {
+                    //        var store = Ext.create('Ext.data.Store', {
+                    //            fields: [],
+                    //            autoLoad: true,
+                    //            proxy: {
+                    //                type: 'ajax',
+                    //                url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveLocationGoods?id=' + id,
+                    //                reader: {
+                    //                    type: 'json',
+                    //                    rootProperty: 'data'
+                    //                }
+                    //            }
+                    //        });
+                    //        model.set("move_location_goods_info_store", store);
+                    //        this.setStore(store);
+                    //    }
+                    //}
                 }
             ]
         });

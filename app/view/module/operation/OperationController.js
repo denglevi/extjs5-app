@@ -11,11 +11,13 @@ Ext.define('erp.view.module.operation.OperationController', {
         'Ext.data.Store',
         'Ext.data.StoreManager',
         'Ext.form.Panel',
+        'Ext.form.field.Checkbox',
         'Ext.form.field.ComboBox',
         'Ext.form.field.Date',
         'Ext.form.field.Display',
         'Ext.form.field.Hidden',
         'Ext.form.field.Text',
+        'Ext.form.field.TextArea',
         'Ext.layout.container.Anchor',
         'Ext.layout.container.Column',
         'Ext.layout.container.VBox',
@@ -35,7 +37,8 @@ Ext.define('erp.view.module.operation.OperationController', {
                 labelAlign: 'right',
                 labelWidth: 100,
                 allowBlank: false,
-                anchor: '100%'
+                anchor: '100%',
+                margin:5
             },
             items: [
                 {fieldLabel: '职位名称', name: 'operations_post'},
@@ -78,7 +81,7 @@ Ext.define('erp.view.module.operation.OperationController', {
         var win = Ext.create('Ext.window.Window', {
             title: '新增职位',
             width: 400,
-            bodyPadding: 20,
+            margin: 10,
             items: [form],
             modal: true,
             resizable: false
@@ -142,13 +145,13 @@ Ext.define('erp.view.module.operation.OperationController', {
         var record = sel[0];
 
         var form = Ext.create('Ext.form.Panel', {
-            xtype: 'form',
-            layout: 'vbox',
+            layout: 'anchor',
             defaults: {
                 xtype: 'textfield',
                 labelAlign: 'right',
                 allowBlank: false,
-                anchor: '100%'
+                anchor: '100%',
+                margin:5
             },
             url: apiBaseUrl + '/index.php/operations/Position/saveSellerPosition',
             items: [
@@ -195,7 +198,7 @@ Ext.define('erp.view.module.operation.OperationController', {
         var win = Ext.create('Ext.window.Window', {
             title: '修改职位',
             width: 400,
-            bodyPadding: 20,
+            margin: 10,
             items: [form]
         });
 
@@ -210,28 +213,37 @@ Ext.define('erp.view.module.operation.OperationController', {
                 labelAlign: 'right',
                 allowBlank: false,
                 columnWidth: 0.5,
-                anchor: '100%'
+                anchor: '100%',
+                margin:5
             },
             items: [
                 {fieldLabel: '姓名', name: 'username'},
                 {fieldLabel: '工号', name: 'job_no'},
                 {fieldLabel: '职位', name: 'job_pos', xtype: 'combo', editable: false},
-                {fieldLabel: '性别', name: 'sex', xtype: 'combo', editable: false},
+                {fieldLabel: '性别', name: 'sex', xtype: 'combo',displayField:'val',valueField:'val',editable: false,store:Ext.create("Ext.data.Store",{
+                    fields:[],
+                    data:[
+                        {val:'男'},
+                        {val:'女'}
+                    ]
+                })},
                 {fieldLabel: '电话', name: 'phone'},
                 {fieldLabel: '地址', name: 'address'},
                 {fieldLabel: '生日', name: 'birthday'},
                 {fieldLabel: '所属大店', name: 'shop_id_1', xtype: 'combo', editable: false},
                 {fieldLabel: '所属小店', name: 'shop_id', xtype: 'combo', editable: false},
-                {fieldLabel: '是否启用签名码', name: 'is_signature', columnWidth: 1},
-                {fieldLabel: '签名码', name: 'signature', columnWidth: 1},
-                {fieldLabel: '备注', name: 'notes', columnWidth: 1}
+                {fieldLabel: '是否启用签名码', name: 'is_signature',xtype:'checkbox'},
+                {fieldLabel: '签名码', name: 'signature', columnWidth: 1,disabled:true},
+                {fieldLabel: '备注', name: 'notes', columnWidth: 1,xtype:'textarea'}
             ]
         };
         var win = Ext.create('Ext.window.Window', {
             title: '新增店员',
-            width: 400,
-            bodyPadding: 20,
+            width: 600,
+            margin: 10,
             items: [form],
+            modal:true,
+            resizable:false,
             buttons: [
                 {
                     text: '保存',
@@ -287,7 +299,7 @@ Ext.define('erp.view.module.operation.OperationController', {
         });
     },
     editSeller: function () {
-        var grid = this.lookupReference("seller_management_container").down("#seller_grid");
+        var grid = this.lookupReference("seller_grid");
         var sel = grid.getSelection(), id;
         if (sel.length == 0) {
             Ext.Msg.alert('系统提示', '请选择要修改的店员');
@@ -299,38 +311,47 @@ Ext.define('erp.view.module.operation.OperationController', {
         }
         var record = sel[0];
 
-        var form = {
-            xtype: 'form',
-            layout: 'vbox',
+        var form = Ext.create('Ext.form.Panel',{
+            layout: 'column',
             defaults: {
                 xtype: 'textfield',
                 labelAlign: 'right',
-                labelWidth: 70,
                 allowBlank: false,
-                anchor: '100%'
+                columnWidth: 0.5,
+                anchor: '100%',
+                margin:5
             },
-            url: apiBaseUrl + '/index.php/operations/Position/saveSellerPosition',
+            url: apiBaseUrl + '/index.php/operations/Position/saveSeller',
             items: [
                 {fieldLabel: '姓名', name: 'username'},
                 {fieldLabel: '工号', name: 'job_no'},
                 {fieldLabel: '职位', name: 'job_pos', xtype: 'combo', editable: false},
-                {fieldLabel: '性别', name: 'sex', xtype: 'combo', editable: false},
+                {fieldLabel: '性别', name: 'sex', xtype: 'combo',displayField:'val',valueField:'val',editable: false,store:Ext.create("Ext.data.Store",{
+                    fields:[],
+                    data:[
+                        {val:'男'},
+                        {val:'女'}
+                    ]
+                })},
                 {fieldLabel: '电话', name: 'phone'},
                 {fieldLabel: '地址', name: 'address'},
                 {fieldLabel: '生日', name: 'birthday'},
-                {fieldLabel: '所属大店', name: 'shop_id_1', xtype: 'combo', editable: false},
-                {fieldLabel: '所属小店', name: 'shop_id', xtype: 'combo', editable: false},
-                {fieldLabel: '是否启用签名码', name: 'is_signature', columnWidth: 1},
-                {fieldLabel: '签名码', name: 'signature', columnWidth: 1},
-                {fieldLabel: '备注', name: 'notes', columnWidth: 1}
+                //{fieldLabel: '所属大店', name: 'shop_id_1', xtype: 'combo', editable: false},
+                //{fieldLabel: '所属小店', name: 'shop_id', xtype: 'combo', editable: false},
+                {fieldLabel: '是否启用签名码', name: 'is_signature',xtype:'checkbox'},
+                {fieldLabel: '签名码', name: 'signature', columnWidth: 1,disabled:true},
+                {fieldLabel: '备注', name: 'notes', columnWidth: 1,xtype:'textarea'}
             ]
-        };
-        form.load(record);
+        });
+
+        form.loadRecord(record);
         var win = Ext.create('Ext.window.Window', {
             title: '修改店员',
-            width: 400,
-            bodyPadding: 20,
+            width: 600,
+            margin: 10,
             items: [form],
+            resizable:false,
+            modal:true,
             buttons: [
                 {
                     text: '保存',

@@ -624,7 +624,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             },me);
             win.show();
         } else if ("申请报关付款" == status_name) {
-            var win = Ext.create('erp.view.window.PurchasePayWin', {
+            var win = Ext.create('erp.view.window.ApplyPassCustomPayWin', {
                 title: status_name,
                 status_id: bat.batch_status,
                 order_no: bat.order_no,

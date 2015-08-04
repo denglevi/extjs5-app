@@ -147,7 +147,7 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
             return;
         }
         Ext.each(sel, function (record) {
-            if(record.get("notice_status" != 2)){
+            if(record.get("notice_status") == 2){
                 mark = 1;
                 return;
             }
@@ -310,7 +310,9 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                                         var item = items[i];
                                         if (item.get("mark") !== 0) continue;
                                         goods.push({
-                                            goods_no: item.get("goods_no")
+                                            goods_no: item.get("goods_no"),
+                                            move_out_location:item.get("move_out_location"),
+                                            move_out_warehouse:item.get("move_out_warehouse")
                                         });
                                     }
                                     if(goods.length == 0) return;
@@ -357,7 +359,9 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                                         var item = items[i];
                                         if (item.get("mark") !== 0) continue;
                                         goods.push({
-                                            goods_no: item.get("goods_no")
+                                            goods_no: item.get("goods_no"),
+                                            move_out_location:item.get("move_out_location"),
+                                            move_out_warehouse:item.get("move_out_warehouse")
                                         });
                                     }
                                     //console.log(goods);
@@ -405,7 +409,9 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseController', {
                                         var item = items[i];
                                         if (item.get("mark") !== 0) continue;
                                         goods.push({
-                                            goods_no: item.get("goods_no")
+                                            goods_no: item.get("goods_no"),
+                                            move_out_location:item.get("move_out_location"),
+                                            move_out_warehouse:item.get("move_out_warehouse")
                                         });
                                     }
 

@@ -46,10 +46,10 @@ Ext.define('erp.Application', {
         //}
         /*
             桌面版代码注释
-         var ipc = require('ipc');
-         ipc.send("close-splash-screen","ping");
-         */
 
+         */
+        //var ipc = require('ipc');
+        //ipc.send("close-splash-screen","ping");
         /*
             WEB版代码注释
          */
@@ -58,6 +58,7 @@ Ext.define('erp.Application', {
             Ext.widget("main",{username:username});
             return;
         }
+
         Ext.widget("login");
     }
 });

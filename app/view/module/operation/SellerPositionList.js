@@ -68,10 +68,11 @@ Ext.define('erp.view.module.operation.SellerPositionList',{
                 {
                     title:'店员列表',
                     itemId:'seller_grid',
+                    reference:'seller_grid',
                     tbar:[
-                        {text:'新增',glyph:0xf067,handler:'addSellerPosition'},
-                        {text:'删除',glyph:0xf1f8,handler:'delSellerPosition'},
-                        {text:'修改',glyph:0xf044,handler:'editSellerPosition'}
+                        {text:'新增',glyph:0xf067,handler:'addSeller'},
+                        {text:'删除',glyph:0xf1f8,handler:'delSeller'},
+                        {text:'修改',glyph:0xf044,handler:'editSeller'}
                     ],
                     columns:[
                         {text:'工号',dataIndex:'job_no',flex:1},

@@ -4,9 +4,7 @@
 Ext.define('erp.view.module.system.AuthoritySetting', {
     extend: 'Ext.Container',
     xtype: 'authoritysetting',
-
     requires: [
-        'Array',
         'Ext.container.Container',
         'Ext.form.FieldSet',
         'Ext.form.field.Base',

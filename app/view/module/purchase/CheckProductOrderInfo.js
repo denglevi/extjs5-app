@@ -15,8 +15,8 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
     initComponent: function () {
         var me = this;
         var data = {
-            create_time:this.record.get("create_time"),
-            vendor_name:this.record.get("supplier_id"),
+            create_time:this.record.get("date"),
+            vendor_name:this.record.get("name"),
             order_no:this.record.get("order_no"),
             batch_no:this.record.get("batch_no"),
             username:this.record.get("username"),
