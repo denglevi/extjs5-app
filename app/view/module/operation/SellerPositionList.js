@@ -77,7 +77,7 @@ Ext.define('erp.view.module.operation.SellerPositionList',{
                     columns:[
                         {text:'工号',dataIndex:'job_no',flex:1},
                         {text:'姓名',dataIndex:'username',flex:1},
-                        {text:'职位',dataIndex:'job_post',flex:1},
+                        {text:'职位',dataIndex:'operations_post',flex:1},
                         {text:'手机',dataIndex:'phone',flex:1},
                         {text:'性别',dataIndex:'sex'},
                         {text:'状态',dataIndex:'status',renderer:function(val){

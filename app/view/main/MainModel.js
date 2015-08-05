@@ -129,6 +129,7 @@ Ext.define('erp.view.main.MainModel', {
         ],
         operateMngMenus:[
             {text: "店员管理", leaf: true, view: 'sellerpositionlist'},
+            {text: "店铺管理", leaf: true, view: 'shopmng'},
             {text: "业绩分配", leaf: true, view: 'resultsallot'},
             {
                 text: "活动促销", leaf: false, children: [

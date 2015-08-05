@@ -237,6 +237,17 @@ Ext.define('erp.view.module.operation.OperationController', {
                 {fieldLabel: '备注', name: 'notes', columnWidth: 1,xtype:'textarea'}
             ]
         };
+        Ext.Ajax.request({
+           async:true,
+            url: apiBaseUrl + '/index.php/Operations/Saleder/getSellerData',
+            method:'POST',
+            success:function(res){
+                console.log(Ext.decode(res.responseText));
+            },
+            failure:function(){
+
+            }
+        });
         var win = Ext.create('Ext.window.Window', {
             title: '新增店员',
             width: 600,
