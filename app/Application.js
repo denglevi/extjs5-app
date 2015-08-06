@@ -22,7 +22,7 @@ Ext.define('erp.Application', {
     stores: [
         'SupplierStore','PurchaseOrderListStore','PurchaseOrderStore','CheckProductListStore',
         'LogisticsListStore','PassCustomListStore','WarehouseReceiveStore','GoodsMenuStore','GoodsListStore',
-        'WarehouseListStore','WarehouseCheckTaskOrderStore','WarehouseCheckOrderStore','SellerPositionListStore',
+        'WarehouseListStore','WarehouseCheckTaskOrderStore','WarehouseCheckOrderStore','SellerPositionListStore','WarehouseSelectStore',
         'SellerListStore','ResultAllotListStore','PaymentMethodStore','BundledSalesListStore','ShopStore',
         'VIPCardListStore','VIPCardOpenLimitStore','VIPCardUpdateLimitStore','VIPCardPutLimitStore',
         'CustomerMngStore','VIPCardListStore','GiftCardInfoStore','GiftCardReturnStandardStore',

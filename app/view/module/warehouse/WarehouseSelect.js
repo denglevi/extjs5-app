@@ -8,6 +8,7 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
     requires: [
         'Ext.Ajax',
         'Ext.data.Store',
+        'Ext.data.StoreManager',
         'Ext.data.proxy.Ajax',
         'Ext.data.reader.Json',
         'Ext.form.Panel',
@@ -46,14 +47,14 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
                     fields: ['id', 'username'],
                     data: res.warehouse
                 }));
-                form.down("combo[name=big_class]").setStore(Ext.create('Ext.data.Store', {
+                form.down("combo[name=large_class]").setStore(Ext.create('Ext.data.Store', {
                     fields: ['id', 'name'],
                     data: res.cate
                 }));
 
                 form.down("combo[name=brand]").setDisabled(false);
                 form.down("combo[name=warehouse]").setDisabled(false);
-                form.down("combo[name=big_class]").setDisabled(false);
+                form.down("combo[name=large_class]").setDisabled(false);
             }
         });
         var fields = me.getSearchFields();
@@ -81,7 +82,7 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
             items: [
                 {xtype: 'combo', fieldLabel: '品牌', name: 'brand', displayField: 'name_en', valueField: 'id'},
                 {
-                    xtype: 'combo', fieldLabel: '大类', name: 'big_class', listeners: {
+                    xtype: 'combo', fieldLabel: '大类', name: 'large_class', listeners: {
                     change: function () {
                         var val = this.getValue(), sub = this.up("form").down("combo[name=middle_class]");
                         console.log(val);
@@ -172,19 +173,6 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
         return fields;
     },
     getGrid: function () {
-        var store = Ext.create('Ext.data.Store', {
-            fields: [],
-            authLoad: false,
-            proxy: {
-                type: 'ajax',
-                url: apiBaseUrl + '/index.php/Warehouse/Stock/searchGoods',
-                reader: {
-                    type: 'json',
-                    rootProperty: 'data',
-                    totalProperty: 'total'
-                }
-            }
-        });
         var grid = {
             xtype: 'grid',
             flex: 1,
@@ -215,19 +203,23 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
             bbar: [
                 '->', {
                     xtype: 'pagingtoolbar',
-                    store: store,
-                    displayInfo: true
+                    displayInfo: true,
+                    store: "WarehouseSelectStore"
                 }],
-            store: store
+            store: "WarehouseSelectStore"
         }
-
         return grid;
     },
     search: function () {
         var form = this.up('form').getForm(),
-            store = this.up("form").up("warehouseselect").down("grid").getStore(),
+            store = Ext.StoreManager.lookup("WarehouseSelectStore"),
             vals = form.getValues();
+        var pt = this.up("form").up("warehouseselect").down("pagingtoolbar");
         store.setProxy({
+            params:{
+                page:1,
+                start:0
+            },
             extraParams: {
                 vals: Ext.encode(vals)
             },
@@ -239,9 +231,9 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
                 totalProperty: 'total'
             }
         });
-        store.load(function (records, operation, success) {
-            console.log(records, operation, success);
-        });
-
+        pt.moveFirst();
+        //store.load({
+        //
+        //});
     }
 });
