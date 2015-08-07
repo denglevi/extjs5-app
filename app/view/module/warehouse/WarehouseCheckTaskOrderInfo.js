@@ -157,8 +157,8 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckTaskOrderInfo', {
         var status = this.record.get("status"),
             btns = [
                 {text: '执行'},
-                {text: '确认'},
-                {text: '盈亏'},
+                //{text: '确认'},
+                //{text: '盈亏'},
                 {text: '终止'}
             ];
         console.log(status);

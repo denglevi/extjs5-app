@@ -50,14 +50,14 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckTaskOrder', {
                     if(val == 0) return 'columnActionIcon1';
                     return 'hide';
                 },tooltip: '执行'},
-                {getClass:function(val){
-                    if(val > 0) return 'columnActionIcon2';
-                    return 'hide';
-                },tooltip: '确认'},
-                {getClass:function(val){
-                    if(val > 0) return 'columnActionIcon3';
-                    return 'hide';
-                },tooltip: '盈亏'},
+                //{getClass:function(val){
+                //    if(val > 0) return 'columnActionIcon2';
+                //    return 'hide';
+                //},tooltip: '确认'},
+                //{getClass:function(val){
+                //    if(val > 0) return 'columnActionIcon3';
+                //    return 'hide';
+                //},tooltip: '盈亏'},
                 {getClass:function(val){
                     if(val > 0) return 'columnActionIcon4';
                     return 'hide';

@@ -20,10 +20,11 @@ Ext.define('erp.view.module.system.SystemLogMng', {
 
         Ext.apply(me,{
             tbar:[
-                {text:'新增',iconCls:'addIcon'},'->',
+                '->',
                 {xtype:'textfield',fieldLabel:'操作用户',name:'action_user',labelAlign:'right',labelWidth:70},
-                {xtype:'datefield',fieldLabel:'操作开始时间',name:'action_user',labelAlign:'right',format:'Y-m-d',editable:false},
-                {xtype:'datefield',fieldLabel:'操作结束时间',name:'action_user',labelAlign:'right',format:'Y-m-d',editable:false},
+                {xtype:'datefield',fieldLabel:'操作时间',name:'action_start_time',labelAlign:'right',format:'Y-m-d',editable:false},
+                {xtype:'tbtext',html:'-'},
+                {xtype:'datefield',hideLabel:true,name:'action_end_time',labelAlign:'right',format:'Y-m-d',editable:false},
                 {text:'搜索'}
             ],
             sortableColumns:false,

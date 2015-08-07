@@ -91,6 +91,10 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                     items: [
                         {disabled:false,xtype: 'datefield', fieldLabel: '盘点日期', format: 'Y-m-d', value: new Date(), name: 'date',hidden:false,editable: false,allowBlank:false},
                         {
+                          name:'warehouse',fieldLabel: '盘点仓库',displayField: 'storage_name',valueField: 'id',editable: false,
+                            disabled:true,hidden:false
+                        },
+                        {
                             disabled:false,
                             fieldLabel: '盘点类型',
                             store: store,
@@ -117,6 +121,15 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                         win.down("combo[name=sex]").setHidden(true);
                                     }
                                     else if (val == 2) {
+                                        win.down("combo[name=year_season]").setDisabled(true);
+                                        win.down("combo[name=large_class]").setDisabled(true);
+                                        win.down("combo[name=small_class]").setDisabled(true);
+                                        win.down("combo[name=sex]").setDisabled(true);
+
+                                        win.down("combo[name=year_season]").setHidden(true);
+                                        win.down("combo[name=large_class]").setHidden(true);
+                                        win.down("combo[name=small_class]").setHidden(true);
+                                        win.down("combo[name=sex]").setHidden(true);
                                         Ext.Ajax.request({
                                             aysnc: true,
                                             method: 'POST',
@@ -265,7 +278,8 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                         method: 'POST',
                         url: apiBaseUrl + '/index.php/Warehouse/TaskList/addWarehouseCheckTaskOrder',
                         params: {
-                            vals:Ext.encode(vals)
+                            vals:Ext.encode(vals),
+                            warehouse_id:vals.warehouse
                         },
                         success: function (res) {
                             console.log(res);
@@ -286,7 +300,32 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                 }
             ]
         });
-
+        Ext.Ajax.request({
+           async:true,
+            url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseData',
+            params: {
+                warehouse:0
+            },
+            method:'POST',
+            success:function(res){
+                var json = Ext.decode(res.responseText);
+                if(!json.success){
+                    Ext.toast(json.msg,"系统提示");
+                    return;
+                }
+                console.log(json.data);
+                var store = Ext.create('Ext.data.Store', {
+                    fields: [],
+                    data: json.data.warehouse
+                });
+                var warehouse = win.down("combo[name=warehouse]");
+                warehouse.setStore(store);
+                warehouse.setDisabled(false);
+            },
+            failure:function(){
+                Ext.toast("请求数据错误,请检查网络,重试!","系统提示");
+            }
+        });
         win.show();
     },
     addCheckOrder:function(){

@@ -67,13 +67,20 @@ Ext.define('erp.view.module.system.AuthoritySetting', {
                         {
                             text: '应用',
                             handler: function () {
+                                if(me.role_id == null){
+                                    Ext.toast("请选择要应用的角色", "系统提示");
+                                    return;
+                                }
                                 var form = this.up("form").getForm();
                                 form.submit({
+                                    params:{
+                                        id:me.role_id
+                                    },
                                     success:function(form,action){
-                                        console.log(action);
+                                        Ext.toast("角色权限设置成功", "系统提示");
                                     },
                                     failure:function(form,action){
-
+                                        Ext.toast("角色权限设置失败,请重试!", "系统提示");
                                     }
                                 });
                             }
@@ -107,8 +114,9 @@ Ext.define('erp.view.module.system.AuthoritySetting', {
                                 var fieldset = {
                                     xtype: 'fieldset',
                                     title: item.name,
-                                    margin: '30 0 0 0',
+                                    margin: '10 0 0 0',
                                     layout: 'column',
+                                    collapsible: true,
                                     defaultType: 'checkbox',
                                     items: fields
                                 };
@@ -128,6 +136,7 @@ Ext.define('erp.view.module.system.AuthoritySetting', {
     },
     onAuthRoleListGridDblClick: function (gp, record) {
         var me = this;
+        me.role_id = record.get("id");
         console.log(record);
         Ext.Ajax.request({
             async: true,

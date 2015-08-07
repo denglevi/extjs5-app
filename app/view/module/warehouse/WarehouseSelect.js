@@ -17,7 +17,8 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
         'Ext.grid.Panel',
         'Ext.layout.container.Column',
         'Ext.toolbar.Fill',
-        'Ext.toolbar.Paging'
+        'Ext.toolbar.Paging',
+        'Ext.toolbar.TextItem'
     ],
 
     initComponent: function () {
@@ -40,7 +41,7 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
                 console.log(text);
                 var form = me.down("form");
                 form.down("combo[name=brand]").setStore(Ext.create('Ext.data.Store', {
-                    fields: ['id', 'username'],
+                    fields: ['base_data_id', 'name_en'],
                     data: res.brand
                 }));
                 form.down("combo[name=warehouse]").setStore(Ext.create('Ext.data.Store', {
@@ -48,8 +49,8 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
                     data: res.warehouse
                 }));
                 form.down("combo[name=large_class]").setStore(Ext.create('Ext.data.Store', {
-                    fields: ['id', 'name'],
-                    data: res.cate
+                    fields: ['base_data_id', 'name'],
+                    data: res.large_class
                 }));
 
                 form.down("combo[name=brand]").setDisabled(false);
@@ -80,43 +81,36 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
                 disabled: true
             },
             items: [
-                {xtype: 'combo', fieldLabel: '品牌', name: 'brand', displayField: 'name_en', valueField: 'id'},
+                {xtype: 'combo', fieldLabel: '品牌', name: 'brand', displayField: 'name_en', valueField: 'base_data_id'},
                 {
                     xtype: 'combo', fieldLabel: '大类', name: 'large_class', listeners: {
                     change: function () {
-                        var val = this.getValue(), sub = this.up("form").down("combo[name=middle_class]");
-                        console.log(val);
-                        sub.clearValue();
-                        if (val !== null) {
-                            console.log(123);
-                            Ext.Ajax.request({
-                                async: true,
-                                url: apiBaseUrl + '/index.php/Warehouse/Stock/getCate',
-                                params: {
-                                    pid: val
-                                },
-                                success: function (response) {
-                                    var text = Ext.decode(response.responseText);
-                                    if (!text.success) {
-                                        Ext.toast("初始化数据错误,请重试!", "系统提示");
-                                        return;
-                                    }
-                                    res = text.data;
-                                    console.log(text);
-                                    var form = me.down("form");
-                                    form.down("combo[name=middle_class]").setStore(Ext.create('Ext.data.Store', {
-                                        fields: ['id', 'name'],
-                                        data: res.cate
-                                    }));
-                                    sub.setDisabled(false);
-                                }
-                            });
+                        var val = this.getValue(), sub = this.up("form").down("combo[name=small_class]"),
+                            items = this.getStore().getData().items, len = items.length, small_class;
+                        if (val == null) {
+                            sub.setDisabled(true);
+                            return;
                         }
-                        else sub.setDisabled(true);
+                        for (var i = 0; i < len; i++) {
+                            var item = items[i];
+                            if (item.get("name") == val) {
+                                small_class = item.get("sub_class");
+                                break;
+                            }
+                        }
+                        console.log(small_class);
+                        sub.clearValue();
+
+                        var form = me.down("form");
+                        form.down("combo[name=small_class]").setStore(Ext.create('Ext.data.Store', {
+                            fields: ['id', 'name'],
+                            data: small_class
+                        }));
+                        sub.setDisabled(false);
                     }
-                }, displayField: 'name', valueField: 'id'
+                }, displayField: 'name', valueField: 'name'
                 },
-                {xtype: 'combo', fieldLabel: '小类', name: 'small_class', displayField: 'name', valueField: 'id',},
+                {xtype: 'combo', fieldLabel: '小类', name: 'small_class', displayField: 'name', valueField: 'name',},
                 {
                     xtype: 'combo', fieldLabel: '仓库', name: 'warehouse', listeners: {
                     change: function () {
@@ -153,8 +147,12 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
                 }, displayField: 'no', valueField: 'id'
                 },
                 {xtype: 'combo', fieldLabel: '库位', name: 'location', displayField: 'no', valueField: 'id'},
-                {xtype: 'datefield', disabled: false, fieldLabel: '入库日期', format: 'Y-m-d', name: 'warehouse_date'},
-                {xtype: 'datefield', disabled: false, fieldLabel: '上架日期', format: 'Y-m-d', name: 'exhibit_date'}
+                {xtype: 'datefield', disabled: false, fieldLabel: '入库日期', format: 'Y-m-d', name: 'warehouse_start_date'},
+                {xtype: 'tbtext', html:'-'},
+                {xtype: 'datefield', disabled: false,hideLabel:true, format: 'Y-m-d', name: 'warehouse_end_date'},
+                {xtype: 'datefield', disabled: false, fieldLabel: '上架日期', format: 'Y-m-d', name: 'exhibit_start_date'},
+                {xtype: 'tbtext', html:'-'},
+                {xtype: 'datefield', disabled: false,hideLabel:true, format: 'Y-m-d', name: 'exhibit_end_date'}
             ],
             buttons: [
                 {
@@ -216,9 +214,9 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
             vals = form.getValues();
         var pt = this.up("form").up("warehouseselect").down("pagingtoolbar");
         store.setProxy({
-            params:{
-                page:1,
-                start:0
+            params: {
+                page: 1,
+                start: 0
             },
             extraParams: {
                 vals: Ext.encode(vals)
