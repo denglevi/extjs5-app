@@ -79,7 +79,14 @@ Ext.define('erp.view.main.MainController', {
             var menus = model.get("menus");
             var menu = [];
             var i = 0;
+            var user_info = localStorage.getItem("userInfo");
+            var userInfo = Ext.decode(user_info),
+                actions =userInfo.role_info.actions,
+                actionStr = actions.join(","),
+                len = menus.length,
+                arr = [];
             Ext.Array.each(menus, function (m) {
+                if(m.hidden || actionStr.indexOf(m.action) == -1) return;
                 var items = {
                     title: m.text,
                     iconCls: m.iconCls,

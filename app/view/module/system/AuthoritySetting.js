@@ -137,7 +137,7 @@ Ext.define('erp.view.module.system.AuthoritySetting', {
     onAuthRoleListGridDblClick: function (gp, record) {
         var me = this;
         me.role_id = record.get("id");
-        console.log(record);
+        me.down("#authList").mask("正在获取数据...");
         Ext.Ajax.request({
             async: true,
             url: apiBaseUrl + '/index.php/System/Authority/getAuthListByRole',
@@ -146,6 +146,10 @@ Ext.define('erp.view.module.system.AuthoritySetting', {
             },
             success: function (res) {
                 var json = Ext.decode(res.responseText);
+                if(!json.success){
+                    Ext.toast(json.msg, "系统提示");
+                    return;
+                }
                 if (json.data != null) {
                     var ids = json.data.split(',');
                     ids.pop();
@@ -155,10 +159,10 @@ Ext.define('erp.view.module.system.AuthoritySetting', {
                 var boxes = me.query("checkbox"), len = boxes.length;
                 for (var i = 0; i < len; i++) {
                     var box = boxes[i], id = box.auth_id;
-                    console.log(box);
                     if (ids.indexOf(id) != -1) box.setValue(true);
                     else box.setValue(false);
                 }
+                me.down("#authList").unmask();
             },
             failure: function (res) {
                 Ext.toast("数据获取错误,请稍后再试!", "系统提示");

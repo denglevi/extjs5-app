@@ -1,14 +1,17 @@
 .x-btn-default-small .x-btn-glyph {
-    opacity:1;
+    opacity: 1;
 }
-.x-title-icon .x-title-icon-default .x-title-glyph{
-    color:brown;
+
+.x-title-icon .x-title-icon-default .x-title-glyph {
+    color: brown;
 }
-.x-panel-header-title-default .x-title-icon-wrap-default .x-title-glyph{
-    color:brown;
+
+.x-panel-header-title-default .x-title-icon-wrap-default .x-title-glyph {
+    color: brown;
 }
+
 .person-form .x-panel-header-default-framed .x-panel-header-glyph {
-    color:brown;
+    color: brown;
 }
 
 /*采购订单状态进度条样式*/
@@ -64,125 +67,154 @@
     background: green;
 }
 
-.blue{
+.blue {
     background: #0088cc;
 }
 
 /*采购订单状态进度条样式*/
 
 .columnActionIcon1 {
-    margin-left:10px;
+    margin-left: 10px;
     background-image: url("images/next.png");
 }
+
 .columnActionIcon2 {
-    margin-left:10px;
+    margin-left: 10px;
     background-image: url("images/accept.png");
 }
+
 .columnActionIcon3 {
-    margin-left:10px;
+    margin-left: 10px;
     background-image: url("images/chart_bar.png");
 }
+
 .columnActionIcon4 {
-    margin-left:10px;
+    margin-left: 10px;
     background-image: url("images/setfieldrole.png");
 }
 
-.homeIcon{
+.homeIcon {
     background-size: contain;
     background-image: url("images/home.png");
 }
-.logoutIcon{
+
+.logoutIcon {
     background-size: contain;
     background-image: url("images/system-log-out.png");
 }
-.purchaseIcon{
+
+.purchaseIcon {
     background-size: contain;
     background-image: url("images/cart.png");
 }
-.goodsIcon{
+
+.goodsIcon {
     background-size: contain;
     background-image: url("images/goods.png");
 }
-.warehouseIcon{
+
+.warehouseIcon {
     background-size: contain;
     background-image: url("images/storehouse_400.png");
 }
-.memberIcon{
+
+.memberIcon {
     background-size: contain;
     background-image: url("images/users.png");
 }
-.operationIcon{
+
+.operationIcon {
     background-size: contain;
     background-image: url("images/61413.png");
 }
-.financialIcon{
+
+.financialIcon {
     background-size: contain;
     background-image: url("images/emblem-money.png");
 }
-.reportIcon{
+
+.reportIcon {
     background-size: contain;
     background-image: url("images/report.png");
 }
-.systemIcon{
+
+.systemIcon {
     background-size: contain;
     background-image: url("images/emblem-system.png");
 }
-.helpIcon{
+
+.helpIcon {
     background-size: contain;
     background-image: url("images/help.png");
 }
-.aboutIcon{
+
+.aboutIcon {
     background-size: contain;
     background-image: url("images/about.png");
 }
-.contactIcon{
+
+.contactIcon {
     background-size: contain;
     background-image: url("images/contact.png");
 }
-.userIcon{
+
+.userIcon {
     background-size: contain;
     background-image: url("images/user.png") !important;
 }
 
-.addIcon{
+.addIcon {
     background-size: contain;
     background-image: url("images/new.png");
 }
-.delIcon{
+
+.delIcon {
     background-size: contain;
     background-image: url("images/delete.png");
 }
-.editIcon{
+
+.editIcon {
     background-size: contain;
     background-image: url("images/edit.png");
 }
-.viewIcon{
+
+.viewIcon {
     background-size: contain;
     background-image: url("images/search.png");
 }
-.importIcon{
+
+.importIcon {
     background-size: contain;
     background-image: url("images/import.png");
 }
-.scanIcon{
+
+.scanIcon {
     background-size: contain;
     background-image: url("images/scan.png");
 }
-.saveIcon{
+
+.saveIcon {
     background-size: contain;
     background-image: url("images/save.png");
 }
-.columnAction{
-    margin-left:5px;
+
+.columnAction {
+    margin-left: 5px;
 }
 
-.goods_pic{
+.userEditIcon {
+    background-size: contain;
+    background-image: url("images/user-edit.png");
+}
+
+.goods_pic {
     background-size: contain;
 }
 
-.x-btn-default-toolbar-small{
-    border-radius:0px !important;
+.x-btn-default-toolbar-small {
+    border-radius: 0px !important;
 }
-.x-btn-default-small{
-    border-radius:0px !important;
+
+.x-btn-default-small {
+    border-radius: 0px !important;
 }

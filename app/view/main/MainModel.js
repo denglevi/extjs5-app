@@ -7,6 +7,7 @@ Ext.define('erp.view.main.MainModel', {
     alias: 'viewmodel.main',
 
     requires: [
+        'Array',
         'Ext.data.TreeStore'
     ],
 
@@ -18,49 +19,57 @@ Ext.define('erp.view.main.MainModel', {
                 text: '采购',
                 //glyph: 0xf07a,
                 iconCls:'purchaseIcon',
-                hidden:false
+                hidden:false,
+                action:'view_purchase_module'
             },
             {
                 text: '商品',
                 //glyph: 0xf1b3
                 iconCls:'goodsIcon',
-                hidden:false
+                hidden:false,
+                action:'view_goods_module'
             },
             {
                 text: '仓库',
                 //glyph: 0xf1b2
                 iconCls:'warehouseIcon',
-                hidden:false
+                hidden:false,
+                action:'view_warehouse_module'
             },
             {
                 text: '会员',
                 //glyph: 0xf007
                 iconCls:'memberIcon',
-                hidden:false
+                hidden:false,
+                action:'view_member_module'
             },
             {
                 text: '营运',
                 //glyph: 0xf07a
                 iconCls:'operationIcon',
-                hidden:false
-            },
-            {
-                text: '财务',
-                //glyph: 0xf0ce
-                iconCls:'financialIcon',
-                hidden:false
+                hidden:false,
+                action:'view_operation_module'
             },
             {
                 text: '报表',
-                //glyph: 0xf080
-                iconCls:'reportIcon',
-                hidden:true
+                //glyph: 0xf0ce
+                iconCls:'financialIcon',
+                hidden:false,
+                action:'view_report_module'
             },
+            //{
+            //    text: '报表',
+            //    //glyph: 0xf080
+            //    iconCls:'reportIcon',
+            //    hidden:true,
+            //    action:'view_purchase_model'
+            //},
             {
                 text: '系统',
                 //glyph: 0xf085
                 iconCls:'systemIcon',
-                hidden:false
+                hidden:false,
+                action:'view_system_module'
             }
         ],
         systemMngMenus:[
@@ -165,13 +174,22 @@ Ext.define('erp.view.main.MainModel', {
     },
     getTopMenus: function () {
         var menus = this.get("menus");
-        //for(var i=0;i<len;i++){
-        //    var menu = menus[i];
-        //    if(menu.disabled) continue;
-        //    arr.push(menu);
-        //}
-
-        return menus;
+        var user_info = localStorage.getItem("userInfo");
+        if(user_info != null){
+            var userInfo = Ext.decode(user_info),
+                actions =userInfo.role_info.actions,
+                actionStr = actions.join(","),
+                len = menus.length,
+                arr = [];
+            console.log(actionStr);
+            for(var i=0;i<len;i++){
+                var menu = menus[i];
+                console.log(menu.action);
+                if(actionStr.indexOf(menu.action) == -1) continue;
+                arr.push(menu);
+            }
+        }
+        return arr;
     },
     getLeftMenus: function (text) {
         var menu = [];
@@ -181,7 +199,7 @@ Ext.define('erp.view.main.MainModel', {
             menu = this.get("goodsMngMenus");
         } else if (text == "仓库") {
             menu = this.get("warehouseMngMenus");
-        } else if (text == "财务") {
+        } else if (text == "报表") {
             menu = this.get("financialMngMenus");
         } else if (text == "营运") {
             menu = this.get("operateMngMenus");

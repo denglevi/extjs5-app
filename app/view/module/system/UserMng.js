@@ -54,6 +54,32 @@ Ext.define('erp.view.module.system.UserMng', {
                             iconCls: 'editIcon columnAction',
                             tooltip: '修改',
                             handler: me.editUser
+                        },
+                        {
+                            iconCls: 'editIcon columnAction',
+                            tooltip: '重置密码',
+                            handler: function(grid, rowIndex, colIndex, item, e, record, row){
+                                var user_id = record.get("id");
+                                Ext.Ajax.request({
+                                   async:true,
+                                    url: apiBaseUrl + '/index.php/System/User/resetUserPassword',
+                                    method:'POST',
+                                    params:{
+                                        id:user_id
+                                    },
+                                    success:function(res){
+                                        var json = Ext.decode(res.responseText);
+                                        if(!json.success){
+                                            Ext.toast(json.msg,"系统提示");
+                                            return;
+                                        }
+                                        Ext.toast("重置密码成功","系统提示");
+                                    },
+                                    failure:function(res){
+                                        Ext.toast("网络请求失败,请重试!","系统提示");
+                                    }
+                                });
+                            }
                         }
                     ]
                 }
