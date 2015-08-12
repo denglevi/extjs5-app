@@ -21,17 +21,31 @@ Ext.define('erp.view.module.purchase.CheckProductList', {
     height:'100%',
     border:true,
     sortableColumns:false,
-    store:'CheckProductListStore',
+    initComponent:function(args){
+        var me = this;
+        me.store = Ext.create("Ext.data.Store",{
+            storeId:"CheckProductListStore",
+            fields: ['id','check_no','order_no','batch_no','supplier_id','buyer_id','create_time'],
+            autoLoad:false,
+            proxy: {
+                type: 'ajax',
+                url: apiBaseUrl+'/index.php/Purchasing/CheckProduct/getCheckProductOrderList',
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data',
+                    totalProperty: 'total'
+                }
+            }
+        });
+        me.bbar = ['->', {
+            xtype: 'pagingtoolbar',
+            store: 'CheckProductListStore',
+            displayInfo: true
+        }];
+
+        this.callParent(args)
+    },
     tbar: [
-        //{
-        //    text:'新增',
-        //    glyph:0xf067,
-        //    handler:'addPurchaseOrder'
-        //},
-        //{
-        //    text:'删除',
-        //    glyph:0xf1f8
-        //},
         '->',
         {
             xtype: 'textfield',
@@ -47,15 +61,33 @@ Ext.define('erp.view.module.purchase.CheckProductList', {
         },
         {
             text: '搜索',
-            glyph: 0xf002
+            glyph: 0xf002,
+            handler:function(){
+                var grid = this.up("checkproductlist"),
+                    purchase_no = grid.down("textfield[name=purchase_no]").getValue(),
+                    batch_no = grid.down("textfield[name=batch_no]").getValue(),
+                    pt = grid.down("pagingtoolbar"),
+                    store = grid.getStore();
+                store.setProxy({
+                    extraParams: {
+                        batch_no: batch_no,
+                        purchase_no: purchase_no
+                    },
+                    type: 'ajax',
+                    url: apiBaseUrl+'/index.php/Purchasing/CheckProduct/getCheckProductOrderList',
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data',
+                        totalProperty: 'total'
+                    }
+                });
+                store.on("load", function () {
+                    grid.down("textfield[name=batch_no]").reset();
+                    grid.down("textfield[name=purchase_no]").reset();
+                });
+                pt.moveFirst();
+            }
         }],
-    bbar: ['->', {
-        xtype: 'pagingtoolbar',
-        store: 'CheckProductListStore',
-        emptyMsg: '<b>暂无记录</b>',
-        displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
-        displayInfo: true
-    }],
     columns:[
         {text:'采购订单号',dataIndex:'order_no',flex:1},
         {text:'供货单号',dataIndex:'batch_no',flex:1},

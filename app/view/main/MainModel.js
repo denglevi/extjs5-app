@@ -7,7 +7,6 @@ Ext.define('erp.view.main.MainModel', {
     alias: 'viewmodel.main',
 
     requires: [
-        'Array',
         'Ext.data.TreeStore'
     ],
 
@@ -184,7 +183,6 @@ Ext.define('erp.view.main.MainModel', {
             console.log(actionStr);
             for(var i=0;i<len;i++){
                 var menu = menus[i];
-                console.log(menu.action);
                 if(actionStr.indexOf(menu.action) == -1) continue;
                 arr.push(menu);
             }

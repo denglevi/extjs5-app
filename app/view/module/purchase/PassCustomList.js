@@ -49,16 +49,58 @@ Ext.define('erp.view.module.purchase.PassCustomList', {
         },
         {
             text: '搜索',
-            glyph: 0xf002
+            glyph: 0xf002,
+            handler:function(){
+                var grid = this.up("passcustomlist"),
+                    purchase_no = grid.down("textfield[name=purchase_no]").getValue(),
+                    batch_no = grid.down("textfield[name=batch_no]").getValue(),
+                    pt = grid.down("pagingtoolbar"),
+                    store = grid.getStore();
+                store.setProxy({
+                    extraParams: {
+                        purchase_no: purchase_no,
+                        batch_no: batch_no
+                    },
+                    type: 'ajax',
+                    url: apiBaseUrl+'/index.php/Purchasing/Customs/getPassCustomOrderList',
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data',
+                        totalProperty: 'total'
+                    }
+                });
+                store.on("load", function () {
+                    grid.down("textfield[name=purchase_no]").reset();
+                    grid.down("textfield[name=batch_no]").reset();
+                });
+                pt.moveFirst();
+            }
         }],
     store: 'PassCustomListStore',
-    bbar: ['->', {
-        xtype: 'pagingtoolbar',
-        store: 'PassCustomListStore',
-        emptyMsg: '<b>暂无记录</b>',
-        displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
-        displayInfo: true
-    }],
+    initComponent:function(args){
+        var me = this;
+        me.store = Ext.create("Ext.data.Store",{
+            storeId:"PassCustomListStore",
+            fields: ['id','logistics_no','order_no','supply_no','cu_contaits','cu_name','create_time'],
+            autoLoad:false,
+            proxy: {
+                type: 'ajax',
+                url: apiBaseUrl+'/index.php/Purchasing/Customs/getPassCustomOrderList',
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data',
+                    totalProperty: 'total'
+                }
+            }
+        });
+        me.bbar = ['->', {
+            xtype: 'pagingtoolbar',
+            store: 'PassCustomListStore',
+            displayInfo: true
+        }];
+        this.callParent(args)
+
+    },
     columns: [
         {text: '采购订单号', dataIndex: 'order_no', flex: 1},
         {text: '供货单号', dataIndex: 'supply_no', flex: 1},

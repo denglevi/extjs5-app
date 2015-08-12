@@ -18,7 +18,56 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
     },
     initComponent:function(args){
         var me = this;
-        this.on("afterrender",function(){me.getStore().load();},{single:true});
+        me.store = Ext.create("Ext.data.Store",{
+            storeId: 'PurchaseOrderListStore',
+            fields: ['id', 'order_nos', 'name', 'order_type', 'status_name', 'order_time', 'order_buyer'],
+            autoLoad: false,
+            proxy: {
+                type: 'ajax',
+                url: apiBaseUrl + '/index.php/Purchasing/Buyer/getPurchaseOrderList.html?api=1',
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data',
+                    totalProperty: 'total'
+                }
+            }
+        });
+        me.bbar = ['->', {
+            xtype: 'pagingtoolbar',
+            store: me.store,
+            displayInfo: true
+        }];
+        this.on("afterrender",function(){
+           var store =  me.getStore();
+            //store.setProxy({
+            //    type: 'ajax',
+            //    url: apiBaseUrl + '/index.php/Purchasing/Buyer/getPurchaseOrderList.html?api=1',
+            //    reader: {
+            //        type: 'json',
+            //        rootProperty: 'data',
+            //        totalProperty: 'total'
+            //    }
+            //});
+            store.load();
+            Ext.Ajax.request({
+                async: true,
+                url: apiBaseUrl + '/index.php/Purchasing/Buyer/getSupplierAndBuyer',
+                success: function (response) {
+                    //myMask.destroy( );
+                    var text = Ext.decode(response.responseText);
+                    if(!text.success){
+                        Ext.toast("获取数据错误,请关闭重试!","系统提示");
+                        return;
+                    }
+                    res = text.data;
+                    me.down("combo[name=supllier_name]").setStore(Ext.create('Ext.data.Store', {
+                        fields: ['id_no', 'name'],
+                        data:res.supplier
+                    }));
+                    me.down("combo[name=supllier_name]").setDisabled(false);
+                }
+            });
+        });
 
         this.callParent(args);
     },
@@ -49,22 +98,44 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
             labelAlign:'right'
         },
         {
-            xtype: 'textfield',
+            xtype: 'combo',
             fieldLabel: "供应商名称",
             name: 'supllier_name',
+            displayField:'name',
+            valueField:'id_no',
+            disabled:true,
+            editable:false,
             labelAlign:'right'
         },
         {
             text: '搜索',
-            glyph: 0xf002
+            glyph: 0xf002,
+            handler:function(){
+                var grid = this.up("purchaseorderlist"),
+                    purchase_order_no = grid.down("textfield[name=purchase_order_no]").getValue(),
+                    supllier_name = grid.down("textfield[name=supllier_name]").getValue(),
+                    pt = grid.down("pagingtoolbar"),
+                    store = grid.getStore();
+                store.setProxy({
+                    extraParams: {
+                        supllier_name: supllier_name,
+                        purchase_order_no: purchase_order_no
+                    },
+                    type: 'ajax',
+                    url: apiBaseUrl + '/index.php/Purchasing/Buyer/getPurchaseOrderList.html?api=1',
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data',
+                        totalProperty: 'total'
+                    }
+                });
+                store.on("load", function () {
+                    grid.down("textfield[name=purchase_order_no]").reset();
+                    grid.down("textfield[name=supllier_name]").reset();
+                });
+                pt.moveFirst();
+            }
         }],
-    bbar: ['->', {
-        xtype: 'pagingtoolbar',
-        store: 'PurchaseOrderListStore',
-        emptyMsg: '<b>暂无记录</b>',
-        displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
-        displayInfo: true
-    }],
     columns: [
         {text: '订单号', dataIndex: 'order_nos',flex:1},
         {text: '供应商', dataIndex: 'name'},

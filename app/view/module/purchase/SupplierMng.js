@@ -50,28 +50,28 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                     displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
                     displayInfo: true
                 }],
-                tbar: [
-                    {
-                        text:'删除',
-                        glyph:0xf1f8
-                    },'->',
-                    {
-                        xtype: 'textfield',
-                        fieldLabel: "供应商编号",
-                        name: 'supllier_no',
-                        labelAlign:'right'
-                    }, '',
-                    {
-                        xtype: 'textfield',
-                        fieldLabel: "供应商名称",
-                        name: 'supllier_name',
-                        labelAlign:'right'
-                    },
-                    {
-                        text: '搜索',
-                        glyph: 0xf002
-                    }
-                ],
+                //tbar: [
+                //    {
+                //        text:'删除',
+                //        glyph:0xf1f8
+                //    },'->',
+                //    {
+                //        xtype: 'textfield',
+                //        fieldLabel: "供应商编号",
+                //        name: 'supllier_no',
+                //        labelAlign:'right'
+                //    }, '',
+                //    {
+                //        xtype: 'textfield',
+                //        fieldLabel: "供应商名称",
+                //        name: 'supllier_name',
+                //        labelAlign:'right'
+                //    },
+                //    {
+                //        text: '搜索',
+                //        glyph: 0xf002
+                //    }
+                //],
                 columns: [
                     {text: '供应商编号', dataIndex: 'vendor_no'},
                     {text: '名称', dataIndex: 'name', flex: 1},
@@ -86,7 +86,7 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                 title: '新增供应商',
                 width: 350,
                 height: '100%',
-                url: 'http://localhost/coscia/index.php/Purchasing/Vendor/editVendor',
+                url: apiBaseUrl + '/index.php/Purchasing/Vendor/editVendor',
                 layout: 'anchor',
                 method: 'POST',
                 bodyPadding: 10,

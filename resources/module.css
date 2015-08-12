@@ -218,3 +218,7 @@
 .x-btn-default-small {
     border-radius: 0px !important;
 }
+
+.x-form-text {
+    display: inherit !important;
+}
