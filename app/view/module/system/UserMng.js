@@ -26,7 +26,8 @@ Ext.define('erp.view.module.system.UserMng', {
             sortableColumns: false,
             enableColumnHide: false,
             columns: [
-                {text: '登录名', dataIndex: 'username', flex: 1},
+                {text: '登录账号', dataIndex: 'username', flex: 1},
+                {text: '用户名', dataIndex: 'nickname', flex: 1},
                 {text: '部门', dataIndex: 'group_name', flex: 1},
                 {text: '角色', dataIndex: 'role_name', flex: 1},
                 {text: '邮箱', dataIndex: 'email', flex: 2},
@@ -114,7 +115,8 @@ Ext.define('erp.view.module.system.UserMng', {
                         margin: 5
                     },
                     items: [
-                        {fieldLabel: '用户名', name: 'username'},
+                        {fieldLabel: '登录账号', name: 'username'},
+                        {fieldLabel: '用户名', name: 'nickname'},
                         {
                             fieldLabel: '部门',
                             xtype: 'combo',
@@ -200,7 +202,8 @@ Ext.define('erp.view.module.system.UserMng', {
                 margin: 5
             },
             items: [
-                {fieldLabel: '用户名', name: 'username'},
+                {fieldLabel: '登录账号', name: 'username'},
+                {fieldLabel: '用户名', name: 'nickname'},
                 {xtype:'hidden',name: 'id'},
                 {
                     fieldLabel: '部门',

@@ -180,7 +180,6 @@ Ext.define('erp.view.main.MainModel', {
                 actionStr = actions.join(","),
                 len = menus.length,
                 arr = [];
-            console.log(actionStr);
             for(var i=0;i<len;i++){
                 var menu = menus[i];
                 if(actionStr.indexOf(menu.action) == -1) continue;

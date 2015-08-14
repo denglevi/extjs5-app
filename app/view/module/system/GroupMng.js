@@ -84,7 +84,7 @@ Ext.define('erp.view.module.system.GroupMng', {
                     },
                     items:[
                         {fieldLabel:'部门名称',name:'name'},
-                        {fieldLabel:'上级部门',name:'parent_id',xtype:'combo',disabled:true,displayField:'name',valueField:'id',editable:false},
+                        {fieldLabel:'上级部门',name:'parent_id',xtype:'combo',disabled:true,displayField:'name',valueField:'id',editable:false,allowBlank:true},
                         {fieldLabel:'描述',name:'description'}
                     ],
                     buttons:[
@@ -145,8 +145,23 @@ Ext.define('erp.view.module.system.GroupMng', {
             items:[
                 {fieldLabel:'部门名称',name:'name'},
                 {xtype:'hidden',name:'id'},
-                {fieldLabel:'上级部门',name:'parent_id',xtype:'combo',displayField:'name',valueField:'id',editable:false},
-                {fieldLabel:'描述',name:'description'}
+                {fieldLabel:'上级部门',name:'parent_id',xtype:'combo',displayField:'name',valueField:'id',editable:false,allowBlank:true},
+                {fieldLabel:'描述',name:'description'},
+                {
+                    fieldLabel: '是否停用',
+                    xtype: 'combo',
+                    name: 'status',
+                    store:Ext.create("Ext.data.Store",{
+                        fields:[],
+                        data:[
+                            {key:'停用',val:0},
+                            {key:'激活',val:1}
+                        ]
+                    }),
+                    displayField: 'key',
+                    valueField: 'val',
+                    editable: false
+                }
             ],
             buttons:[
                 {text:'重置',handler:function(){

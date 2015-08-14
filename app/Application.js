@@ -44,20 +44,21 @@ Ext.define('erp.Application', {
         //        this.close(true);
         //    });
         //}
-        /*
-            桌面版代码注释
-         */
-        //var ipc = require('ipc');
-        //ipc.send("close-splash-screen","ping");
-        /*
-            WEB版代码注释
-         */
-        if(localStorage.getItem("is_login") == 1){
-            var username = localStorage.getItem("user");
-            Ext.widget("main",{username:username});
-            return;
+        if(version == "desktop"){
+            /*
+             桌面版代码注释
+             */
+            ipc.send("close-splash-screen","ping");
+        }else{
+            /*
+             WEB版代码注释
+             */
+            if(localStorage.getItem("is_login") == 1){
+                var username = localStorage.getItem("user");
+                Ext.widget("main",{username:username});
+            }
         }
-
+        
         Ext.widget("login");
     }
 });

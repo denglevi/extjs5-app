@@ -32,7 +32,7 @@
                         localStorage.setItem("user",val.username);
                         localStorage.setItem("userInfo",Ext.encode(action.result.data));
                         me.getView().destroy();
-                        Ext.widget("main",{username:val.username});
+                        Ext.widget("main");
 
                         //var win = Ext.gui.Window.get()
                         //win.setResizable(true);

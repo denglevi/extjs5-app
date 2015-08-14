@@ -31,19 +31,19 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                     success: function (response) {
                         //myMask.destroy( );
                         var text = Ext.decode(response.responseText);
-                        if(!text.success){
-                            Ext.toast("获取数据错误,请关闭重试!","系统提示");
+                        if (!text.success) {
+                            Ext.toast("获取数据错误,请关闭重试!", "系统提示");
                             return;
                         }
                         res = text.data;
                         var form = me.down("form");
                         form.down("combo[name=buyer]").setStore(Ext.create('Ext.data.Store', {
                             fields: ['id', 'username'],
-                            data:res.buyer
+                            data: res.buyer
                         }));
                         form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
                             fields: ['id_no', 'name'],
-                            data:res.supplier
+                            data: res.supplier
                         }));
 
                         form.down("combo[name=buyer]").setDisabled(false);
@@ -75,7 +75,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                         xtype: 'datefield',
                         editable: false,
                         format: 'Y-m-d',
-                        value:new Date()
+                        value: new Date()
                     },
                     {
                         fieldLabel: '供应商',
@@ -84,7 +84,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                         editable: false,
                         displayField: 'name',
                         valueField: 'id_no',
-                        disabled:true
+                        disabled: true
                     },
                     {
                         fieldLabel: '买手',
@@ -93,7 +93,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                         editable: false,
                         displayField: 'username',
                         valueField: 'id',
-                        disabled:true
+                        disabled: true
                     },
                     {
                         xtype: 'radiogroup',
@@ -113,7 +113,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                                 var val = this.getValue();
                                 this.up("form").getForm().submit({
                                     clientValidation: false,
-                                    waitMsg:'正在导入商品信息...',
+                                    waitMsg: '正在导入商品信息...',
                                     url: apiBaseUrl + '/index.php/Purchasing/Buyer/importPurchaseOrderProduct',
                                     success: function (form, action) {
                                         var data = action.result.data;
@@ -135,7 +135,30 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                                                 Ext.Msg.alert('系统提示', '远程连接错误，请稍后重试');
                                                 break;
                                             case Ext.form.action.Action.SERVER_INVALID:
-                                                Ext.Msg.alert('系统提示', action.result.msg);
+                                                //@todo web desktop版本需要修改
+                                                //web
+                                                if (version == "desktop" && action.result.errorCode != 300) {
+                                                    Ext.Msg.alert('系统提示', action.result.msg);
+                                                    return;
+                                                }
+                                                if (version == "web") {
+                                                    Ext.Msg.alert('系统提示', action.result.msg);
+                                                    return;
+                                                }
+                                                Ext.Msg.show({
+                                                    title: '系统提示',
+                                                    message: "导入的模板不正确,请重新导入",
+                                                    buttons: Ext.Msg.YESCANCEL,
+                                                    buttonText: {yes: '点击下载模板', cancel: '取消'},
+                                                    icon: Ext.Msg.QUESTION,
+                                                    fn: function (btn) {
+                                                        if (btn === 'yes') {
+                                                            ipc.send("save-file",action.result.filePath);
+                                                        } else {
+
+                                                        }
+                                                    }
+                                                });
                                         }
                                     }
                                 });
@@ -167,17 +190,17 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                             var form = this.up('form').getForm();
                             if (form.isValid()) {
                                 form.submit({
-                                    waitMsg:'正在新增...',
+                                    waitMsg: '正在新增...',
                                     //headers: {'Content-Type': 'application/json'},
-                                    params:{
-                                        products:Ext.encode(me.products)
+                                    params: {
+                                        products: Ext.encode(me.products)
                                     },
                                     success: function (form, action) {
                                         //me.down("grid").getStore().load();
                                         console.log(action.result);
                                         me.destroy();
                                         var store = Ext.StoreManager.lookup("PurchaseOrderListStore");
-                                        if(store != null) store.load();
+                                        if (store != null) store.load();
                                         //Ext.Msg.alert('系统提示', '新增订单成功');
                                     },
                                     failure: function (form, action) {

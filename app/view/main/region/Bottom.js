@@ -7,7 +7,6 @@ Ext.define('erp.view.main.region.Bottom', {
         'erp.ux.TransparentButton'
     ],
     initComponent: function () {
-        var username = this.up("main").username;
         var userInfo = Ext.decode(localStorage.getItem("userInfo"));
         var userTip = userInfo == null || userInfo == ""?'':'用户角色:'+userInfo.role_info.name+'<br>上次登录时间:'+userInfo.login_time+'<br>上次登录IP:'+userInfo.last_login_ip;
         Ext.apply(this, {
@@ -24,7 +23,7 @@ Ext.define('erp.view.main.region.Bottom', {
                     text: '蔻莎国际品牌管理有限公司'
                 }, '->',
                 {
-                    text: '登录用户：' + username,
+                    text: '登录用户：' + userInfo.nickname,
                     //glyph: 0xf007
                     tooltip:userTip,
                     iconCls: 'userIcon'
@@ -33,7 +32,7 @@ Ext.define('erp.view.main.region.Bottom', {
                     text: '蔻莎国际品牌管理有限公司 @版权所有'
                 }, '',
                 {
-                    text: 'version 0.5.9'
+                    text: 'version 0.6.0'
         }, '->'
             ]
         });
