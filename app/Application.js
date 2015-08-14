@@ -46,7 +46,6 @@ Ext.define('erp.Application', {
         //}
         /*
             桌面版代码注释
-
          */
         //var ipc = require('ipc');
         //ipc.send("close-splash-screen","ping");
