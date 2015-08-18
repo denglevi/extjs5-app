@@ -9,7 +9,7 @@ Ext.define('erp.view.module.member.VIPCardList',{
         'Ext.grid.column.Action',
         'erp.view.module.member.VIPCardController'
     ],
-    initComponenet:function(){
+    initComponent:function(){
         var me = this;
         me.callParent();
     },

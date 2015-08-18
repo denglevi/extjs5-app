@@ -69,12 +69,14 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckTaskOrder', {
     tbar: [
         {
             text: '新增',
-            glyph: 0xf067,
+            //glyph: 0xf067,
+            iconCls:'addIcon',
             handler: "addTaskOrder"
         },
         {
             text: '删除',
-            glyph: 0xf1f8,
+            //glyph: 0xf1f8,
+            iconCls:'delIcon',
             handler: 'delWarehouseCheckOrder'
         }
     ],

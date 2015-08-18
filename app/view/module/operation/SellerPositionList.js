@@ -43,9 +43,18 @@ Ext.define('erp.view.module.operation.SellerPositionList',{
                     title:'职位列表',
                     reference:'seller_position_grid',
                     tbar:[
-                        {text:'新增',glyph:0xf067,handler:'addSellerPosition'},
-                        {text:'删除',glyph:0xf1f8,handler:'delSellerPosition'},
-                        {text:'修改',glyph:0xf044,handler:'editSellerPosition'}
+                        {text:'新增',
+                            //glyph:0xf067,
+                            iconCls:'addIcon',
+                            handler:'addSellerPosition'},
+                        {text:'删除',
+                            //glyph:0xf1f8,
+                            iconCls:'delIcon',
+                            handler:'delSellerPosition'},
+                        {text:'修改',
+                            //glyph:0xf044,
+                            iconCls:'editIcon',
+                            handler:'editSellerPosition'}
                     ],
                     columns:[
                         {text:'中文职位名',dataIndex:'operations_post',flex:1},
@@ -70,9 +79,18 @@ Ext.define('erp.view.module.operation.SellerPositionList',{
                     itemId:'seller_grid',
                     reference:'seller_grid',
                     tbar:[
-                        {text:'新增',glyph:0xf067,handler:'addSeller'},
-                        {text:'删除',glyph:0xf1f8,handler:'delSeller'},
-                        {text:'修改',glyph:0xf044,handler:'editSeller'}
+                        {text:'新增',
+                            //glyph:0xf067,
+                            iconCls:'addIcon',
+                            handler:'addSeller'},
+                        {text:'删除',
+                            //glyph:0xf1f8,
+                            iconCls:'delIcon',
+                            handler:'delSeller'},
+                        {text:'修改',
+                            //glyph:0xf044,
+                            iconCls:'editIcon',
+                            handler:'editSeller'}
                     ],
                     columns:[
                         {text:'工号',dataIndex:'job_no',flex:1},

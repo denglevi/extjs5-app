@@ -61,7 +61,8 @@ Ext.define('erp.view.module.purchase.CheckProductList', {
         },
         {
             text: '搜索',
-            glyph: 0xf002,
+            //glyph: 0xf002,
+            iconCls:'searchIcon',
             handler:function(){
                 var grid = this.up("checkproductlist"),
                     purchase_no = grid.down("textfield[name=purchase_no]").getValue(),

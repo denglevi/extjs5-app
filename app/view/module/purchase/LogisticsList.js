@@ -54,7 +54,8 @@ Ext.define('erp.view.module.purchase.LogisticsList', {
         //},
         {
             text:'删除',
-            glyph:0xf1f8,
+            //glyph:0xf1f8,
+            iconCls:'delIcon',
             handler: 'deleteLogisticsOrder'
         },'->',
         {
@@ -71,7 +72,8 @@ Ext.define('erp.view.module.purchase.LogisticsList', {
         },
         {
             text: '搜索',
-            glyph: 0xf002,
+            //glyph: 0xf002,
+            iconCls:'searchIcon',
             handler:function(){
                 var grid = this.up("logisticslist"),
                     logistic_no = grid.down("textfield[name=logistic_no]").getValue(),

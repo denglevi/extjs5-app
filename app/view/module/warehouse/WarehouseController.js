@@ -1732,7 +1732,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
 
             }
         });
-        console.log(res);
+        //console.log(res);
         if (!res.success) {
             Ext.toast(res.msg, "系统提示", 't');
             return;
@@ -1757,6 +1757,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         return [{
             xtype: 'panel',
             name: "info",
+            width:'100%',
             bind: {
                 data: '{order_info}'
             },
@@ -1914,13 +1915,13 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         ];
                     }
                     grid.setTitle(text);
-                    console.log(store);
                     grid.reconfigure(store, columns);
                 }
             }
         }, {
             xtype: 'grid',
             flex: 1,
+            width:'100%',
             reference: 'goods_delivery_info_grid',
             title: '商品详细信息',
             itemId:"delivery_info_grid",

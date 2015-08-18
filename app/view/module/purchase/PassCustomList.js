@@ -32,7 +32,8 @@ Ext.define('erp.view.module.purchase.PassCustomList', {
         //},
         {
             text: '删除',
-            glyph: 0xf1f8,
+            //glyph: 0xf1f8,
+            iconCls:'delIcon',
             handler: 'deletePassCustomOrder'
         }, '->',
         {
@@ -49,7 +50,8 @@ Ext.define('erp.view.module.purchase.PassCustomList', {
         },
         {
             text: '搜索',
-            glyph: 0xf002,
+            //glyph: 0xf002,
+            iconCls:'searchIcon',
             handler:function(){
                 var grid = this.up("passcustomlist"),
                     purchase_no = grid.down("textfield[name=purchase_no]").getValue(),

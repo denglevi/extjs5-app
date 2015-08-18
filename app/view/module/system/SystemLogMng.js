@@ -25,7 +25,7 @@ Ext.define('erp.view.module.system.SystemLogMng', {
                 {xtype:'datefield',fieldLabel:'操作时间',name:'action_start_time',labelAlign:'right',format:'Y-m-d',editable:false},
                 {xtype:'tbtext',html:'-'},
                 {xtype:'datefield',hideLabel:true,name:'action_end_time',labelAlign:'right',format:'Y-m-d',editable:false},
-                {text:'搜索'}
+                {text:'搜索',iconCls:'searchIcon'}
             ],
             sortableColumns:false,
             enableColumnHide:false,

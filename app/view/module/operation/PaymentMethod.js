@@ -18,9 +18,18 @@ Ext.define('erp.view.module.operation.PaymentMethod', {
             sortableColumns: false,
             enableColumnHide: false,
             tbar:[
-                {text:'新增',glyph:0xf067,handler:'addPaymentMethod'},
-                {text:'删除',glyph:0xf1f8,handler:'delPaymentMethod'},
-                {text:'修改',glyph:0xf044,handler:'editPaymentMethod'}
+                {text:'新增',
+                    //glyph:0xf067,
+                    iconCls:'addIcon',
+                    handler:'addPaymentMethod'},
+                {text:'删除',
+                    //glyph:0xf1f8,
+                    iconCls:'delIcon',
+                    handler:'delPaymentMethod'},
+                {text:'修改',
+                    //glyph:0xf044,
+                    iconCls:'editIcon',
+                    handler:'editPaymentMethod'}
             ],
             columns: [
                 {text: '结算方式', dataIndex: 'cleraing_name', flex: 1},

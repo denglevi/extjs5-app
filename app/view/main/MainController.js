@@ -47,6 +47,8 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.operation.BundledSales',
         'erp.view.module.operation.SellerPositionList',
         'erp.view.module.operation.ShopMng',
+        'erp.view.module.operation.CouponSort',
+        'erp.view.module.operation.SingleType',
         //新增VIEW
         'erp.view.module.member.VIPCardOpenLimit',
         'erp.view.module.member.VIPCardUpdateLimit',

@@ -19,9 +19,18 @@ Ext.define('erp.view.module.operation.ResultsAllot', {
             sortableColumns: false,
             enableColumnHide: false,
             tbar:[
-                {text:'新增',glyph:0xf067,handler:'addResultAllot'},
-                {text:'删除',glyph:0xf1f8,handler:'delResultAllot'},
-                {text:'修改',glyph:0xf044,handler:'editResultAllot'}
+                {text:'新增',
+                    //glyph:0xf067,
+                    iconCls:'addIcon',
+                    handler:'addResultAllot'},
+                {text:'删除',
+                    //glyph:0xf1f8,
+                    iconCls:'delIcon',
+                    handler:'delResultAllot'},
+                {text:'修改',
+                    //glyph:0xf044,
+                    iconCls:'editIcon',
+                    handler:'editResultAllot'}
             ],
             columns: [
                 {text: '年月', dataIndex: 'themonths', flex: 1},

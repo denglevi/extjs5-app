@@ -27,7 +27,7 @@ Ext.define('erp.Application', {
         'VIPCardListStore','VIPCardOpenLimitStore','VIPCardUpdateLimitStore','VIPCardPutLimitStore',
         'CustomerMngStore','VIPCardListStore','GiftCardInfoStore','GiftCardReturnStandardStore',
         'GiftCardSaleStore','GiftCardPutLimitStore','VIPListStore','GoodsDeliveryNoticeStore','WarehouseDeliveryOrderStore',
-        'GroupStore','RoleStore','ModuleStore','UserStore','SystemLogStore','AuthorityStore'
+        'GroupStore','RoleStore','ModuleStore','UserStore','SystemLogStore','AuthorityStore','CouponSortList','SingleList'
         // TODO: add global / shared stores here
     ],
     //views:['erp.view.login.Login','erp.view.main.Main'],
@@ -56,9 +56,10 @@ Ext.define('erp.Application', {
             if(localStorage.getItem("is_login") == 1){
                 var username = localStorage.getItem("user");
                 Ext.widget("main",{username:username});
+                return;
             }
         }
-        
+
         Ext.widget("login");
     }
 });

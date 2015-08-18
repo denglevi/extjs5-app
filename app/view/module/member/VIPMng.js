@@ -10,7 +10,7 @@ Ext.define('erp.view.module.member.VIPMng', {
         'erp.view.module.member.VIPController'
     ],
     controller:'vip',
-    initComponenet: function () {
+    initComponent: function () {
         var me = this;
         me.callParent();
     },

@@ -180,6 +180,11 @@
 
 .viewIcon {
     background-size: contain;
+    background-image: url("images/view.png");
+}
+
+.searchIcon {
+    background-size: contain;
     background-image: url("images/search.png");
 }
 
@@ -205,6 +210,16 @@
 .userEditIcon {
     background-size: contain;
     background-image: url("images/user-edit.png");
+}
+
+.childNodeIcon {
+    background-size: contain;
+    background-image: url("images/node-2.png") !important;;
+}
+
+.parentNodeIcon {
+    background-size: contain;
+    background-image: url("images/node-1.png") !important;;
 }
 
 .goods_pic {

@@ -102,7 +102,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 xtype: 'panel',
                 data: order_info,
                 width: '100%',
-                margin: 10,
+                //margin: 10,
                 dockedItems: [{
                     xtype: 'toolbar',
                     dock: 'bottom',
@@ -513,7 +513,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         return {
             title: '商品信息',
             xtype: 'grid',
-            margin: '10 0 0 0',
+            //margin: '10 0 0 0',
             flex: 1,
             width: '100%',
             sortableColumns: false,

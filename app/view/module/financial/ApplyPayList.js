@@ -72,7 +72,8 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
         me.tbar = [
             {
                 text: '删除',
-                glyph: 0xf1f8,
+                //glyph: 0xf1f8,
+                iconCls:'delIcon',
                 handler: function () {
                     var sel = me.getSelection(),
                         ids = [];
@@ -143,7 +144,8 @@ Ext.define('erp.view.module.financial.ApplyPayList', {
             },
             {
                 text: '搜索',
-                glyph: 0xf002,
+                //glyph: 0xf002,
+                iconCls:'searchIcon',
                 handler: function () {
                     var grid = this.up("applypaylist"),
                         receive_money_company = grid.down("textfield[name=receive_money_company]").getValue(),

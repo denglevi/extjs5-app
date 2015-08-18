@@ -67,7 +67,8 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouse', {
                 //},
                 {
                     text: '删除',
-                    glyph: 0xf1f8,
+                    //glyph: 0xf1f8,
+                    iconCls:'delIcon',
                     handler:'delMoveWarehouseOrder'
                 }
             ],

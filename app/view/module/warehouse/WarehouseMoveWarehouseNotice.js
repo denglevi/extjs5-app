@@ -63,12 +63,14 @@ Ext.define('erp.view.module.warehouse.WarehouseMoveWarehouseNotice', {
             tbar: [
                 {
                     text: '新增',
-                    glyph: 0xf067,
+                    //glyph: 0xf067,
+                    iconCls:'addIcon',
                     handler: 'addMoveWarehouseNotice'
                 },
                 {
                     text: '删除',
-                    glyph: 0xf1f8,
+                    //glyph: 0xf1f8,
+                    iconCls:'delIcon',
                     handler:'delMoveWarehouseNotice'
                 }
             ],

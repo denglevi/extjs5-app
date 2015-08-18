@@ -27,10 +27,8 @@ Ext.define("erp.view.module.warehouse.WarehouseDeliveryOrder",{
                 xtype: 'panel',
                 title: '配货单详情',
                 flex: 1,
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                },
+                layout:'vbox',
+                height:'100%',
                 itemId: 'info_panel'
             }
         ];;

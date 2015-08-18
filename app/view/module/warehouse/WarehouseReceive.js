@@ -43,7 +43,8 @@ Ext.define('erp.view.module.warehouse.WarehouseReceive', {
         },
         {
             text: '搜索',
-            glyph: 0xf002
+            iconCls:'searchIcon'
+            //glyph: 0xf002
         }],
     bbar: ['->', {
         xtype: 'pagingtoolbar',

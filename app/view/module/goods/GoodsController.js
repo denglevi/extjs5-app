@@ -454,7 +454,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
         });
         win.show();
     },
-    delGoodsDeliveryNotice:function(del_btn){
+    delGoodsDeliveryNotice: function (del_btn) {
         var sel = del_btn.up('grid').getSelection(), ids = [], names = [], mark = 0;
         if (sel.length == 0) {
             Ext.Msg.alert('系统提示', '请选择要删除的配货通知单');
@@ -563,6 +563,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
         }, {
             xtype: 'panel',
             name: "info",
+            width: '100%',
             bind: {
                 data: '{notice_info}'
             },
@@ -597,9 +598,9 @@ Ext.define('erp.view.module.goods.GoodsController', {
                         },
                         items: [
                             '->', {
-                                text:"导入数据",
+                                text: "导入数据",
                                 iconCls: 'importIcon',
-                                handler:function(){
+                                handler: function () {
                                     var dom = Ext.get("delivery_upload_file"),
                                         input = dom.select("input").last();
                                     input.dom.click();
@@ -617,60 +618,61 @@ Ext.define('erp.view.module.goods.GoodsController', {
                     }
                 ]
             }
-        }, {
-            xtype: 'segmentedbutton',
-            defaults: {
-                margin: 5
-            },
-            items: [
-                {text: '商品详细信息', pressed: true},
-                {text: '操作日志'}
-            ],
-            listeners: {
-                toggle: function (container, button, pressed) {
-                    var text = button.getText(),
-                        columns, store,
-                        grid = container.up("panel").down("grid");
-                    if ("商品详细信息" == text) {
-                        store = Ext.data.StoreManager.lookup("delivery_goods_notice_store");
-                        columns = [
-                            {text: '系统款号', dataIndex: 'system_style_no', flex: 1},
-                            {text: '国际款号', dataIndex: 'supply_style_no', flex: 1},
-                            {text: '名称', dataIndex: 'name', flex: 1},
-                            {text: '颜色', dataIndex: 'color', flex: 1},
-                            {text: '尺码', dataIndex: 'size', flex: 1},
-                            {text: '数量', dataIndex: 'num', flex: 1},
-                            {text: '库存数', dataIndex: 'warehouse_num', flex: 1}
-                        ];
-                    } else {
-                        columns = [
-                            {text: '操作类型', dataIndex: 'no', flex: 1},
-                            {text: '操作人', dataIndex: 'no', flex: 1},
-                            {text: '操作时间', dataIndex: 'no', flex: 1}
-                        ];
+        },
+            {
+                xtype: 'segmentedbutton',
+                margin: 10,
+                items: [
+                    {text: '商品详细信息', pressed: true},
+                    {text: '操作日志'}
+                ],
+                listeners: {
+                    toggle: function (container, button, pressed) {
+                        var text = button.getText(),
+                            columns, store,
+                            grid = container.up("panel").down("grid");
+                        if ("商品详细信息" == text) {
+                            store = Ext.data.StoreManager.lookup("delivery_goods_notice_store");
+                            columns = [
+                                {text: '系统款号', dataIndex: 'system_style_no', flex: 1},
+                                {text: '国际款号', dataIndex: 'supply_style_no', flex: 1},
+                                {text: '名称', dataIndex: 'name', flex: 1},
+                                {text: '颜色', dataIndex: 'color', flex: 1},
+                                {text: '尺码', dataIndex: 'size', flex: 1},
+                                {text: '数量', dataIndex: 'num', flex: 1},
+                                {text: '库存数', dataIndex: 'warehouse_num', flex: 1}
+                            ];
+                        } else {
+                            columns = [
+                                {text: '操作类型', dataIndex: 'no', flex: 1},
+                                {text: '操作人', dataIndex: 'no', flex: 1},
+                                {text: '操作时间', dataIndex: 'no', flex: 1}
+                            ];
+                        }
+                        grid.setTitle(text);
+                        grid.reconfigure(store, columns);
                     }
-                    grid.setTitle(text);
-                    grid.reconfigure(store, columns);
                 }
             }
-        }, {
-            xtype: 'grid',
-            flex: 1,
-            reference: 'goods_delivery_info_grid',
-            title: '商品详细信息',
-            sortableColumns: false,
-            enableColumnHide: false,
-            store: productStore,
-            columns: [
-                {text: '系统款号', dataIndex: 'system_style_no', flex: 1},
-                {text: '国际款号', dataIndex: 'supply_style_no', flex: 1},
-                {text: '名称', dataIndex: 'name', flex: 1},
-                {text: '颜色', dataIndex: 'color', flex: 1},
-                {text: '尺码', dataIndex: 'size', flex: 1},
-                {text: '数量', dataIndex: 'num', flex: 1},
-                {text: '库存数', dataIndex: 'warehouse_num', flex: 1}
-            ]
-        }
+            , {
+                xtype: 'grid',
+                flex: 1,
+                width: '100%',
+                reference: 'goods_delivery_info_grid',
+                title: '商品详细信息',
+                sortableColumns: false,
+                enableColumnHide: false,
+                store: productStore,
+                columns: [
+                    {text: '系统款号', dataIndex: 'system_style_no', flex: 1},
+                    {text: '国际款号', dataIndex: 'supply_style_no', flex: 1},
+                    {text: '名称', dataIndex: 'name', flex: 1},
+                    {text: '颜色', dataIndex: 'color', flex: 1},
+                    {text: '尺码', dataIndex: 'size', flex: 1},
+                    {text: '数量', dataIndex: 'num', flex: 1},
+                    {text: '库存数', dataIndex: 'warehouse_num', flex: 1}
+                ]
+            }
         ];
     },
     onGoodsDeliveryNoticeGridDblClick: function (gp, record) {
@@ -683,11 +685,11 @@ Ext.define('erp.view.module.goods.GoodsController', {
             model = order.getViewModel();
         model.set("goods_delivery_notice_id", id);
         model.set("notice_status", notice_status == 1 ? true : false);
-
+console.log(record);
         model.set("notice_info", {
             notice_no: record.get("notice_no"),
-            store: record.get("store"),
-            warehouse_id: record.get("warehouse_id"),
+            store: record.get("shops_name"),
+            warehouse_id: record.get("storage_name"),
             order_no: record.get("order_no"),
             send_type: record.get("send_type"),
             price_select: record.get("price_select"),
@@ -719,17 +721,17 @@ Ext.define('erp.view.module.goods.GoodsController', {
         var me = this,
             id = this.getViewModel().get("goods_delivery_notice_id");
         var store = me.lookupReference('goods_delivery_info_grid').getStore(),
-            data = store.getData(),items = data.items,len = items.length,tmp=[];
-        if(len == 0) return;
-        for(var i=0;i<len;i++){
+            data = store.getData(), items = data.items, len = items.length, tmp = [];
+        if (len == 0) return;
+        for (var i = 0; i < len; i++) {
             var item = items[i];
             tmp.push({
-                supply_style_no:item.get("supply_style_no"),
-                system_style_no:item.get("system_style_no"),
-                name:item.get("name"),
-                color:item.get("color"),
-                size:item.get("size"),
-                num:item.get("num")
+                supply_style_no: item.get("supply_style_no"),
+                system_style_no: item.get("system_style_no"),
+                name: item.get("name"),
+                color: item.get("color"),
+                size: item.get("size"),
+                num: item.get("num")
             });
         }
         var status = btn.getText() == "申请配货" ? 1 : 0;

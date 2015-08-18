@@ -143,7 +143,8 @@ Ext.define('erp.view.module.goods.GoodsList', {
                 },
                 {
                     text: '搜索',
-                    glyph: 0xf002,
+                    //glyph: 0xf002,
+                    iconCls:'searchIcon',
                     handler: 'searchGoods'
                 }],
             columns: [

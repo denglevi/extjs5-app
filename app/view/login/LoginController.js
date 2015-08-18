@@ -10,12 +10,13 @@
         onLoginbtnClick: function () {
             var form = this.lookupReference('form'),me=this;
             if (form.isValid()) {
+                var val = form.getValues();
                 form.getForm().submit({
                     clientValidation: false,
                     waitMsg:'正在登入系统...',
                     url: apiBaseUrl + '/index.php/System/Index/loginSystem',
                     success: function (form, action) {
-                        console.log(action);
+                        //console.log(action);
                         if(!action.result.success){
                             Ext.toast("登录失败,请重试!","系统提示");
                             return;

@@ -27,21 +27,14 @@ Ext.define('erp.view.module.goods.GoodsDeliveryOrder', {
     initComponent: function () {
 
         var me = this;
-        me.layout = {
-            type: 'hbox',
-            align: 'stretch'
-        };
-
         var import_list = this.getNoticeOrderListGrid();
         this.items = [
             import_list, {
                 xtype: 'panel',
                 title: '配货通知单详情',
                 flex: 1,
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                },
+                layout:'vbox',
+                height:'100%',
                 itemId: 'info_panel'
             }
         ];;

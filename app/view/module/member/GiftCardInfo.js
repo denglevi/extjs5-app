@@ -9,7 +9,7 @@ Ext.define('erp.view.module.member.GiftCardInfo',{
         'Ext.grid.column.Action'
     ],
 
-    initComponenet:function(){
+    initComponent:function(){
         var me = this;
         me.callParent();
     },

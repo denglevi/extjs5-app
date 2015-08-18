@@ -11,7 +11,7 @@ Ext.define('erp.view.module.member.CustomerMng', {
     ],
 
     controller: 'customer',
-    initComponenet: function () {
+    initComponent: function () {
         var me = this;
         me.callParent();
     },

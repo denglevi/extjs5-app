@@ -72,29 +72,29 @@ Ext.define('erp.view.main.MainModel', {
             }
         ],
         systemMngMenus:[
-            {text: "用户管理", leaf: true, view: 'usermng'},
-            {text: "日志管理", leaf: true,view: 'systemlogmng'},
-            {text: "模块管理", leaf: true,view: 'modulemng'},
+            {text: "用户管理", leaf: true, view: 'usermng',iconCls:'childNodeIcon'},
+            {text: "日志管理", leaf: true,view: 'systemlogmng',iconCls:'childNodeIcon'},
+            {text: "模块管理", leaf: true,view: 'modulemng',iconCls:'childNodeIcon'},
             {
-                text: "权限管理", leaf: false, children: [
-                {text: "权限设置", leaf: true, view:  'authoritymng'},
-                {text: "分配权限", leaf: true,view: 'authoritysetting'}
+                text: "权限管理", leaf: false,iconCls:'parentNodeIcon', children: [
+                {text: "权限设置", leaf: true, view:  'authoritymng',iconCls:'childNodeIcon'},
+                {text: "分配权限", leaf: true,view: 'authoritysetting',iconCls:'childNodeIcon'}
             ]
             },
-            {text: "部门管理", leaf: true,view: 'groupmng'},
-            {text: "角色管理", leaf: true,view: 'rolemng'}
+            {text: "部门管理", leaf: true,view: 'groupmng',iconCls:'childNodeIcon'},
+            {text: "角色管理", leaf: true,view: 'rolemng',iconCls:'childNodeIcon'}
         ],
         purchaseMngMenus:[
-            {text: "供应商管理", leaf: true,view: 'suppliermng',iconCls:'userIcon'},
-            {text: "采购清单", leaf: true, view: 'purchaseorderlist'},
+            {text: "供应商管理", leaf: true,view: 'suppliermng',iconCls:'childNodeIcon'},
+            {text: "采购清单", leaf: true, view: 'purchaseorderlist',iconCls:'childNodeIcon'},
             //{text: "收货清单", leaf: true},
-            {text: "验货清单", leaf: true, view: 'checkproductlist'},
-            {text: "采购物流清单", leaf: true, view: 'logisticslist'},
-            {text: "清关流程", leaf: true, view: 'passcustomlist'}
+            {text: "验货清单", leaf: true, view: 'checkproductlist',iconCls:'childNodeIcon'},
+            {text: "采购物流清单", leaf: true, view: 'logisticslist',iconCls:'childNodeIcon'},
+            {text: "清关流程", leaf: true, view: 'passcustomlist',iconCls:'childNodeIcon'}
         ],
         goodsMngMenus:[
             {
-                text: "基础资料",leaf:true,view:'basedatamng'
+                text: "基础资料",leaf:true,view:'basedatamng',iconCls:'childNodeIcon'
                 //children: [
                 //    {text: "品牌管理", leaf: true},
                 //    {text: "颜色管理", leaf: true},
@@ -104,9 +104,9 @@ Ext.define('erp.view.main.MainModel', {
                 //    {text: "洗涤管理", leaf: true}
                 //]
             },
-            {text: "商品目录", leaf: true, view: 'goodsmenu'},
-            {text: "商品列表", leaf: true, view: 'goodslist'},
-            {text: "配送通知单", leaf: true,view:'goodsdeliveryorder'}
+            {text: "商品目录", leaf: true, view: 'goodsmenu',iconCls:'childNodeIcon'},
+            {text: "商品列表", leaf: true, view: 'goodslist',iconCls:'childNodeIcon'},
+            {text: "配送通知单", leaf: true,view:'goodsdeliveryorder',iconCls:'childNodeIcon'}
         ],
         warehouseMngMenus:[
             //{
@@ -115,60 +115,64 @@ Ext.define('erp.view.main.MainModel', {
             //    {text: "库位", leaf: true}
             //]
             //},
-            {text: "仓库设置", leaf: true, view: 'warehousesetting'},
-            {text: "仓库收货", leaf: true, view: 'warehousereceive'},
-            {text: "进货单", leaf: true, view: 'warehouseimportgoods'},
-            {text: "商品配货单", leaf: true,view:'warehousedeliveryorder'},
-            {text: "商品上架", leaf: true, view: 'warehouseexhibitgoods'},
+            {text: "仓库设置", leaf: true, view: 'warehousesetting',iconCls:'childNodeIcon'},
+            {text: "仓库收货", leaf: true, view: 'warehousereceive',iconCls:'childNodeIcon'},
+            {text: "进货单", leaf: true, view: 'warehouseimportgoods',iconCls:'childNodeIcon'},
+            {text: "商品配货单", leaf: true,view:'warehousedeliveryorder',iconCls:'childNodeIcon'},
+            {text: "商品上架", leaf: true, view: 'warehouseexhibitgoods',iconCls:'childNodeIcon'},
             {
-                text: "仓库管理", expanded: false, children: [
-                {text: "商品移位", leaf: true, view: 'warehousemovelocation'},
-                {text: "移库通知单", leaf: true, view: 'warehousemovewarehousenotice'},
-                {text: "商品移库", leaf: true, view: 'warehousemovewarehouse'}
+                text: "仓库管理", expanded: false,iconCls:'parentNodeIcon', children: [
+                {text: "商品移位", leaf: true, view: 'warehousemovelocation',iconCls:'childNodeIcon'},
+                {text: "移库通知单", leaf: true, view: 'warehousemovewarehousenotice',iconCls:'childNodeIcon'},
+                {text: "商品移库", leaf: true, view: 'warehousemovewarehouse',iconCls:'childNodeIcon'}
             ]
             },
-            {text: "库存查询", leaf: true, view: 'warehouseselect'},
+            {text: "库存查询", leaf: true, view: 'warehouseselect',iconCls:'childNodeIcon'},
             {
-                text: "仓库盘点", expanded: false, children: [
-                {text: "任务单", leaf: true, view: 'warehousechecktaskorder'},
-                {text: "盘点单", leaf: true, view: 'warehousecheckorder'}
+                text: "仓库盘点", expanded: false,iconCls:'parentNodeIcon', children: [
+                {text: "任务单", leaf: true, view: 'warehousechecktaskorder',iconCls:'childNodeIcon'},
+                {text: "盘点单", leaf: true, view: 'warehousecheckorder',iconCls:'childNodeIcon'}
             ]
             }
         ],
         operateMngMenus:[
-            {text: "店员管理", leaf: true, view: 'sellerpositionlist'},
-            {text: "店铺管理", leaf: true, view: 'shopmng'},
-            {text: "业绩分配", leaf: true, view: 'resultsallot'},
+            {text: "店员管理", leaf: true, view: 'sellerpositionlist',iconCls:'childNodeIcon'},
+            {text: "店铺管理", leaf: true, view: 'shopmng',iconCls:'childNodeIcon'},
+            {text: "业绩分配", leaf: true, view: 'resultsallot',iconCls:'childNodeIcon'},
             {
-                text: "活动促销", leaf: false, children: [
-                {text: "捆绑促销", leaf: true, view: 'bundledsales'},
-                {text: "整单促销", leaf: true}
+                text: "活动促销", leaf: false,iconCls:'parentNodeIcon', children: [
+                {text: "捆绑促销", leaf: true, view: 'bundledsales',iconCls:'childNodeIcon'},
+                {text: "整单促销", leaf: true,iconCls:'childNodeIcon'}
             ]
             },
-            {text: "结算方式", leaf: true, view: 'paymentmethod'}
+            {text: "结算方式", leaf: true, view: 'paymentmethod',iconCls:'childNodeIcon'},
+            {text:"礼券",leaf:false,iconCls:'parentNodeIcon',children:[
+                {text: "类别", leaf: true, view: 'coupon_sort',iconCls:'childNodeIcon'},
+                {text: "投放单", leaf: true, view:'single_type',iconCls:'childNodeIcon'}
+            ]}
         ],
         memberMngMenus:[
             {
-                text: "VIP资料", leaf: false, children: [
+                text: "VIP资料", leaf: false,iconCls:'parentNodeIcon', children: [
                 {text: "VIP卡类别", leaf: true, view: 'vipcardlist'},
                 {text: "VIP会员发卡规则", leaf: true,view:'vipcardopenlimit'},
                 {text: "VIP会员升级规则", leaf: true,view:'vipcardupdatelimit'},
                 {text: "VIP会员卡制成投放单", leaf: true,view:'vipcardputlimit'}
             ]
             },
-            {text: "顾客管理", leaf: true,view:'customermng'},
-            {text: "会员管理", leaf: true,view:'vipmng'},
+            {text: "顾客管理", leaf: true,view:'customermng',iconCls:'childNodeIcon'},
+            {text: "会员管理", leaf: true,view:'vipmng',iconCls:'childNodeIcon'},
             {
-                text: "礼品卡", leaf: false, children: [
-                {text: "礼品卡资料", leaf: true, view: 'giftcardinfo'},
-                {text: "礼品卡返利标准", leaf: true,view:'giftcardreturnstandard'},
-                {text: "礼品卡销售", leaf: true,view:'giftcardsale'},
-                {text: "礼品卡制成投放单", leaf: true,view:'giftcardputlimit'}
+                text: "礼品卡", leaf: false,iconCls:'parentNodeIcon', children: [
+                {text: "礼品卡资料", leaf: true, view: 'giftcardinfo',iconCls:'childNodeIcon'},
+                {text: "礼品卡返利标准", leaf: true,view:'giftcardreturnstandard',iconCls:'childNodeIcon'},
+                {text: "礼品卡销售", leaf: true,view:'giftcardsale',iconCls:'childNodeIcon'},
+                {text: "礼品卡制成投放单", leaf: true,view:'giftcardputlimit',iconCls:'childNodeIcon'}
             ]
             }
         ],
         financialMngMenus:[
-            {text: "付款申请", leaf: true, view: 'applypaylist'}
+            {text: "付款申请", leaf: true, view: 'applypaylist',iconCls:'childNodeIcon'}
         ]
     },
     getTopMenus: function () {

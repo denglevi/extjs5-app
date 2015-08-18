@@ -83,12 +83,14 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
     tbar: [
         {
             text: '新增',
-            glyph: 0xf067,
+            //glyph: 0xf067,
+            iconCls:'addIcon',
             handler: 'addPurchaseOrder'
         },
         {
             text: '删除',
-            glyph: 0xf1f8,
+            //glyph: 0xf1f8,
+            iconCls:'delIcon',
             handler:'deletePurchaseOrder'
         }, '->',
         {
@@ -109,7 +111,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
         },
         {
             text: '搜索',
-            glyph: 0xf002,
+            //glyph: 0xf002,
+            iconCls:'searchIcon',
             handler:function(){
                 var grid = this.up("purchaseorderlist"),
                     purchase_order_no = grid.down("textfield[name=purchase_order_no]").getValue(),
@@ -138,7 +141,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
         }],
     columns: [
         {text: '订单号', dataIndex: 'order_nos',flex:1},
-        {text: '供应商', dataIndex: 'name'},
+        {text: '供应商', dataIndex: 'name',flex:1},
         {text: '买手', dataIndex: 'order_buyer'},
         {text: '订单类型', dataIndex: 'order_state',renderer:function(value, cellmeta, record, rowIndex, columnIndex, store){
             if(value == 'spot_purchase_order'){

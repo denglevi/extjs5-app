@@ -49,57 +49,71 @@ Ext.define('erp.view.module.operation.SalesActivityController', {
                 xtype:'textfield',
                 columnWidth:0.5,
                 margin:5,
-                allowBlank:false,
+                //allowBlank:false,
                 anchor:'100%',
                 labelAlign:'right',
                 labelWidth:110
             },
             items:[
-                {fieldLabel:'活动名称',name:'activity_name'},
-                {fieldLabel:'大店',name:'shop',xtype:'combo',editable:false,disabled:true,displayField:'shops_name',valueField:'id'},
-                {fieldLabel:'开始日期',name:'start_date',xtype:'datefield',editable:false,format:'Y-m-d'},
-                {fieldLabel:'结束日期',name:'end_date',xtype:'datefield',editable:false,format:'Y-m-d'},
-                {fieldLabel:'捆绑数量',name:'bundled_num'},
-                {fieldLabel:'捆绑方式',name:'bundled_type',xtype:'combo',displayField:'name',valueField:'val',editable:false,store:Ext.create('Ext.data.Store',{
-                    fields:['name','val'],
-                    data:[
-                        {name:'任意捆绑',val:'1'},
-                        {name:'不同商品范围捆绑',val:'2'},
-                        {name:'同款商品捆绑',val:'3'}
-                    ]
-                })},
-                {fieldLabel:'促销类型',name:'sales_type',xtype:'combo',displayField:'name',valueField:'val',editable:false,store:Ext.create('Ext.data.Store',{
+                {fieldLabel:'活动名称',name:'activity_name',allowBlank:false},
+                {fieldLabel:'大店',name:'shop',xtype:'combo',editable:false,disabled:true,displayField:'shops_name',valueField:'id',allowBlank:false},
+                {fieldLabel:'开始日期',name:'start_date',xtype:'datefield',editable:false,format:'Y-m-d',allowBlank:false},
+                {fieldLabel:'结束日期',name:'end_date',xtype:'datefield',editable:false,format:'Y-m-d',allowBlank:false},
+                {fieldLabel:'促销类型',name:'sales_type',allowBlank:false,xtype:'combo',displayField:'name',valueField:'val',editable:false,store:Ext.create('Ext.data.Store',{
                     fields:['name','val'],
                     data:[
                         {name:'折扣',val:'1'},
                         {name:'优惠价',val:'2'},
                         {name:'捆绑价',val:'3'}
                     ]
-                })},
+                }),listeners:{
+                    change:function(){
+                        var val = this.getValue(),
+                            form = this.up("form"),
+                            bundleNum = form.down("textfield[name=bundled_num]"),
+                            bundleType = form.down("textfield[name=bundled_type]");
+                        if(3 != val){
+                            bundleNum.setDisabled(true);
+                            bundleType.setDisabled(true);
+                            return;
+                        }
+                        bundleNum.setDisabled(false);
+                        bundleType.setDisabled(false);
+                    }
+                }},
+                {fieldLabel:'捆绑方式',name:'bundled_type',disabled:true,xtype:'combo',displayField:'name',valueField:'val',editable:false,store:Ext.create('Ext.data.Store',{
+                    fields:['name','val'],
+                    data:[
+                        {name:'任意捆绑',val:'1'},
+                        {name:'不同商品范围捆绑',val:'2'},
+                        {name:'同款商品捆绑',val:'3'}
+                    ]
+                }),allowBlank:false},
+                {fieldLabel:'捆绑数量',name:'bundled_num',disabled:true,allowBlank:false},
                 {fieldLabel:'换购品数量',name:'exchange_num'},
                 {fieldLabel:'是否约束时段',xtype:'radiogroup',editable:false,items: [
                     {boxLabel: '是', name: 'has_time_limit', inputValue: 1},
                     {boxLabel: '否', name: 'has_time_limit', inputValue: 0}
                 ],listeners:{
                     change:function(btn,newVal,oldVal){
-                        if(newVal.type == 1) {
+                        if(newVal.has_time_limit == 1) {
 
-                            form.down("timefield[name=start_time]").setHidden(false);
+                            //form.down("timefield[name=start_time]").setHidden(false);
                             form.down("timefield[name=start_time]").setDisabled(false);
-                            form.down("timefield[name=end_time]").setHidden(false);
+                            //form.down("timefield[name=end_time]").setHidden(false);
                             form.down("timefield[name=end_time]").setDisabled(false);
                             return;
                         }
-                        form.down("timefield[name=start_time]").setHidden(true);
+                        //form.down("timefield[name=start_time]").setHidden(true);
                         form.down("timefield[name=start_time]").setDisabled(true);
-                        form.down("timefield[name=end_time]").setHidden(true);
+                        //form.down("timefield[name=end_time]").setHidden(true);
                         form.down("timefield[name=end_time]").setDisabled(true);
                         return;
                     }
                 }
                 },
-                {fieldLabel:'开始时段',name:'start_time',xtype:'timefield',editable:false,hidden:true,disabled:true},
-                {fieldLabel:'结束时段',name:'end_time',xtype:'timefield',editable:false,hidden:true,disabled:true},
+                {fieldLabel:'开始时段',name:'start_time',xtype:'timefield',editable:false,disabled:true},
+                {fieldLabel:'结束时段',name:'end_time',xtype:'timefield',editable:false,disabled:true},
                 {fieldLabel:'分级让利',name:'checkbox_1',xtype:'checkboxfield',editable:false,columnWidth:0.25},
                 {fieldLabel:'分级促销',name:'checkbox_2',xtype:'checkboxfield',editable:false,columnWidth:0.25},
                 {fieldLabel:'结算方式限制',name:'checkbox_3',xtype:'checkboxfield',editable:false,columnWidth:0.25},
@@ -109,15 +123,24 @@ Ext.define('erp.view.module.operation.SalesActivityController', {
                 {fieldLabel:'sku设置促销品',name:'checkbox_7',xtype:'checkboxfield',editable:false,columnWidth:0.25},
                 {fieldLabel:'允许使用折扣券',name:'checkbox_8',xtype:'checkboxfield',editable:false,columnWidth:0.25},
                 //{fieldLabel:'限额卡不参与促销',name:'checkbox_9',xtype:'checkboxfield',editable:false,columnWidth:0.25},
-                {fieldLabel:'允许退换货',name:'checkbox_10',xtype:'checkboxfield',editable:false,columnWidth:0.25},
+                {fieldLabel:'允许退换货',name:'checkbox_10',xtype:'checkboxfield',editable:false,columnWidth:0.25,value:true},
                 //{fieldLabel:'买高赠低',name:'checkbox_11',xtype:'checkboxfield',editable:false,columnWidth:0.5},
                 {fieldLabel:'促销日有效',name:'checkbox_12',xtype:'checkboxfield',editable:false,columnWidth:0.25,listeners:{
                     change:function(obj,newVal,oldVal){
+                        var group = form.down("#day"),
+                            items = group.items.items;
                         if(newVal){
-                            form.down("#day").setDisabled(false);
+                            Ext.Array.each(items,function(item){
+                                item.setDisabled(false);
+                            })
+                            group.setDisabled(false);
                             return;
                         }
-                        form.down("#day").setDisabled(true);
+
+                        Ext.Array.each(items,function(item){
+                            item.setDisabled(true);
+                        })
+                        group.setDisabled(true);
                     }
                 }},
                 {fieldLabel:'促销日',itemId:"day",disabled:true,xtype:'checkboxgroup',columnWidth:0.75,items:[
@@ -130,8 +153,8 @@ Ext.define('erp.view.module.operation.SalesActivityController', {
                     { boxLabel: '日', name: 'day[]', inputValue: '7' }
                 ]},
                 {fieldLabel:'适用对象',name:'checkbox_14',xtype:'checkboxgroup',items:[
-                    { boxLabel: '普通', name: 'obj[]', inputValue: '1' },
-                    { boxLabel: 'VIP', name: 'obj[]', inputValue: '2' }
+                    { boxLabel: '普通', name: 'obj[]', inputValue: '1',value:true },
+                    { boxLabel: 'VIP', name: 'obj[]', inputValue: '2' ,value:true}
                 ]},
             ],
             buttons: [

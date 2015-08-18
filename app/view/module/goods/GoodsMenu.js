@@ -34,12 +34,14 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
     tbar: [
         {
             text: '导入商品目录',
-            glyph: 0xf067,
+            //glyph: 0xf067,
+            iconCls:'addIcon',
             handler: 'importGoodsMenu'
         },
         {
             text: '删除',
-            glyph: 0xf1f8,
+            //glyph: 0xf1f8,
+            iconCls:'delIcon',
             handler: 'deleteGoodsMenu'
         }, '->',
         {
@@ -56,7 +58,8 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
         },
         {
             text: '搜索',
-            glyph: 0xf002,
+            //glyph: 0xf002,
+            iconCls:'searchIcon',
             handler: "searchMenu"
         }],
     store: 'GoodsMenuStore',
