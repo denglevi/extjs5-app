@@ -110,24 +110,24 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                     if (val == 1) {
                                         win.down("combo[name=brand]").setDisabled(true);
                                         win.down("combo[name=year_season]").setDisabled(true);
-                                        win.down("combo[name=large_class]").setDisabled(true);
+                                        win.down("#large_class").setDisabled(true);
                                         win.down("combo[name=small_class]").setDisabled(true);
                                         win.down("combo[name=sex]").setDisabled(true);
 
                                         win.down("combo[name=brand]").setHidden(true);
                                         win.down("combo[name=year_season]").setHidden(true);
-                                        win.down("combo[name=large_class]").setHidden(true);
+                                        win.down("#large_class").setHidden(true);
                                         win.down("combo[name=small_class]").setHidden(true);
                                         win.down("combo[name=sex]").setHidden(true);
                                     }
                                     else if (val == 2) {
                                         win.down("combo[name=year_season]").setDisabled(true);
-                                        win.down("combo[name=large_class]").setDisabled(true);
+                                        win.down("#large_class").setDisabled(true);
                                         win.down("combo[name=small_class]").setDisabled(true);
                                         win.down("combo[name=sex]").setDisabled(true);
 
                                         win.down("combo[name=year_season]").setHidden(true);
-                                        win.down("combo[name=large_class]").setHidden(true);
+                                        win.down("#large_class").setHidden(true);
                                         win.down("combo[name=small_class]").setHidden(true);
                                         win.down("combo[name=sex]").setHidden(true);
                                         win.down("combo[name=brand]").setHidden(false);
@@ -222,7 +222,7 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                 }
                             }
                         },
-                        {xtype:'tagfield',fieldLabel: '品牌',displayField: 'name_en',valueField: 'name_en',name:'brand',editable: false},
+                        {xtype:'tagfield',fieldLabel: '品牌',displayField: 'name_en',valueField: 'name_en',name:'brand',editable: true},
                         {xtype:'tagfield',fieldLabel: '年季',displayField: 'name',valueField: 'no',name: 'year_season',editable:true,store:store},
                         //{fieldLabel: '品牌',displayField: 'name_en',valueField: 'id',name:'brand',editable: false},
                         //{xtype:'tagfield',fieldLabel: '年季',displayField: 'public_name',valueField: 'id',name: 'year_season',editable:true,store:store},

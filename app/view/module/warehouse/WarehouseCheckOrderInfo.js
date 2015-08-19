@@ -64,8 +64,8 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                             columnWidth: 0.4,
                             value: me.record.get("inventory_user")
                         },
-                        {fieldLabel: '盘点金额', value: me.record.get("sum_length1")},
-                        {fieldLabel: '盘点数量', value: me.record.get("sum_length")}
+                        {fieldLabel: '盘点金额', value: me.record.get("inventory_money")},
+                        {fieldLabel: '盘点数量', value: me.record.get("inventory_count")}
                     ],
                     buttons: me.getActionButtons()
                 },
@@ -81,11 +81,11 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                 enableColumnHide: false,
                 enableColumnResize: false,
                 columns: [
-                    {text: '唯一码', flex: 1,dataIndex:'no'},
-                    {text: '系统款号', flex: 1,dataIndex:'system_style_no'},
-                    {text: '商品名称', flex: 1,dataIndex:'name_zh'},
-                    {text: '折扣',dataIndex:'discount'},
-                    {text: '单价',dataIndex:'retail_price'}
+                    {text: '唯一码', flex: 1, dataIndex: 'no'},
+                    {text: '系统款号', flex: 1, dataIndex: 'system_style_no'},
+                    {text: '商品名称', flex: 1, dataIndex: 'name_zh'},
+                    {text: '折扣', dataIndex: 'discount'},
+                    {text: '单价', dataIndex: 'retail_price'}
                 ],
                 store: Ext.create('Ext.data.Store', {
                     fields: [],
@@ -105,6 +105,33 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                     }
                 }
             });
+        var log = Ext.create('Ext.grid.Panel', {
+            sortableColumns: false,
+            enableColumnHide: false,
+            enableColumnResize: false,
+            columns: [
+                {text: '操作时间', flex: 1, dataIndex: 'operation_time'},
+                {text: '操作用户', flex: 1, dataIndex: 'operation_user'},
+                {text: '操作模块', flex: 1, dataIndex: 'operation'},
+            ],
+            store: Ext.create('Ext.data.Store', {
+                fields: [],
+                autoLoad: false,
+                proxy: {
+                    type: 'ajax',
+                    url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/getCheckOutLogList?id=' + me.record.get("pid"),
+                    reader: {
+                        rootProperty: 'data',
+                        type: 'json'
+                    }
+                }
+            }),
+            listeners: {
+                afterrender: function () {
+                    this.getStore().load();
+                }
+            }
+        });
         var tab = Ext.create('Ext.tab.Panel', {
             flex: 1,
             items: [
@@ -114,7 +141,9 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                     items: [grid]
                 },
                 {
-                    title: '操作日志'
+                    title: '操作日志',
+                    itemId: 'log',
+                    items:[log]
                 }
             ]
         });
@@ -123,9 +152,9 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
     },
     getActionButtons: function () {
         var me = this;
-        btns = [
+        var btns = [
             {
-                text: '扫货', handler: function () {
+                text: '扫货',itemId:'goods_set', handler: function () {
                 var win = Ext.create('Ext.window.Window', {
                     title: '扫描商品',
                     width: 400,
@@ -149,7 +178,9 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                                     url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/scanGoods',
                                     method: 'POST',
                                     params: {
-                                        no: no
+                                        no: no,
+                                        take_no:me.record.get('tasklist_no'),
+                                        id:me.record.get('pid')
                                     },
                                     success: function (res) {
                                         var json = Ext.decode(res.responseText);
@@ -159,14 +190,14 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                                             return
                                         }
                                         obj.setValue("");
-                                        var res = store.findRecord("no",no);
-                                        if(res !== null){
+                                        var res = store.findRecord("no", no);
+                                        if (res !== null) {
                                             Ext.toast("此商品已在扫描", "系统提示");
                                             return;
                                         }
                                         json.data.mark = 0;
                                         json.data.inventory_id = me.record.get("id");
-                                        store.insert(0,json.data);
+                                        store.insert(0, json.data);
                                     },
                                     failure: function (res) {
                                         Ext.toast("服务请求错误,请检查网络连接!", "系统提示");
@@ -179,32 +210,50 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                 win.show();
             }
             },
-            {text: '保存',handler:me.saveWarehouseCheckOrder,scope:me},
-            {text: '确认'}
+            {text: '保存',itemId:'save',handler:me.saveWarehouseCheckOrder,scope:me},
+            {text: '确认',itemId:'status_yes',handler:me.editWarehouseCheckStatus,scope:me},
+            {text: '取消确认',itemId:'status_no',handler:me.editWarehouseCheckStatusNo,scope:me}
         ];
+
+        if(me.record.get("status")==0){
+            btns[3].hidden=true;
+            btns[0].hidden=false;
+            btns[1].hidden=false;
+            btns[2].hidden=false;
+        }else{
+            btns[0].hidden=false;
+            btns[1].hidden=false;
+            btns[2].hidden=false;
+            btns[3].hidden=true;
+        }
+
         return btns;
     },
-    saveWarehouseCheckOrder:function(){
-        var me=this,store = me.down("#detail").down("grid").getStore(),goods=[];
-        var items = store.getData().items,len = items.length;
+    saveWarehouseCheckOrder: function () {
+        var me = this, store = me.down("#detail").down("grid").getStore(), goods = [];
+        var items = store.getData().items, len = items.length;
 
-        for(var i=0;i<len;i++){
-            var item = items[i],mark = item.get("mark");
-            if(mark != 0) continue;
+        for (var i = 0; i < len; i++) {
+            var item = items[i], mark = item.get("mark");
+            if (mark != 0) continue;
             goods.push({
-                no:item.get("no"),
-                system_style_no:item.get("system_style_no"),
-                    inventory_id:item.get("inventory_id")
+                no: item.get("no"),
+                system_style_no: item.get("system_style_no"),
+                inventory_id: item.get("inventory_id")
             });
+        }
+        if(goods.length<1){
+            Ext.toast("请先扫描商品", "系统提示");
+            return;
         }
         Ext.Ajax.request({
             async: true,
             url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/saveWarehouseCheckOrder',
             method: 'POST',
             params: {
-                goods:Ext.encode(goods),
-                id:me.record.get("id"),
-                status:1
+                goods: Ext.encode(goods),
+                id: me.record.get("pid"),
+                status: 1
             },
             success: function (res) {
                 var json = Ext.decode(res.responseText);
@@ -213,6 +262,64 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                     return
                 }
                 Ext.toast("保存成功", "系统提示");
+                var store = Ext.StoreManager.lookup("WarehouseCheckOrderStore");
+                if(store != null) store.load();
+            },
+            failure: function (res) {
+                Ext.toast("服务请求错误,请检查网络连接!", "系统提示");
+            }
+        });
+    },
+    editWarehouseCheckStatus:function(){
+        var me=this;
+        Ext.Ajax.request({
+            async: true,
+            url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/editWarehouseCheckStatus',
+            method: 'POST',
+            params: {
+                id:me.record.get("pid"),
+                status:1
+            },
+            success: function (res) {
+                var json = Ext.decode(res.responseText);
+                if (!json.success) {
+                    Ext.toast(json.msg, "系统提示");
+                    return
+                }
+                Ext.toast("操作成功", "系统提示");
+                me.down('#status_no').setHidden(false);
+                me.down('#goods_set').setHidden(true);
+                me.down('#save').setHidden(true);
+                me.down('#status_yes').setHidden(true);
+                Ext.StoreManager.lookup("WarehouseCheckOrderStore").load();
+            },
+            failure: function (res) {
+                Ext.toast("服务请求错误,请检查网络连接!", "系统提示");
+            }
+        });
+    },
+    editWarehouseCheckStatusNo:function() {
+        var me = this;
+        Ext.Ajax.request({
+            async: true,
+            url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/editWarehouseCheckStatusNo',
+            method: 'POST',
+            params: {
+                id: me.record.get("pid"),
+                status: 0
+            },
+            success: function (res) {
+                var json = Ext.decode(res.responseText);
+                if (!json.success) {
+                    Ext.toast(json.msg, "系统提示");
+                    return
+                }
+                Ext.toast("操作成功", "系统提示");
+                me.down('#status_no').setHidden(true);
+                me.down('#goods_set').setHidden(false);
+                me.down('#save').setHidden(false);
+                me.down('#status_yes').setHidden(false);
+                Ext.StoreManager.lookup("WarehouseCheckOrderStore").load();
             },
             failure: function (res) {
                 Ext.toast("服务请求错误,请检查网络连接!", "系统提示");
