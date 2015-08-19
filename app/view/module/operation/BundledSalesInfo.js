@@ -116,7 +116,7 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
 
     },
     getBbar: function () {
-        var bar = ['->'],me = this;;
+        var bar = ['->'],me = this;
         if(this.record.get("sku_setupt") == 0) bar.push({text: '添加商品范围',handler:me.addGoodsArea});
         if (this.record.get("status") == 0) return bar.concat({text: '审批',handler:me.checkInfo}, {text: '修改',handler:function(){
             var model = me.getViewModel();

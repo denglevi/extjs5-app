@@ -27,7 +27,9 @@ Ext.define('erp.Application', {
         'VIPCardListStore','VIPCardOpenLimitStore','VIPCardUpdateLimitStore','VIPCardPutLimitStore',
         'CustomerMngStore','VIPCardListStore','GiftCardInfoStore','GiftCardReturnStandardStore',
         'GiftCardSaleStore','GiftCardPutLimitStore','VIPListStore','GoodsDeliveryNoticeStore','WarehouseDeliveryOrderStore',
-        'GroupStore','RoleStore','ModuleStore','UserStore','SystemLogStore','AuthorityStore','CouponSortList','SingleList'
+        'GroupStore','RoleStore','ModuleStore','UserStore','SystemLogStore','AuthorityStore','CouponSortList','SingleList',
+        //整单促销STORE
+        'WholeOrderPromotionStore'
         // TODO: add global / shared stores here
     ],
     //views:['erp.view.login.Login','erp.view.main.Main'],

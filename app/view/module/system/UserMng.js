@@ -31,10 +31,10 @@ Ext.define('erp.view.module.system.UserMng', {
                 {text: '部门', dataIndex: 'group_name', flex: 1},
                 {text: '角色', dataIndex: 'role_name', flex: 1},
                 {text: '邮箱', dataIndex: 'email', flex: 2},
-                {text: '电话', dataIndex: 'mobile', flex: 1},
+                {text: '电话', dataIndex: 'mobile', flex: 2},
                 {text: '注册时间', dataIndex: 'create_time', flex: 1},
-                {text: '最后登录时间', dataIndex: 'last_login_time', flex: 1},
-                {text: '最后登录IP', dataIndex: 'last_login_ip', flex: 1},
+                {text: '登录时间', dataIndex: 'last_login_time', flex: 2},
+                {text: '最后登录IP', dataIndex: 'last_login_ip', flex: 2},
                 {
                     text: '状态', dataIndex: 'status', flex: 1, renderer: function (val) {
                     if (0 == val) return "停用";

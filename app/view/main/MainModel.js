@@ -142,7 +142,7 @@ Ext.define('erp.view.main.MainModel', {
             {
                 text: "活动促销", leaf: false,iconCls:'parentNodeIcon', children: [
                 {text: "捆绑促销", leaf: true, view: 'bundledsales',iconCls:'childNodeIcon'},
-                {text: "整单促销", leaf: true,iconCls:'childNodeIcon'}
+                {text: "整单促销", leaf: true,iconCls:'childNodeIcon',view:'wholeorderpromotion'}
             ]
             },
             {text: "结算方式", leaf: true, view: 'paymentmethod',iconCls:'childNodeIcon'},

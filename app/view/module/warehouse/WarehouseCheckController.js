@@ -130,6 +130,7 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                         win.down("combo[name=large_class]").setHidden(true);
                                         win.down("combo[name=small_class]").setHidden(true);
                                         win.down("combo[name=sex]").setHidden(true);
+                                        win.down("combo[name=brand]").setHidden(false);
                                         Ext.Ajax.request({
                                             aysnc: true,
                                             method: 'POST',
@@ -162,7 +163,8 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                         Ext.Ajax.request({
                                             aysnc: true,
                                             method: 'POST',
-                                            url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseData',
+                                            //url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseData',
+                                            url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseList',
                                             params: {
                                                 brand:0,
                                                 year_season:0,
@@ -220,17 +222,52 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                 }
                             }
                         },
-                        {fieldLabel: '品牌',displayField: 'name_en',valueField: 'id',name:'brand',editable: false},
-                        {xtype:'tagfield',fieldLabel: '年季',displayField: 'public_name',valueField: 'id',name: 'year_season',editable:true,store:store},
-                        {xtype:'tagfield',fieldLabel: '大类',displayField: 'name',valueField: 'id',name: 'large_class',listeners:{
+                        {xtype:'tagfield',fieldLabel: '品牌',displayField: 'name_en',valueField: 'name_en',name:'brand',editable: false},
+                        {xtype:'tagfield',fieldLabel: '年季',displayField: 'name',valueField: 'no',name: 'year_season',editable:true,store:store},
+                        //{fieldLabel: '品牌',displayField: 'name_en',valueField: 'id',name:'brand',editable: false},
+                        //{xtype:'tagfield',fieldLabel: '年季',displayField: 'public_name',valueField: 'id',name: 'year_season',editable:true,store:store},
+                        //{xtype:'tagfield',fieldLabel: '大类',displayField: 'name',valueField: 'id',name: 'large_class',listeners:{
+                        //    change:function(){
+                        //        var val = this.getValue();
+                        //        Ext.Ajax.request({
+                        //            aysnc: true,
+                        //            method: 'POST',
+                        //            url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseData',
+                        //            params: {
+                        //                small_class:0
+                        //            },
+                        //            success: function (res) {
+                        //                var json = Ext.decode(res.responseText);
+                        //                console.log(json);
+                        //                if(!json.success){
+                        //                    Ext.toast(json.msg,"系统提示");
+                        //                    return;
+                        //                }
+                        //                var store = Ext.create('Ext.data.Store', {
+                        //                    fields: ['type', 'val'],
+                        //                    data: json.data.small_class
+                        //                });
+                        //                var smallClassField = win.down("tagfield[name=small_class]");
+                        //                smallClassField.setStore(store);
+                        //                smallClassField.setDisabled(false);
+                        //                smallClassField.setHidden(false);
+                        //            },
+                        //            failure: function (res) {
+                        //                Ext.toast("请求错误,请检查网络!","系统提示");
+                        //            }
+                        //        });
+                        //    }
+                        //}},
+                        {xtype:'tagfield',fieldLabel: '大类',displayField: 'name',valueField: 'base_data_id',itemId:'large_class',name: 'large_class[]',listeners:{
                             change:function(){
-                                var val = this.getValue();
+                                var val= this.getValue();
+                                var str=val.join(',');
                                 Ext.Ajax.request({
                                     aysnc: true,
                                     method: 'POST',
-                                    url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseData',
+                                    url: apiBaseUrl + '/index.php/Warehouse/TaskList/getExtBigClass',
                                     params: {
-                                        small_class:0
+                                        large_class:str
                                     },
                                     success: function (res) {
                                         var json = Ext.decode(res.responseText);
@@ -241,7 +278,7 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                         }
                                         var store = Ext.create('Ext.data.Store', {
                                             fields: ['type', 'val'],
-                                            data: json.data.small_class
+                                            data: json.data
                                         });
                                         var smallClassField = win.down("tagfield[name=small_class]");
                                         smallClassField.setStore(store);
@@ -254,8 +291,10 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                 });
                             }
                         }},
-                        {xtype:'tagfield',fieldLabel: '小类',displayField: 'name',valueField: 'id',name: 'small_class'},
-                        {xtype:'tagfield',fieldLabel: '性别',displayField: 'public_name',valueField: 'id',name: 'sex'},
+                        {xtype:'tagfield',fieldLabel: '小类',displayField: 'name',valueField: 'name',name: 'small_class'},
+                        {xtype:'tagfield',fieldLabel: '性别',displayField: 'name',valueField: 'name',name: 'sex'},
+                        //{xtype:'tagfield',fieldLabel: '小类',displayField: 'name',valueField: 'id',name: 'small_class'},
+                        //{xtype:'tagfield',fieldLabel: '性别',displayField: 'public_name',valueField: 'id',name: 'sex'},
                         {disabled:false,columnWidth: 1,xtype: 'textarea',fieldLabel: '备注',name: 'mark',editable: true,allowBlank: true,hidden: false}
                     ]
                 }
