@@ -169,7 +169,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         if ('申请付款' == next_status.name) {
             var total = 0;
             Ext.each(product_info, function (product) {
-                total += parseFloat(product.orderinfo_nprice);
+                var money = parseFloat(product.orderinfo_wholesale)*parseFloat(product.orderinfo_amount);
+                total += money;
             });
             var win = Ext.create('erp.view.window.PurchasePayWin', {
                 title: next_status.name,
@@ -518,14 +519,32 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             width: '100%',
             sortableColumns: false,
             columns: [
-                {text: '品牌', dataIndex: 'brand',flex:1},
+                {text: '品牌', dataIndex: 'brand'},
                 {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
                 {text: '商品名称', dataIndex: 'orderinfo_name'},
                 {text: '颜色', dataIndex: 'orderinfo_color'},
                 {text: '尺码', dataIndex: 'orderinfo_group'},
+                {text: '性别', dataIndex: 'sex'},
+                {text: '年份季节', dataIndex: 'year_season'},
                 {text: '数量', dataIndex: 'orderinfo_amount'},
+                {text: '加价率', dataIndex: 'rate'},
                 {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
-                {text: '总价(欧)', dataIndex: 'orderinfo_nprice'},
+                {text: '加价率批发价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                    var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                        rate = parseFloat(record.get("rate"));
+                    return batch_price*rate+batch_price;
+                }},
+                {text: '总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                    var num = parseFloat(record.get("orderinfo_amount")),
+                        batch_price = parseFloat(record.get("orderinfo_wholesale"));
+                    return num*batch_price;
+                }},
+                {text: '加价率总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                    var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                        num = parseFloat(record.get("orderinfo_amount")),
+                        rate = parseFloat(record.get("rate"));
+                    return (batch_price*rate+batch_price)*num;
+                }},
                 {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
             ],
             store: Ext.create('Ext.data.Store', {
@@ -693,13 +712,33 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             if (text == "商品信息") {
                 item[0].setHidden(true);
                 columns = [
+                    {text: '品牌', dataIndex: 'brand'},
                     {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
                     {text: '商品名称', dataIndex: 'orderinfo_name'},
                     {text: '颜色', dataIndex: 'orderinfo_color'},
                     {text: '尺码', dataIndex: 'orderinfo_group'},
+                    {text: '性别', dataIndex: 'sex'},
+                    {text: '年份季节', dataIndex: 'year_season'},
                     {text: '数量', dataIndex: 'orderinfo_amount'},
+                    {text: '加价率', dataIndex: 'rate'},
                     {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
-                    {text: '总价(欧)', dataIndex: 'orderinfo_nprice'},
+                    {text: '加价率批发价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                            rate = parseFloat(record.get("rate"));
+                        return batch_price*rate+batch_price;
+                    }},
+                    {text: '总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        var num = parseFloat(record.get("orderinfo_amount")),
+                            batch_price = parseFloat(record.get("orderinfo_wholesale"));
+                        //console.log(num,batch_price);
+                        return num*batch_price;
+                    }},
+                    {text: '加价率总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                            num = parseFloat(record.get("orderinfo_amount")),
+                            rate = parseFloat(record.get("rate"));
+                        return (batch_price*rate+batch_price)*num;
+                    }},
                     {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
                 ];
                 data = me.res.product_info;
@@ -815,9 +854,19 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                         {text: '商品名称', dataIndex: 'name'},
                         {text: '颜色', dataIndex: 'color'},
                         {text: '尺码', dataIndex: 'size'},
+                        {text: '性别', dataIndex: 'sex'},
                         {text: '数量', dataIndex: 'num'},
+                        {text: '加价率', dataIndex: 'rate'},
                         {text: '批发价(欧)', dataIndex: 'batch_price'},
-                        {text: '总价(欧)', dataIndex: 'total_price'},
+                        {text: '加价率批发价(欧)', dataIndex: '',rerender:function(val,data,record){
+                            return record.get("batch_price")*(parseFloat(record.get("rate"))+1);
+                        }},
+                        {text: '总价(欧)', dataIndex: 'total_price',rerender:function(val,data,record){
+                            return record.get("num")*record.get("batch_price");
+                        }},
+                        {text: '加价率总价(欧)', dataIndex: '',rerender:function(val,data,record){
+                           return record.get("batch_price")*(parseFloat(record.get("rate"))+1)*record.get("num");
+                        }},
                         {text: '官方零售价(欧)', dataIndex: 'retail_price', flex: 1}
                     ]
                 }

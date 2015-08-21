@@ -106,7 +106,9 @@ Ext.define('erp.view.main.MainModel', {
             },
             {text: "商品目录", leaf: true, view: 'goodsmenu',iconCls:'childNodeIcon'},
             {text: "商品列表", leaf: true, view: 'goodslist',iconCls:'childNodeIcon'},
-            {text: "配送通知单", leaf: true,view:'goodsdeliveryorder',iconCls:'childNodeIcon'}
+            {text: "配送通知单", leaf: true,view:'goodsdeliveryorder',iconCls:'childNodeIcon'},
+            {text: "定价单", leaf: true,view:'goodsdeliveryorder',iconCls:'childNodeIcon'},
+            {text: "折扣单", leaf: true,view:'goodsdeliveryorder',iconCls:'childNodeIcon'}
         ],
         warehouseMngMenus:[
             //{
@@ -172,7 +174,8 @@ Ext.define('erp.view.main.MainModel', {
             }
         ],
         financialMngMenus:[
-            {text: "付款申请", leaf: true, view: 'applypaylist',iconCls:'childNodeIcon'}
+            {text: "付款申请", leaf: true, view: 'applypaylist',iconCls:'childNodeIcon'},
+            {text: "成本单", leaf: true, view: 'costaccount',iconCls:'childNodeIcon'}
         ]
     },
     getTopMenus: function () {

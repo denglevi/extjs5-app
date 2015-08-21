@@ -56,70 +56,150 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                 method:'POST',
                 defaults:{
                     anchor: '100%',
-                    xtype: 'textfield',
                     allowBlank: false,
                     margin: 10
                 },
                 bodyPadding:10,
                 items:[
                     {
-                        fieldLabel: '报关公司',
-                        name: 'receive_money_company',
-                        xtype:'combo',
-                        displayField:'name',
-                        valueField:'name',
-                        editable:false,
-                        listeners:{
-                            change:function(obj,newVal,oldVal){
-                                var items = obj.getStore().getData().items,len=items.length;
-                                for(var i=0;i<len;++i){
-                                    if(newVal == items[i].get("name")){
-                                        var no =me.down("textfield[name=company_bank_no]"),
-                                            bank = me.down("textfield[name=company_open_bank]");
-                                        no.setValue(items[i].get("bank_account"));
-                                        bank.setValue(items[i].get("address"));
-
-                                        no.setDisabled(false);
-                                        bank.setDisabled(false);
-                                        break;
-                                    }
-                                }
-
-                            }
+                        xtype:'fieldset',
+                        title:'报关费用',
+                        defaults:{
+                            anchor: '100%',
+                            xtype: 'textfield',
+                            allowBlank: false,
+                            margin: 10
                         },
-                        disabled:true
-                    },
-                    {
-                        fieldLabel: '公司账号',
-                        name: 'company_bank_no',
-                        disabled:true
-                    },
-                    {
-                        fieldLabel: '开户行',
-                        name: 'company_open_bank',
-                        disabled:true
-                    },
-                    {
-                        fieldLabel: '付款金额',
-                        xtype:'numberfield',
-                        name: 'money',
-                        value:me.total
-                    },
-                    {
-                        fieldLabel: '最后付款日期',
-                        name: 'last_pay_day',
-                        xtype: 'datefield',
-                        editable: false,
-                        format: 'Y-m-d',
-                        value:new Date()
+                        items:[
+                            {
+                                fieldLabel: '报关公司',
+                                name: 'receive_money_company',
+                                xtype:'combo',
+                                displayField:'name',
+                                valueField:'name',
+                                editable:false,
+                                listeners:{
+                                    change:function(obj,newVal,oldVal){
+                                        var items = obj.getStore().getData().items,len=items.length;
+                                        for(var i=0;i<len;++i){
+                                            if(newVal == items[i].get("name")){
+                                                var no =me.down("textfield[name=company_bank_no]"),
+                                                    bank = me.down("textfield[name=company_open_bank]");
+                                                no.setValue(items[i].get("bank_account"));
+                                                bank.setValue(items[i].get("address"));
 
-                    },
-                    {
-                        fieldLabel: '用途',
-                        name: 'pay_function',
-                        xtype: 'textarea',
-                        allowBlank:true
-                    },
+                                                no.setDisabled(false);
+                                                bank.setDisabled(false);
+                                                break;
+                                            }
+                                        }
+
+                                    }
+                                },
+                                disabled:true
+                            },
+                            {
+                                fieldLabel: '公司账号',
+                                name: 'company_bank_no',
+                                disabled:true
+                            },
+                            {
+                                fieldLabel: '开户行',
+                                name: 'company_open_bank',
+                                disabled:true
+                            },
+                            {
+                                fieldLabel: '付款金额',
+                                xtype:'numberfield',
+                                name: 'money',
+                                value:me.total
+                            },
+                            {
+                                fieldLabel: '最后付款日期',
+                                name: 'last_pay_day',
+                                xtype: 'datefield',
+                                editable: false,
+                                format: 'Y-m-d',
+                                value:new Date()
+
+                            },
+                            {
+                                fieldLabel: '用途',
+                                name: 'pay_function',
+                                xtype: 'textarea',
+                                allowBlank:true
+                            }
+                        ]
+                    },{
+                        xtype:'fieldset',
+                        title:'国际物流费用',
+                        defaults:{
+                            anchor: '100%',
+                            xtype: 'textfield',
+                            allowBlank: false,
+                            margin: 10
+                        },
+                        items:[
+                            {
+                                fieldLabel: '报关公司',
+                                name: 'receive_money_company',
+                                xtype:'combo',
+                                displayField:'name',
+                                valueField:'name',
+                                editable:false,
+                                listeners:{
+                                    change:function(obj,newVal,oldVal){
+                                        var items = obj.getStore().getData().items,len=items.length;
+                                        for(var i=0;i<len;++i){
+                                            if(newVal == items[i].get("name")){
+                                                var no =me.down("textfield[name=company_bank_no]"),
+                                                    bank = me.down("textfield[name=company_open_bank]");
+                                                no.setValue(items[i].get("bank_account"));
+                                                bank.setValue(items[i].get("address"));
+
+                                                no.setDisabled(false);
+                                                bank.setDisabled(false);
+                                                break;
+                                            }
+                                        }
+
+                                    }
+                                },
+                                disabled:true
+                            },
+                            {
+                                fieldLabel: '公司账号',
+                                name: 'company_bank_no',
+                                disabled:true
+                            },
+                            {
+                                fieldLabel: '开户行',
+                                name: 'company_open_bank',
+                                disabled:true
+                            },
+                            {
+                                fieldLabel: '付款金额',
+                                xtype:'numberfield',
+                                name: 'money',
+                                value:me.total
+                            },
+                            {
+                                fieldLabel: '最后付款日期',
+                                name: 'last_pay_day',
+                                xtype: 'datefield',
+                                editable: false,
+                                format: 'Y-m-d',
+                                value:new Date()
+
+                            },
+                            {
+                                fieldLabel: '用途',
+                                name: 'pay_function',
+                                xtype: 'textarea',
+                                allowBlank:true
+                            }
+                        ]
+                    }
                     //{
                     //    fieldLabel: '选择付款人',
                     //    name: 'payer',

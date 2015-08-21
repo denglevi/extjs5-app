@@ -35,6 +35,7 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
                         allowBlank: false,
                         disabled: false,
                         margin: 10,
+                        labelAlign:'right',
                         columnWidth: 0.5
                     },
                     items: this.getFieldItems(me.batch_no,me.order_no),

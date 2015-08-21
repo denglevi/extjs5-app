@@ -42,7 +42,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                             data: res.buyer
                         }));
                         form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
-                            fields: ['id_no', 'name'],
+                            fields: ['id_no', {name:'name',convert:function(v){return Ext.util.Format.htmlDecode(v);}}],
                             data: res.supplier
                         }));
 
@@ -220,15 +220,34 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                 height: '100%',
                 sortableColumns: false,
                 columns: [
-                    {text: '品牌', dataIndex: 'brand', flex: 1},
+                    {text: '品牌', dataIndex: 'brand'},
                     {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
                     {text: '商品名称', dataIndex: 'orderinfo_name'},
                     {text: '颜色', dataIndex: 'orderinfo_color'},
                     {text: '尺码', dataIndex: 'orderinfo_group'},
+                    {text: '性别', dataIndex: 'sex'},
+                    {text: '年份季节', dataIndex: 'year_season'},
                     {text: '数量', dataIndex: 'orderinfo_amount'},
+                    {text: '加价率', dataIndex: 'rate'},
                     {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
-                    {text: '总价(欧)', dataIndex: 'orderinfo_nprice'},
-                    {text: '官方零售价(欧)', dataIndex: 'orderinfo_official'}
+                    {text: '加价率批发价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                            rate = parseFloat(record.get("rate"));
+                        return batch_price*rate+batch_price;
+                    }},
+                    {text: '总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        var num = parseFloat(record.get("orderinfo_amount")),
+                            batch_price = parseFloat(record.get("orderinfo_wholesale"));
+                        console.log(num,batch_price);
+                        return num*batch_price;
+                    }},
+                    {text: '加价率总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                            num = parseFloat(record.get("orderinfo_amount")),
+                            rate = parseFloat(record.get("rate"));
+                        return (batch_price*rate+batch_price)*num;
+                    }},
+                    {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
                 ]
             }
         ]

@@ -25,6 +25,7 @@ Ext.define('erp.view.window.GoodsInfoWin', {
     width: 650,
     height: 600,
     modal:true,
+    html:'<iframe id="printIframe" style="display:none;" />',
     initComponent: function () {
         var me = this;
 
@@ -94,7 +95,65 @@ Ext.define('erp.view.window.GoodsInfoWin', {
             //    text: '修改'
             //},
             {
-                text: '打印吊牌'
+                text: '打印吊牌',
+                handler:function(){
+
+                    //var c = me.body.first().dom.innerHTML;
+                    //var printer = me.body.last().dom.contentWindow;
+                    //console.log(me,printer);
+                    //printer.document.body.innerHTML = c;
+                    //printer.focus();
+                    //printer.print();
+                    var tpl = new Ext.XTemplate(
+                        '<div class="width:200px;clear:both;">',
+                        '<div style="width:200px;font-family: Arial;font-weight: 900;text-align: center;font-size: large;">{brand}</div>',
+                        '<div class="row" style="font-size: small;">',
+                        '<div class="col-md-12">国际款号: {supply_style_no}</div>',
+                        '<div class="col-md-12">系统款号:{system_style_no}</div>',
+                        '<div class="col-md-6">品名: {name_zh}</div>',
+                        '<div class="col-md-6">等级: {level}</div>',
+                        '<div class="col-md-12">型号规格: {shape}</div>',
+                        '<div class="col-md-12">颜色: {color}</div>',
+                        '<div class="col-md-12">面料成份: {material_1}</div>',
+                        '<div>安全技术类别: {safety_level}</div>',
+                        '<div>产品执行标准: {execute_standard}</div>',
+                        '<div>洗涤方法: <img src="/resources/images/wash_type/01.jpg" width="100" height="10" /></div>',
+                        '<div>检验员: {brand}</div>',
+                        '<div>原产地: {original}</div>',
+                        '<div>价格: RMB {retail_price}</div>',
+                        '</div>',
+                        '<div>条形码</div>',
+                        '</div>'
+                    );
+                    //var area = "<div></div>";
+                    var area = tpl.apply(info);
+                    //var printArea = '<div class="width:200px;clear:both;">' +
+                    //    '<div style="width:200px;font-family: Arial;font-weight: 900;text-align: center;font-size: large;">'+info.brand+'</div>' +
+                    //    '<div class="row" style="font-size: small;">' +
+                    //    '<div class="col-md-12">国际款号: '+info.supply_style_no+'</div>' +
+                    //    '<div class="col-md-12">系统款号: '+info.system_style_no+'</div>' +
+                    //    '<div class="col-md-6">品名: '+info.name_zh+'</div>' +
+                    //    '<div class="col-md-6">等级: '+info.level+'</div>' +
+                    //    '<div class="col-md-12">型号规格: '+info.shape+'</div>' +
+                    //    '<div class="col-md-12">颜色: '+info.color+'</div>' +
+                    //    '<div class="col-md-12">面料成份: '+info.material_1+'</div>' +
+                    //    '<div>安全技术类别: '+info.safety_level+'</div>' +
+                    //    '<div>产品执行标准: '+info.execute_standard+'</div>' +
+                    //    '<div>洗涤方法: <img src="/resources/images/wash_type/01.jpg" width="100" height="10" /></div>' +
+                    //    '<div>检验员: '+info.brand+'</div>' +
+                    //    '<div>原产地: '+info.original+'</div>' +
+                    //    '<div>价格: RMB'+info.retail_price+'</div>' +
+                    //    '</div>' +
+                    //    '<div>条形码</div>' +
+                    //    '</div>';
+                    //var options = { mode : 'iframe'};
+                    //
+                    //$(printArea).printArea( options );
+                    var iframe = document.getElementById("printIframe");
+                    iframe.contentWindow.document.body.innerHTML=area;
+                    iframe.contentWindow.focus();//IE will print parent window without this statement.
+                    iframe.contentWindow.print();
+                }
             }
         ];
         this.items = [

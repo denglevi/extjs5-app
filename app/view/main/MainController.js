@@ -26,6 +26,7 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.purchase.PassCustomList',
         'erp.view.module.purchase.CheckProductList',
         'erp.view.module.financial.ApplyPayList',
+        'erp.view.module.financial.CostAccount',
         'erp.view.module.purchase.SupplierMng',
         'erp.view.module.goods.GoodsMenu',
         'erp.view.module.goods.GoodsList',

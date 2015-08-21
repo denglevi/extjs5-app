@@ -32,7 +32,7 @@ Ext.define('erp.view.window.PurchasePayWin',{
                     me.destroy();
                     return;
                 }
-                console.log(json.data);
+                //console.log(json.data);
                 var company = me.down("textfield[name=receive_money_company]"),
                     bank_no = me.down("textfield[name=company_bank_no]"),
                     bank_name = me.down("textfield[name=company_open_bank]");
@@ -40,6 +40,8 @@ Ext.define('erp.view.window.PurchasePayWin',{
                 bank_no.setValue(json.data.bank_no);
                 bank_name.setValue(json.data.bank_name);
 
+                var rv = company.getRawValue();
+                company.setValue(Ext.util.Format.htmlDecode(rv));
                 company.setDisabled(false);
                 bank_no.setDisabled(false);
                 bank_name.setDisabled(false);
@@ -49,6 +51,7 @@ Ext.define('erp.view.window.PurchasePayWin',{
                 me.destroy();
             }
         });
+        me.width=400;
         me.items=[
             {
                 xtype:'form',
@@ -58,7 +61,8 @@ Ext.define('erp.view.window.PurchasePayWin',{
                     anchor: '100%',
                     xtype: 'textfield',
                     allowBlank: false,
-                    margin: 10
+                    margin: 5,
+                    labelAlign:'right'
                 },
                 bodyPadding:10,
                 items:[
@@ -76,6 +80,14 @@ Ext.define('erp.view.window.PurchasePayWin',{
                         fieldLabel: '开户行',
                         name: 'company_open_bank',
                         disabled:true
+                    },
+                    {
+                        fieldLabel: '合同号',
+                        name: 'contract_no'
+                    },
+                    {
+                        fieldLabel: '汇率',
+                        name: 'exchange_rate'
                     },
                     {
                         fieldLabel: '付款金额(欧)',

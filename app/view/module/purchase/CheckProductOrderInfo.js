@@ -22,13 +22,15 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
             username:this.record.get("username"),
             id:this.record.get("id")
         }
-        console.log(data,this.record);
+        //console.log(data,this.record);
+
         me.layout = 'vbox';
         me.items = [
             {
                 xtype:'panel',
                 data:data,
                 width:'100%',
+                itemId:'check_product_info',
                 margin:'30,10,20,10',
                 tpl:new Ext.XTemplate(
                     '<div class="col-md-12">',
@@ -37,6 +39,10 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                     '<div class="col-md-3">订单号：{order_no}</div>',
                     '<div class="col-md-3">供应单号：{batch_no}</div>',
                     '<div class="col-md-2">买手：{username}</div>',
+                    '</div>',
+                    '<div class="col-md-12">',
+                    '<div class="col-md-2">总箱数：{box_num}</div>',
+                    '<div class="col-md-2">总件数：{num}</div>',
                     '</div>'
                 )
             },
@@ -55,6 +61,8 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                             {text: '品牌', dataIndex: 'brand'},
                             {text: '国际款号', dataIndex: 'style_no',flex:1},
                             {text: '名称', dataIndex: 'product_name'},
+                            {text: '颜色', dataIndex: 'color'},
+                            {text: '尺码', dataIndex: 'size'},
                             {text: '性别', dataIndex: 'sex'},
                             {text: '产地', dataIndex: 'origin'},
                             {text: '材质', dataIndex: 'material'},
@@ -71,7 +79,20 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                                     },
                                     success: function(response){
                                         var text = Ext.decode(response.responseText);
-                                        console.log(text);
+                                        if(text.data == null) return;
+                                        //console.log(text);
+                                        var goods = text.data,len = goods.length,num= 0,box_num='';
+                                        for(var i=0;i<len;i++){
+                                            if(goods[i].num == undefined || goods[i].box_no == undefined) continue;
+                                            num += parseInt(goods[i].num);
+                                            if(box_num.indexOf(goods[i].box_no+'|-') != -1) continue;
+                                            box_num += goods[i].box_no+'|-';
+                                        }
+                                        data.num = num;
+                                        var len = box_num.split("|-").length;
+                                        //console.log(box_num.split("|-"),box_num.split("|-").length);
+                                        data.box_num = len-1;
+                                        me.down("#check_product_info").setData(data);
                                         var store = Ext.create('Ext.data.Store',{
                                             fields:[],
                                             data:text.data

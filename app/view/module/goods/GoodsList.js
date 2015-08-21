@@ -28,7 +28,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
             type: 'hbox',
             stretch: true
         };
-
+        me.html = '<iframe id="printList" style="display:none;" />';
         var import_list = this.getImportList();
         var goods_list = this.getGoodsList();
         this.items = [
@@ -91,9 +91,50 @@ Ext.define('erp.view.module.goods.GoodsList', {
             flex: 1,
             height: '100%',
             title: '商品列表',
+            selModel: 'checkboxmodel',
             reference: 'goods_list_grid',
             sortableColumns:false,
             tbar: [
+                {
+                  text:'打印',
+                    handler:function(del_btn){
+                        var sel = del_btn.up('grid').getSelection(), ids = [], names = [], mark = 0;
+                        if (sel.length == 0) {
+                            Ext.Msg.alert('系统提示', '请选择要打印的商品');
+                            return;
+                        }
+                        var area = "";
+                        Ext.each(sel, function (record) {
+                            var info = record.getData();
+                            var tpl = new Ext.XTemplate(
+                                '<div class="width:200px;clear:both;">',
+                                '<div style="width:200px;font-family: Arial;font-weight: 900;text-align: center;font-size: large;">{brand}</div>',
+                                '<div class="row" style="font-size: small;">',
+                                '<div class="col-md-12">国际款号: {supply_style_no}</div>',
+                                '<div class="col-md-12">系统款号:{system_style_no}</div>',
+                                '<div class="col-md-6">品名: {name_zh}</div>',
+                                '<div class="col-md-6">等级: {level}</div>',
+                                '<div class="col-md-12">型号规格: {shape}</div>',
+                                '<div class="col-md-12">颜色: {color}</div>',
+                                '<div class="col-md-12">面料成份: {material_1}</div>',
+                                '<div>安全技术类别: {safety_level}</div>',
+                                '<div>产品执行标准: {execute_standard}</div>',
+                                '<div>洗涤方法: <img src="/resources/images/wash_type/01.jpg" width="100" height="10" /></div>',
+                                '<div>检验员: {brand}</div>',
+                                '<div>原产地: {original}</div>',
+                                '<div>价格: RMB {retail_price}</div>',
+                                '</div>',
+                                '<div>条形码</div>',
+                                '</div>'
+                            );
+                            area += tpl.apply(info);
+                        });
+                        var iframe = document.getElementById("printList");
+                        iframe.contentWindow.document.body.innerHTML=area;
+                        iframe.contentWindow.focus();//IE will print parent window without this statement.
+                        iframe.contentWindow.print();
+                    }
+                },
                 '->',
                 {
                     xtype: 'textfield',

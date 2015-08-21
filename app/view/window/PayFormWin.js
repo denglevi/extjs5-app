@@ -16,7 +16,7 @@ Ext.define('erp.view.window.PayFormWin', {
     ],
     xtype: 'payformwin',
     title: "付款单",
-    width: 600,
+    width: 700,
     layout: 'fit',
     modal: true,
     initComponent: function () {
@@ -40,14 +40,14 @@ Ext.define('erp.view.window.PayFormWin', {
                     labelAlign: 'right',
                     labelWidth: 110
                 },
-                items: this.getFieldItems(rate),
+                items: this.getFieldItems(),
                 buttons: this.getBtns(rate)
             }
         ]
         this.callParent();
     },
 
-    getFieldItems: function (rate) {
+    getFieldItems: function () {
         var record = this.record, me = this, pay_money;
         if (me.record.get("pay_type") == "申请报关付款") {
             pay_money = {xtype: 'displayfield', fieldLabel: '申请付款金额', name: 'money', value: record.get("money")};
@@ -63,6 +63,7 @@ Ext.define('erp.view.window.PayFormWin', {
                 value: record.get("receive_money_company")
             },
             {xtype: 'displayfield', fieldLabel: '公司账号', name: 'company_bank_no', value: record.get("company_bank_no")},
+            {xtype: 'displayfield', fieldLabel: '合同号', name: 'contract_no', value: record.get("contract_no")},
             {xtype: 'displayfield', fieldLabel: '最后付款日期', name: 'last_pay_day', value: record.get("last_pay_day")},
             pay_money,
             {
@@ -96,7 +97,7 @@ Ext.define('erp.view.window.PayFormWin', {
                             }
                         }
                     },
-                    {xtype: 'displayfield', fieldLabel: '汇率', name: 'rate', value: rate},
+                    {xtype: 'displayfield', fieldLabel: '汇率', name: 'rate', value: record.get("exchange_rate")},
                     {fieldLabel: '人民币', editable: false, name: 'RMB', allowBlank: false},
                     {
                         fieldLabel: '付款凭证',
