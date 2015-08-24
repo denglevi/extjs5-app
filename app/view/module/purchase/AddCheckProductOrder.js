@@ -156,7 +156,13 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                                 });
                             }
                         }
-                    }
+                    },
+                    {
+                        fieldLabel: '验货备注',
+                        name: 'mark',
+                        xtype: 'textarea',
+                        allowBlank:true
+                    },
                 ],
                 buttons: [
                     {

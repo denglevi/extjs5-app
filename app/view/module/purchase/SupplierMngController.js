@@ -15,7 +15,10 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
     onSupplierGridDblClick:function(gp,record){
         gp.up("suppliermng").getViewModel().set("fieldDisabled",true);
         var form = gp.up("suppliermng").down("form");
+        var name = form.down("textfield[name=name]");
         form.loadRecord(record);
+        var rv = name.getRawValue();
+        name.setValue(Ext.util.Format.htmlDecode(rv));
     },
     addPurchaseOrder:function(btn){
         btn.up('grid').up('tabpanel').setActiveTab({

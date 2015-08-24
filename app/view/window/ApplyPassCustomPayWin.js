@@ -34,15 +34,23 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                     me.destroy();
                     return;
                 }
-                console.log(json.data);
-                var company = me.down("textfield[name=receive_money_company]"),
+                console.log(json.data,me.down("fieldset"));
+                var coustom_company = me.down("#custom_pay").down("textfield[name=receive_money_company]"),
                     store = Ext.create("Ext.data.Store",{
                         fields:[],
-                        data:json.data
+                        data:json.data.custom_compay
                     });
-                company.setStore(store);
+                coustom_company.setStore(store);
 
-                company.setDisabled(false);
+                coustom_company.setDisabled(false);
+                var logistics_company = me.down("#logistics_pay").down("textfield[name=receive_money_company]"),
+                    store = Ext.create("Ext.data.Store",{
+                        fields:[],
+                        data:json.data.logistics_company
+                    });
+                logistics_company.setStore(store);
+
+                logistics_company.setDisabled(false);
             },
             failure:function(){
                 Ext.alert("系统提示","网络请求错误,请重试!");
@@ -64,11 +72,15 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                     {
                         xtype:'fieldset',
                         title:'报关费用',
+                        layout:'column',
+                        itemId:'custom_pay',
                         defaults:{
                             anchor: '100%',
                             xtype: 'textfield',
                             allowBlank: false,
-                            margin: 10
+                            columnWidth:0.5,
+                            margin: 10,
+                            labelAlign:'right'
                         },
                         items:[
                             {
@@ -133,15 +145,19 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                     },{
                         xtype:'fieldset',
                         title:'国际物流费用',
+                        layout:'column',
+                        itemId:'logistics_pay',
                         defaults:{
                             anchor: '100%',
                             xtype: 'textfield',
                             allowBlank: false,
+                            columnWidth:0.5,
+                            labelAlign:'right',
                             margin: 10
                         },
                         items:[
                             {
-                                fieldLabel: '报关公司',
+                                fieldLabel: '物流公司',
                                 name: 'receive_money_company',
                                 xtype:'combo',
                                 displayField:'name',

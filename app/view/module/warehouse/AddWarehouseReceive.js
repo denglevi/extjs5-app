@@ -88,11 +88,12 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                         listeners: {
                             edit: function (gp, e) {
                                 var record = e.record,
+                                    send_num = record.get("send_num"),
                                     num = record.get("num");
                                 if(num == "" || num == null){
                                     num = 0;
                                 }
-                                record.set("diff_num", parseInt(num) + parseInt(record.get("diff_num")));
+                                record.set("diff_num", parseInt(num) - parseInt(send_num));
                             }
                         }
                     }
@@ -206,7 +207,13 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
             {
                 fieldLabel: '供应商',
                 name: 'supplier',
-                value: this.record.get("name")
+                value: this.record.get("name"),
+                listeners:{
+                    beforerender:function(){
+                        var rv = this.getRawValue();
+                        this.setValue(Ext.util.Format.htmlDecode(rv));
+                    }
+                }
             }
         ];
     },

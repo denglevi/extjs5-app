@@ -38,7 +38,7 @@ Ext.define('erp.view.window.PayFormWin', {
                     margin: 5,
                     columnWidth: 0.5,
                     labelAlign: 'right',
-                    labelWidth: 110
+                    labelWidth: 120
                 },
                 items: this.getFieldItems(),
                 buttons: this.getBtns(rate)
@@ -49,6 +49,39 @@ Ext.define('erp.view.window.PayFormWin', {
 
     getFieldItems: function () {
         var record = this.record, me = this, pay_money;
+        if("关税缴纳" == record.get("pay_type")){
+            var items = record.get("items");
+            var json = Ext.decode(items);
+            var items = [
+                {fieldLabel:'申请人',xtype:'displayfield',value:record.get("applier_name")},
+                {fieldLabel:'订货单号',value:record.get("order_no"),xtype:'displayfield'},
+                {fieldLabel:'到货单号',value:json.logistics_no,xtype:'displayfield'},
+                {fieldLabel:'公司名',value:json.pay_company,xtype:'displayfield'},
+                {fieldLabel:'账号',value:json.pay_bank_no,xtype:'displayfield'},
+                {fieldLabel:'汇率',value:record.get("exchange_rate"),xtype:'displayfield'},
+                {fieldLabel:'总件数',value:json.total_goods,xtype:'displayfield'},
+                {fieldLabel:'报关总金额(欧元)',value:json.money_EUR,xtype:'displayfield'},
+                {fieldLabel:'关税总金额(人民币)',value:json.money_RMB,xtype:'displayfield'},
+                {fieldLabel:'增值税(人民币)',value:json.tax,xtype:'displayfield'},
+                {fieldLabel:'缴税总额',value:record.get("money"),xtype:'displayfield'},
+                {fieldLabel:'最后付款日期',xtype:'displayfield',value:record.get("last_pay_day")},
+                {fieldLabel:'缴纳关税相关文件',value:'xxxx',xtype:'displayfield'},
+                {fieldLabel:'实际付款金额(人民币)',name:'pay_money'},
+                {
+                    fieldLabel: '付款凭证',
+                    name: 'fileinfo[]',
+                    xtype: 'filefield',
+                    buttonText: '上传',
+                    allowBlank: false,
+                    disabled: false,
+                    editable: false,
+                },
+                {fieldLabel: '备注', name: 'mark', xtype: 'textarea', allowBlank: true, columnWidth: 1}
+            ]
+
+            return items;
+        }
+
         if (me.record.get("pay_type") == "申请报关付款") {
             pay_money = {xtype: 'displayfield', fieldLabel: '申请付款金额', name: 'money', value: record.get("money")};
         } else {

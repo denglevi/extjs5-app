@@ -433,6 +433,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 order_no: order_info.order_nos,
                 batch_no: batchs[0].batch_no,
                 url: url,
+                width:600,
                 total: total
             });
             win.on("beforedestroy",me.changeOrderData,me);

@@ -179,6 +179,12 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                 formBind: true,
                 disabled: true,
                 handler: function () {
+                    if("关税缴纳" == text){
+                        var win = me.getWin(id,status_id);
+                        win.show();
+                        return;
+                    }
+
                     var form = this.up('form').getForm();
                     if (form.isValid()) {
                         form.submit({
@@ -202,6 +208,82 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                 }
             }
         ];
+    },
+    getWin:function(id,status_id){
+        var me = this;
+        var win = Ext.create('Ext.window.Window',{
+            width:600,
+            layout:'fit',
+            modal:true,
+            resizable:false,
+            title:'关税缴纳',
+            items:[
+                {
+                    xtype:'form',
+                    layout:'column',
+                    url: apiBaseUrl + '/index.php/Purchasing/Customs/applyCustomTax',
+                    bodyPadding: 10,
+                    defaults:{
+                        xtype:'textfield',
+                        columnWidth:0.5,
+                        labelAlign:'right',
+                        margin:5,
+                        labelWidth:120,
+                        allowBlank:false
+                    },
+                    items:[
+                        {fieldLabel:'订货单号',name:'order_no'},
+                        {fieldLabel:'到货单号',name:'logistics_no'},
+                        {fieldLabel:'公司名',name:'pay_company'},
+                        {fieldLabel:'账号',name:'pay_bank_no'},
+                        {fieldLabel:'汇率',name:'exchange_rate'},
+                        {fieldLabel:'总件数',name:'total_goods',xtype:'numberfield'},
+                        {fieldLabel:'报关总金额(欧元)',name:'money_EUR',xtype:'numberfield'},
+                        {fieldLabel:'关税总金额(人民币)',name:'money_RMB',xtype:'numberfield'},
+                        {fieldLabel:'增值税(人民币)',name:'tax',xtype:'numberfield'},
+                        {fieldLabel:'缴税总额',name:'total_tax',xtype:'numberfield'},
+                        {fieldLabel:'最后付款日期',name:'last_pay_day',xtype:'datefield',format:'Y-m-d',editable:false},
+                        {fieldLabel:'上传文件',name:'files',xtype:'fileuploadfield',buttonText:'上传文件'}
+                    ],
+                    buttons:[
+                        {
+                            text: '重置',
+                            handler: function () {
+                                this.up('form').getForm().reset();
+                            }
+                        },
+                        {
+                            text: "提交",
+                            formBind: true,
+                            disabled: true,
+                            handler: function () {
+                                var form = this.up('form').getForm();
+                                if (form.isValid()) {
+                                    form.submit({
+                                        params:{
+                                            id:id,
+                                            next_status:status_id,
+                                            status:me.record.get('cu_status')
+                                        },
+                                        waitMsg: '正在更新...',
+                                        success: function (form, action) {
+                                            me.destroy();
+                                            win.destroy();
+                                            console.log(action.result);
+                                        },
+                                        failure: function (form, action) {
+                                            console.log(action);
+                                            Ext.Msg.alert('失败', action.result.msg||"系统服务错误,请联系管理管理员!");
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        });
+        return win;
     }
 });
 

@@ -20,6 +20,7 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
             order_no:this.record.get("order_no"),
             batch_no:this.record.get("batch_no"),
             username:this.record.get("username"),
+            mark:this.record.get("mark"),
             id:this.record.get("id")
         }
         //console.log(data,this.record);
@@ -43,6 +44,7 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                     '<div class="col-md-12">',
                     '<div class="col-md-2">总箱数：{box_num}</div>',
                     '<div class="col-md-2">总件数：{num}</div>',
+                    '<div class="col-md-8">备注：{mark}</div>',
                     '</div>'
                 )
             },

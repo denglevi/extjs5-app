@@ -75,6 +75,9 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                 columns: [
                     {text: '供应商编号', dataIndex: 'vendor_no'},
                     {text: '名称', dataIndex: 'name', flex: 1},
+                    {text: '联系人', dataIndex: 'contact_name', flex: 1},
+                    {text: '电话', dataIndex: 'contact_phone', flex: 1},
+                    {text: '邮箱', dataIndex: 'contact_email', flex: 1},
                     {text: '地址', dataIndex: 'address', flex: 2}
                 ],
                 listeners: {
@@ -123,6 +126,15 @@ Ext.define('erp.view.module.purchase.SupplierMng', {
                     }, {
                         fieldLabel: '银行账号',
                         name: 'bank_no'
+                    },{
+                        fieldLabel: '联系人',
+                        name: 'contact_name'
+                    },{
+                        fieldLabel: '联系人电话',
+                        name: 'contact_phone'
+                    },{
+                        fieldLabel: '联系人邮箱',
+                        name: 'contact_email'
                     }
                 ],
                 tbar: ['->',
