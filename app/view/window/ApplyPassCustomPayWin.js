@@ -34,7 +34,7 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                     me.destroy();
                     return;
                 }
-                console.log(json.data,me.down("fieldset"));
+                console.log(json.data);
                 var coustom_company = me.down("#custom_pay").down("textfield[name=receive_money_company]"),
                     store = Ext.create("Ext.data.Store",{
                         fields:[],
@@ -95,8 +95,8 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                                         var items = obj.getStore().getData().items,len=items.length;
                                         for(var i=0;i<len;++i){
                                             if(newVal == items[i].get("name")){
-                                                var no =me.down("textfield[name=company_bank_no]"),
-                                                    bank = me.down("textfield[name=company_open_bank]");
+                                                var no =obj.up("fieldset").down("textfield[name=company_bank_no]"),
+                                                    bank = obj.up("fieldset").down("textfield[name=company_open_bank]");
                                                 no.setValue(items[i].get("bank_account"));
                                                 bank.setValue(items[i].get("address"));
 
@@ -168,8 +168,8 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                                         var items = obj.getStore().getData().items,len=items.length;
                                         for(var i=0;i<len;++i){
                                             if(newVal == items[i].get("name")){
-                                                var no =me.down("textfield[name=company_bank_no]"),
-                                                    bank = me.down("textfield[name=company_open_bank]");
+                                                var no =obj.up("fieldset").down("textfield[name=company_bank_no]"),
+                                                    bank = obj.up("fieldset").down("textfield[name=company_open_bank]");
                                                 no.setValue(items[i].get("bank_account"));
                                                 bank.setValue(items[i].get("address"));
 

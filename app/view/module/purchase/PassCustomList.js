@@ -25,11 +25,12 @@ Ext.define('erp.view.module.purchase.PassCustomList', {
     border: true,
     sortableColumns: false,
     tbar: [
-        //{
-        //    text:'新增',
-        //    glyph:0xf067,
-        //    handler:'addPurchaseOrder'
-        //},
+        {
+            text:'新增',
+            //glyph:0xf067,
+            iconCls:'addIcon',
+            handler:'addPassCustomOrder'
+        },
         {
             text: '删除',
             //glyph: 0xf1f8,

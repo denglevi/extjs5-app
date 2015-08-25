@@ -1,5 +1,5 @@
-Ext.define('erp.view.window.PurchasePayWin',{
-    extend:'Ext.window.Window',
+Ext.define('erp.view.window.PurchasePayWin', {
+    extend: 'Ext.window.Window',
     requires: [
         'Ext.data.Store',
         'Ext.data.proxy.Ajax',
@@ -12,23 +12,23 @@ Ext.define('erp.view.window.PurchasePayWin',{
         'Ext.form.field.TextArea',
         'Ext.layout.container.Anchor'
     ],
-    xtype:'purchasepaywin',
-    layout:'anchor',
-    modal:true,
-    initComponent:function(){
-        var me = this;
+    xtype: 'purchasepaywin',
+    layout: 'anchor',
+    modal: true,
+    initComponent: function () {
+        var me = this, fields;
         console.log(me.batch_no);
         Ext.Ajax.request({
-           async:true,
-            method:'POST',
-            params:{
-                order_no:me.order_no
+            async: true,
+            method: 'POST',
+            params: {
+                order_no: me.order_no
             },
-            url:apiBaseUrl+'/index.php/Purchasing/buyer/getSupplierInfo',
-            success:function(res){
+            url: apiBaseUrl + '/index.php/Purchasing/buyer/getSupplierInfo',
+            success: function (res) {
                 var json = Ext.decode(res.responseText);
-                if(!json.success){
-                    Ext.alert("系统提示",json.msg);
+                if (!json.success) {
+                    Ext.alert("系统提示", json.msg);
                     me.destroy();
                     return;
                 }
@@ -46,92 +46,99 @@ Ext.define('erp.view.window.PurchasePayWin',{
                 bank_no.setDisabled(false);
                 bank_name.setDisabled(false);
             },
-            failure:function(){
-                Ext.alert("系统提示","网络请求错误,请重试!");
+            failure: function () {
+                Ext.alert("系统提示", "网络请求错误,请重试!");
                 me.destroy();
             }
         });
-        me.width=400;
-        me.items=[
+        me.width = 400;
+        if (me.title = "申请定金") {
+            fields = [
+                {fieldLabel: '收款公司', name: 'receive_money_company', disabled: true},
+                {fieldLabel: '公司账号', name: 'company_bank_no', disabled: true},
+                {fieldLabel: '开户行', name: 'company_open_bank', disabled: true},
+                {fieldLabel: '合同号', name: 'contract_no'},
+                {fieldLabel: '付款金额(欧)', xtype: 'numberfield', name: 'total', value: me.total},
+                {fieldLabel: '汇率', name: 'exchange_rate'},
+                {fieldLabel: '定金百分比', xtype: 'numberfield',minValue:0,maxValue:100, name: 'percent',listeners:{
+                    blur:function(){
+                        if(!this.isValid()) return;
+                        var percent = this.getValue(),form = this.up("form"),
+                            total = form.down("numberfield[name=total]").getValue(),
+                            money = parseFloat((parseFloat(total) * percent)/100);
+                        form.down("textfield[name=money]").setValue(money);
+                    }
+                },columnWidth:0.95,margin:'5 0 5 5'},
+                {xtype:'displayfield',hideLabel:true,value:'%',columnWidth:0.05,margin:'5 5 5 0'},
+                {fieldLabel: '定金付款金额(欧)', name: 'money'},
+                {
+                    fieldLabel: '最后付款日期',
+                    name: 'last_pay_day',
+                    xtype: 'datefield',
+                    editable: false,
+                    format: 'Y-m-d',
+                    value: new Date()
+                },
+                {fieldLabel: '用途', name: 'pay_function', xtype: 'textarea', allowBlank: true}
+            ];
+        } else {
+            fields = [
+                {fieldLabel: '收款公司', name: 'receive_money_company', disabled: true},
+                {fieldLabel: '公司账号', name: 'company_bank_no', disabled: true},
+                {fieldLabel: '开户行', name: 'company_open_bank', disabled: true},
+                {fieldLabel: '合同号', name: 'contract_no'},
+                {fieldLabel: '汇率', name: 'exchange_rate'},
+                {fieldLabel: '付款金额(欧)', xtype: 'numberfield', name: 'money', value: me.total},
+                {
+                    fieldLabel: '最后付款日期',
+                    name: 'last_pay_day',
+                    xtype: 'datefield',
+                    editable: false,
+                    format: 'Y-m-d',
+                    value: new Date()
+                },
+                {fieldLabel: '用途', name: 'pay_function', xtype: 'textarea', allowBlank: true}
+            ];
+        }
+        me.items = [
             {
-                xtype:'form',
-                url:apiBaseUrl+'/index.php'+me.url+'?api=1',
-                method:'POST',
-                defaults:{
+                xtype: 'form',
+                url: apiBaseUrl + '/index.php' + me.url + '?api=1',
+                method: 'POST',
+                layout:'column',
+                defaults: {
                     anchor: '100%',
                     xtype: 'textfield',
                     allowBlank: false,
                     margin: 5,
-                    labelAlign:'right'
+                    columnWidth:1,
+                    labelWidth:110,
+                    labelAlign: 'right'
                 },
-                bodyPadding:10,
-                items:[
-                    {
-                        fieldLabel: '收款公司',
-                        name: 'receive_money_company',
-                        disabled:true
-                    },
-                    {
-                        fieldLabel: '公司账号',
-                        name: 'company_bank_no',
-                        disabled:true
-                    },
-                    {
-                        fieldLabel: '开户行',
-                        name: 'company_open_bank',
-                        disabled:true
-                    },
-                    {
-                        fieldLabel: '合同号',
-                        name: 'contract_no'
-                    },
-                    {
-                        fieldLabel: '汇率',
-                        name: 'exchange_rate'
-                    },
-                    {
-                        fieldLabel: '付款金额(欧)',
-                        xtype:'numberfield',
-                        name: 'money',
-                        value:me.total
-                    },
-                    {
-                        fieldLabel: '最后付款日期',
-                        name: 'last_pay_day',
-                        xtype: 'datefield',
-                        editable: false,
-                        format: 'Y-m-d',
-                        value:new Date()
-
-                    },
-                    {
-                        fieldLabel: '用途',
-                        name: 'pay_function',
-                        xtype: 'textarea',
-                        allowBlank:true
-                    },
-                    //{
-                    //    fieldLabel: '选择付款人',
-                    //    name: 'payer',
-                    //    xtype: 'combo',
-                    //    editable: false,
-                    //    displayField: 'username',
-                    //    valueField: 'id',
-                    //    //queryMode:'local',
-                    //    store:Ext.create('Ext.data.Store',{
-                    //        //autoLoad:true,
-                    //        fields:['id','username'],
-                    //        proxy: {
-                    //            type: 'ajax',
-                    //            url: apiBaseUrl+'/index.php/Purchasing/Buyer/getPayer',
-                    //            reader: {
-                    //                type: 'json',
-                    //                rootProperty: 'data'
-                    //            }
-                    //        }
-                    //    })
-                    //}
-                ],
+                bodyPadding: 10,
+                items: fields
+                //{
+                //    fieldLabel: '选择付款人',
+                //    name: 'payer',
+                //    xtype: 'combo',
+                //    editable: false,
+                //    displayField: 'username',
+                //    valueField: 'id',
+                //    //queryMode:'local',
+                //    store:Ext.create('Ext.data.Store',{
+                //        //autoLoad:true,
+                //        fields:['id','username'],
+                //        proxy: {
+                //            type: 'ajax',
+                //            url: apiBaseUrl+'/index.php/Purchasing/Buyer/getPayer',
+                //            reader: {
+                //                type: 'json',
+                //                rootProperty: 'data'
+                //            }
+                //        }
+                //    })
+                //}
+                ,
                 buttons: [
                     {
                         text: '重置',
@@ -147,13 +154,13 @@ Ext.define('erp.view.window.PurchasePayWin',{
                             var form = this.up('form').getForm();
                             if (form.isValid()) {
                                 form.submit({
-                                    params:{
-                                        status_id:me.status_id,
-                                        order_no:me.order_no,
-                                        batch_no:me.batch_no,
-                                        pay_type:me.title
+                                    params: {
+                                        status_id: me.status_id,
+                                        order_no: me.order_no,
+                                        batch_no: me.batch_no,
+                                        pay_type: me.title
                                     },
-                                    waitMsg:'正在提交...',
+                                    waitMsg: '正在提交...',
                                     success: function (form, action) {
                                         me.destroy();
                                     },

@@ -130,6 +130,9 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
             record:record
         });
     },
+    addPassCustomOrder:function(){
+
+    },
     deletePassCustomOrder:function(del_btn){
         var sel = del_btn.up('grid').getSelection(),ids=[],nos=[];
         if(sel.length == 0){

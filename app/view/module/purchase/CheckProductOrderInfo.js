@@ -23,8 +23,6 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
             mark:this.record.get("mark"),
             id:this.record.get("id")
         }
-        //console.log(data,this.record);
-
         me.layout = 'vbox';
         me.items = [
             {
@@ -36,15 +34,15 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                 tpl:new Ext.XTemplate(
                     '<div class="col-md-12">',
                     '<div class="col-md-2">日期：{create_time}</div>',
-                    '<div class="col-md-2">供应商：{vendor_name}</div>',
-                    '<div class="col-md-3">订单号：{order_no}</div>',
+                    '<div class="col-md-3">供应商：{vendor_name}</div>',
+                    '<div class="col-md-2">订单号：{order_no}</div>',
                     '<div class="col-md-3">供应单号：{batch_no}</div>',
                     '<div class="col-md-2">买手：{username}</div>',
                     '</div>',
                     '<div class="col-md-12">',
                     '<div class="col-md-2">总箱数：{box_num}</div>',
-                    '<div class="col-md-2">总件数：{num}</div>',
-                    '<div class="col-md-8">备注：{mark}</div>',
+                    '<div class="col-md-3">总件数：{num}</div>',
+                    '<div class="col-md-7">备注：{mark}</div>',
                     '</div>'
                 )
             },
@@ -82,8 +80,7 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                                     success: function(response){
                                         var text = Ext.decode(response.responseText);
                                         if(text.data == null) return;
-                                        //console.log(text);
-                                        var goods = text.data,len = goods.length,num= 0,box_num='';
+                                        var goods = text.data,len = goods.length,num= 0,box_num='',diff = text.diff;
                                         for(var i=0;i<len;i++){
                                             if(goods[i].num == undefined || goods[i].box_no == undefined) continue;
                                             num += parseInt(goods[i].num);
@@ -100,6 +97,24 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                                             data:text.data
                                         });
                                         gp.setStore(store);
+                                        if(diff.length != 0){
+                                            var tab = gp.up("tabpanel");
+                                            var grid = Ext.create("Ext.grid.Panel",{
+                                                title: '商品差异数',
+                                                xtype: 'grid',
+                                                scrollable:'y',
+                                                sortableColumns:false,
+                                                columns: [
+                                                    {text: '国际款号', dataIndex: 'style_no',flex:1},
+                                                    {text: '差异数', dataIndex: 'diff'}
+                                                ],
+                                                store:Ext.create('Ext.data.Store',{
+                                                    fields:[],
+                                                    data:text.diff
+                                                })
+                                            });
+                                            tab.add(grid);
+                                        }
                                     }
                                 });
                             }

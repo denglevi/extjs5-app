@@ -53,9 +53,9 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             next_status = res.next_status,
             barContainer = me.getBarContainer(batchs,order_info),
             infoGrid = me.getInfoGrid(product_info);
-        console.log(model);
+        //console.log(model);
         model.set("purchaseOrderStatus",status);
-        console.log(res);
+        //console.log(res);
         me.res = res;
         if (next_status !== null) {
             var url = next_status.action == '' ? '/Purchasing/Buyer/purchasingAction' : next_status.action;
@@ -155,7 +155,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         me.callParent();
     },
     onNextStatusBtnClick:function(){
-        //现货状态
+        //期货状态
         var me = this,
             model = me.getViewModel(),
             next_status = me.res.next_status,
@@ -184,6 +184,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             win.show();
         } else if ("申请部分货款" == next_status.name) {
             var store = null;
+            console.log(order_info);
             var win = Ext.create('Ext.window.Window', {
                 title: next_status.name,
                 width: 550,
@@ -204,66 +205,61 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                             xtype: 'textfield',
                             columnWidth: 0.5,
                             labelAlign: 'right',
-                            labelWidth: 90
+                            labelWidth: 90,
+                            allowBlank:false
                         },
                         url: apiBaseUrl + '/index.php/Purchasing/Buyer/applyPartGoodsPay',
                         items: [
-                            {
-                                xtype: 'displayfield',
-                                fieldLabel: '订单号',
-                                columnWidth:1,
-                                value: order_info.order_nos
-                            },
-                            {
-                                xtype: 'combo',
-                                fieldLabel: '供应商',
-                                name: 'supplier',
-                                disabled: true,
-                                displayField: 'name',
-                                valueField: 'id_no',
-                                editable: false,
-                                columnWidth:0.5,
-                                listeners:{
-                                    change:function(){
-                                        var form = this.up("form"),supplier = form.down("combo[name=supplier]"),val = this.getValue().split('|');
-                                        var items = supplier.getStore().getData().items,len = items.length;
-                                        console.log(items,val[0]);
-                                        for(var i=0;i<len;i++){
-                                            var item = items[i];
-                                            if(val[0] == item.get("id")){
-                                                form.down("textfield[name=receive_money_company]").setValue(item.get("name"));
-                                                form.down("textfield[name=company_bank_no]").setValue(item.get("bank_no"));
-                                                form.down("textfield[name=company_open_bank]").setValue(item.get("bank_name"));
-                                                break;
-                                            }
-                                        }
-                                    }
+                            {fieldLabel: '订单号',value: order_info.order_nos},
+                            {fieldLabel: '合同号', name: 'contract_no'},
+                            {xtype:'hiddenfield',name:'supplier',value:order_info.vendor_id},
+                            {fieldLabel: '供应商', editable:false,name: 'supplier_name',value:order_info.name,listeners:{
+                                beforerender:function(){
+                                    var rv = this.getRawValue();
+                                    this.setValue(Ext.util.Format.htmlDecode(rv));
                                 }
-                            },
+                            }},
+                            //{
+                            //    xtype: 'combo',
+                            //    fieldLabel: '供应商',
+                            //    name: 'supplier',
+                            //    disabled: true,
+                            //    displayField: 'name',
+                            //    valueField: 'id_no',
+                            //    editable: false,
+                            //    columnWidth:0.5,
+                            //    listeners:{
+                            //        change:function(){
+                            //            var form = this.up("form"),supplier = form.down("combo[name=supplier]"),val = this.getValue().split('|');
+                            //            var items = supplier.getStore().getData().items,len = items.length;
+                            //            console.log(items,val[0]);
+                            //            for(var i=0;i<len;i++){
+                            //                var item = items[i];
+                            //                if(val[0] == item.get("id")){
+                            //                    form.down("textfield[name=receive_money_company]").setValue(item.get("name"));
+                            //                    form.down("textfield[name=company_bank_no]").setValue(item.get("bank_no"));
+                            //                    form.down("textfield[name=company_open_bank]").setValue(item.get("bank_name"));
+                            //                    break;
+                            //                }
+                            //            }
+                            //        }
+                            //    }
+                            //},
                             //{
                             //    xtype: 'combo', fieldLabel: '买手', name: 'buyer', disabled: true,
                             //    displayField: 'username',
                             //    valueField: 'id',
                             //    editable: false
                             //},
-                            {
-                                fieldLabel: '收款公司',
-                                name: 'receive_money_company'
-                            },
-                            {
-                                fieldLabel: '公司账号',
-                                name: 'company_bank_no',
-                            },
-                            {
-                                fieldLabel: '开户行',
-                                name: 'company_open_bank',
-                            },
+                            {fieldLabel: '收款公司',name: 'receive_money_company',value:order_info.bank_name},
+                            {fieldLabel: '公司账号',name: 'company_bank_no',value:order_info.bank_no},
+                            {fieldLabel: '开户行',name: 'company_open_bank',value:order_info.address},
+                            {fieldLabel: '汇率',name: 'exchange_rate'},
                             {
                                 xtype: 'filefield',
                                 name: 'excel_file',
                                 buttonText: '导入商品',
-                                allowBlank: true,
-                                columnWidth:1,
+                                clearOnSubmit:false,
                                 listeners: {
                                     change: function () {
                                         var val = this.getValue();
@@ -277,7 +273,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                 me.products = data;
                                                 var total = 0;
                                                 for(var i=0;i<data.length;i++){
-                                                    total += parseFloat(data[i].orderinfo_nprice);
+                                                    var goods = data[i],num = (parseFloat(goods.rate)+1)*parseFloat(goods.orderinfo_wholesale)*parseFloat(goods.orderinfo_amount);
+                                                    total += num;
                                                 }
                                                 win.down("textfield[name=money]").setValue(total);
                                                 store = Ext.create('Ext.data.Store', {
@@ -303,48 +300,10 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                     }
                                 }
                             },
-                            {
-                                fieldLabel: '付款金额(欧)',
-                                name: 'money',
-                                value: me.total,
-                                xtype: 'numberfield'
-                            },
-                            {
-                                fieldLabel: '最后付款日期',
-                                name: 'last_pay_day',
-                                xtype: 'datefield',
-                                editable: false,
-                                format: 'Y-m-d',
-                                value: new Date()
-
-                            },
-                            {
-                                fieldLabel: '用途',
-                                name: 'pay_function',
-                                xtype: 'textarea',
-                                columnWidth:1
-                            },
-                            //{
-                            //    fieldLabel: '选择付款人',
-                            //    name: 'payer',
-                            //    xtype: 'combo',
-                            //    editable: false,
-                            //    displayField: 'username',
-                            //    valueField: 'id',
-                            //    //queryMode:'local',
-                            //    store: Ext.create('Ext.data.Store', {
-                            //        //autoLoad:true,
-                            //        fields: ['id', 'username'],
-                            //        proxy: {
-                            //            type: 'ajax',
-                            //            url: apiBaseUrl + '/index.php/Purchasing/Buyer/getPayer',
-                            //            reader: {
-                            //                type: 'json',
-                            //                rootProperty: 'data'
-                            //            }
-                            //        }
-                            //    })
-                            //},
+                            {fieldLabel: '付款金额(欧)',name: 'money',value: me.total,xtype: 'numberfield'},
+                            {fieldLabel: '最后付款日期',name: 'last_pay_day',xtype: 'datefield',editable: false,format: 'Y-m-d',value: new Date()},
+                            {fieldLabel:'是否为最后一批货',name:'is_last_batch',xtype:'checkbox',labelWidth:120,allowBlank:true},
+                            {fieldLabel: '备注',name: 'pay_function',xtype: 'textarea',columnWidth:1,allowBlank:true}
                         ],
                         buttons: [
                             {
@@ -398,31 +357,31 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     }
                 ]
             });
-            Ext.Ajax.request({
-                async: true,
-                url: apiBaseUrl + '/index.php/Purchasing/Buyer/getSupplierAndBuyer',
-                success: function (response) {
-                    //myMask.destroy( );
-                    var text = Ext.decode(response.responseText);
-                    if (!text.success) {
-                        Ext.toast("获取数据错误,请关闭重试!", "系统提示");
-                        return;
-                    }
-                    res = text.data;
-                    var form = win.down("form");
-                    //form.down("combo[name=buyer]").setStore(Ext.create('Ext.data.Store', {
-                    //    fields: ['id', 'username'],
-                    //    data: res.buyer
-                    //}));
-                    form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
-                        fields: [],
-                        data: res.supplier
-                    }));
-
-                    //form.down("combo[name=buyer]").setDisabled(false);
-                    form.down("combo[name=supplier]").setDisabled(false);
-                }
-            });
+            //Ext.Ajax.request({
+            //    async: true,
+            //    url: apiBaseUrl + '/index.php/Purchasing/Buyer/getSupplierAndBuyer',
+            //    success: function (response) {
+            //        //myMask.destroy( );
+            //        var text = Ext.decode(response.responseText);
+            //        if (!text.success) {
+            //            Ext.toast("获取数据错误,请关闭重试!", "系统提示");
+            //            return;
+            //        }
+            //        res = text.data;
+            //        var form = win.down("form");
+            //        //form.down("combo[name=buyer]").setStore(Ext.create('Ext.data.Store', {
+            //        //    fields: ['id', 'username'],
+            //        //    data: res.buyer
+            //        //}));
+            //        form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
+            //            fields: [],
+            //            data: res.supplier
+            //        }));
+            //
+            //        //form.down("combo[name=buyer]").setDisabled(false);
+            //        form.down("combo[name=supplier]").setDisabled(false);
+            //    }
+            //});
             win.on("beforedestroy",me.changeOrderData,me);
             win.show();
         } else if ("申请报关付款" == next_status.name) {
@@ -439,6 +398,11 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             win.on("beforedestroy",me.changeOrderData,me);
             win.show();
         } else if ("申请定金" == next_status.name) {
+            var total = 0;
+            Ext.each(product_info, function (product) {
+                var money = product.orderinfo_wholesale*(parseFloat(product.rate)+1)*product.orderinfo_amount;
+                total += money;
+            });
             var win = Ext.create('erp.view.window.PurchasePayWin', {
                 title: next_status.name,
                 status_id: order_info.order_status,
@@ -750,9 +714,28 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     {text: '商品名称', dataIndex: 'name'},
                     {text: '颜色', dataIndex: 'color'},
                     {text: '尺码', dataIndex: 'size'},
+                    {text: '性别', dataIndex: 'sex'},
+                    {text: '年份季节', dataIndex: 'year_season'},
                     {text: '数量', dataIndex: 'num'},
+                    {text: '加价率', dataIndex: 'rate'},
                     {text: '批发价(欧)', dataIndex: 'batch_price'},
-                    {text: '总价(欧)', dataIndex: 'total_price'},
+                    {text: '加价率批发价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        var batch_price = parseFloat(record.get("batch_price")),
+                            rate = parseFloat(record.get("rate"));
+                        return batch_price*rate+batch_price;
+                    }},
+                    {text: '总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        var num = parseFloat(record.get("num")),
+                            batch_price = parseFloat(record.get("batch_price"));
+                        //console.log(num,batch_price);
+                        return num*batch_price;
+                    }},
+                    {text: '加价率总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        var batch_price = parseFloat(record.get("batch_price")),
+                            num = parseFloat(record.get("num")),
+                            rate = parseFloat(record.get("rate"));
+                        return (batch_price*rate+batch_price)*num;
+                    }},
                     {text: '官方零售价(欧)', dataIndex: 'retail_price', flex: 1}
                 ];
                 for (var i = 0; i < len; i++) {

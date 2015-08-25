@@ -34,8 +34,9 @@ Ext.define('erp.view.window.AddPassCustomWin', {
                         xtype: 'textfield',
                         allowBlank: false,
                         disabled: false,
-                        margin: 10,
+                        margin: 5,
                         columnWidth: 0.5,
+                        labelAlign:'right',
                         labelWidth: 120
                     },
                     items: this.getFieldItems(me.batch_no, me.order_no, next_status_id, me.next_status.is_last),
@@ -110,7 +111,7 @@ Ext.define('erp.view.window.AddPassCustomWin', {
             {fieldLabel: '报关公司联系电话', name: 'cu_tel', editable: false},
             {xtype: 'hiddenfield', name: 'next_status', value: next_status},
             {xtype: 'hiddenfield', name: 'is_last_status', value: is_last},
-            {fieldLabel: '报关公司联系地址', name: 'cu_address', xtype: 'textarea', editable: false}
+            {fieldLabel: '报关公司联系地址', name: 'cu_address', xtype: 'textarea', editable: false,columnWidth:1}
         ];
 
         return fields;

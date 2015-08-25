@@ -58,34 +58,14 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                     anchor: '100%',
                     xtype: 'textfield',
                     allowBlank: false,
-                    margin: 10
+                    labelAlign:'right',
+                    margin: 5
                 },
                 items: [
-                    {
-                        fieldLabel:"采购订单号",
-                        name:'order_no',
-                        editable:false,
-                        value:me.order_no
-                    },
-                    {
-                        fieldLabel:"供应订单号",
-                        name:'batch_no',
-                        editable:false,
-                        value:me.batch_no
-                    },
-                    {
-                        fieldLabel: '制单日期',
-                        name: 'date',
-                        xtype: 'datefield',
-                        editable: false,
-                        format: 'Y-m-d',
-                        value:new Date()
-                    },
-                    {
-                        xtype:'hidden',
-                        name:'supplier',
-                        value:me.order_info.vendor_id
-                    },
+                    {fieldLabel:"采购订单号",name:'order_no',editable:false,value:me.order_no},
+                    {fieldLabel:"供应订单号",name:'batch_no',editable:false,value:me.batch_no},
+                    {fieldLabel: '制单日期',name: 'date',xtype: 'datefield',editable: false,format: 'Y-m-d',value:new Date()},
+                    {xtype:'hidden',name:'supplier',value:me.order_info.vendor_id},
                     //{
                     //    fieldLabel: '供应商',
                     //    name: 'supplier',
@@ -102,11 +82,7 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                     //    displayField: 'username',
                     //    valueField: 'id',
                     //},
-                    {
-                        xtype: 'filefield',
-                        name: 'excel_file',
-                        buttonText: '导入装箱单',
-                        allowBlank: true,
+                    {xtype: 'filefield',name: 'excel_file',buttonText: '导入装箱单',allowBlank: true,clearOnSubmit:false,
                         listeners: {
                             change: function () {
                                 var val = this.getValue();
@@ -157,12 +133,7 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                             }
                         }
                     },
-                    {
-                        fieldLabel: '验货备注',
-                        name: 'mark',
-                        xtype: 'textarea',
-                        allowBlank:true
-                    },
+                    {fieldLabel: '验货备注',name: 'mark',xtype: 'textarea',allowBlank:true}
                 ],
                 buttons: [
                     {

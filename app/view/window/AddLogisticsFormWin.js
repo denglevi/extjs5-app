@@ -34,7 +34,7 @@ Ext.define('erp.view.window.AddLogisticsFormWin', {
                         xtype: 'textfield',
                         allowBlank: false,
                         disabled: false,
-                        margin: 10,
+                        margin:5,
                         labelAlign:'right',
                         columnWidth: 0.5
                     },
