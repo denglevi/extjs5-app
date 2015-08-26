@@ -110,9 +110,9 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
     getFieldItems: function () {
         var record =this.record;
         var fields = [
-            {fieldLabel: '供货单号', name: 'batch_no',value:record.get("supply_no")},
-            {fieldLabel: '采购单号', name: 'order_no',value:record.get("order_no")},
-            {fieldLabel: '物流单号', name: 'logistics_no',value:record.get("logistics_no")},
+            {fieldLabel: '供货单号',xtype:'displayfield',name: 'batch_no',value:record.get("supply_no"),columnWidth:1},
+            //{fieldLabel: '采购单号', name: 'order_no',value:record.get("order_no")},
+            //{fieldLabel: '物流单号', name: 'logistics_no',value:record.get("logistics_no")},
             {fieldLabel: '报关公司', name: 'cu_name',value:record.get("cu_name")},
             {fieldLabel: '报关公司联系人', name: 'cu_contaits',value:record.get("cu_contaits")},
             {fieldLabel: '报关公司联系电话', name: 'cu_tel',value:record.get("cu_tel")},

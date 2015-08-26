@@ -212,7 +212,9 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                             {text: '产地', dataIndex: 'origin'},
                             {text: '材质', dataIndex: 'material'},
                             {text: '数量', dataIndex: 'num'},
-                            {text: '箱号', dataIndex: 'box_no'}
+                            {text: '箱号', dataIndex: 'box_no'},
+                            {text: '单价', dataIndex: 'unit_price'},
+                            {text: '总价', dataIndex: 'total_price'}
                         ]
                     }
                 ]

@@ -42,7 +42,11 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                             data: res.buyer
                         }));
                         form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
-                            fields: ['id_no', {name:'name',convert:function(v){return Ext.util.Format.htmlDecode(v);}}],
+                            fields: ['id_no', {
+                                name: 'name', convert: function (v) {
+                                    return Ext.util.Format.htmlDecode(v);
+                                }
+                            }],
                             data: res.supplier
                         }));
 
@@ -96,28 +100,107 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                         disabled: true
                     },
                     {
-                        xtype: 'radiogroup',
-                        fieldLabel: '订货类型',
-                        items: [
-                            {boxLabel: '现货', name: 'type', inputValue: '0', checked: true},
-                            {boxLabel: '期货', name: 'type', inputValue: '1'}
-                        ]
+                        xtype: 'radiogroup', fieldLabel: '订货类型', items: [
+                        {boxLabel: '期货', name: 'type', inputValue: '1', checked: true},
+                        {boxLabel: '现货', name: 'type', inputValue: '0'}
+                    ], listeners: {
+                        change: function (obj, newVal) {
+                            var type = newVal.type, grid = obj.up("form").up("addpurchaseorder").down("grid"), columns;
+                            if (type == 1) {
+                                columns = [
+                                    {text: '品牌', dataIndex: 'brand'},
+                                    {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
+                                    {text: '商品名称', dataIndex: 'orderinfo_name'},
+                                    {text: '颜色', dataIndex: 'orderinfo_color'},
+                                    {text: '尺码', dataIndex: 'orderinfo_group'},
+                                    {text: '性别', dataIndex: 'sex'},
+                                    {text: '年份季节', dataIndex: 'year_season'},
+                                    {text: '数量', dataIndex: 'orderinfo_amount'},
+                                    {text: '加价率', dataIndex: 'rate'},
+                                    {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
+                                    {
+                                        text: '加价率批发价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
+                                        var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                                            rate = parseFloat(record.get("rate"));
+                                        return batch_price * rate + batch_price;
+                                    }
+                                    },
+                                    {
+                                        text: '总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
+                                        var num = parseFloat(record.get("orderinfo_amount")),
+                                            batch_price = parseFloat(record.get("orderinfo_wholesale"));
+                                        //console.log(num,batch_price);
+                                        return num * batch_price;
+                                    }
+                                    },
+                                    {
+                                        text: '加价率总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
+                                        var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                                            num = parseFloat(record.get("orderinfo_amount")),
+                                            rate = parseFloat(record.get("rate"));
+                                        return (batch_price * rate + batch_price) * num;
+                                    }
+                                    },
+                                    {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
+                                ];
+                            } else {
+                                columns = [
+                                    {text: '品牌', dataIndex: 'brand'},
+                                    {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
+                                    {text: '商品名称', dataIndex: 'orderinfo_name'},
+                                    {text: '颜色', dataIndex: 'orderinfo_color'},
+                                    {text: '尺码', dataIndex: 'orderinfo_group'},
+                                    {text: '性别', dataIndex: 'sex'},
+                                    {text: '年份季节', dataIndex: 'year_season'},
+                                    {text: '数量', dataIndex: 'orderinfo_amount'},
+                                    {text: '折扣率', dataIndex: 'rate'},
+                                    {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
+                                    {
+                                        text: '折扣率批发价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
+                                        var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                                            rate = parseFloat(record.get("rate"));
+                                        return parseFloat((batch_price - batch_price * rate)/1.22).toFixed(2);
+                                    }
+                                    },
+                                    {
+                                        text: '总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
+                                        var num = parseFloat(record.get("orderinfo_amount")),
+                                            batch_price = parseFloat(record.get("orderinfo_wholesale"));
+                                        //console.log(num,batch_price);
+                                        return num * batch_price;
+                                    }
+                                    },
+                                    {
+                                        text: '折扣率总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
+                                        var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                                            num = parseFloat(record.get("orderinfo_amount")),
+                                            rate = parseFloat(record.get("rate")),price = (batch_price - batch_price * rate)/1.22;
+                                        return parseFloat(price * num).toFixed(2);
+                                    }
+                                    },
+                                    {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
+                                ];
+                            }
+                            grid.setColumns(columns);
+                        }
+                    }
                     },
                     {
-                        xtype: 'filefield',
-                        name: 'excel_file',
-                        buttonText: '导入商品',
-                        allowBlank: true,
+                        xtype: 'filefield', name: 'excel_file', buttonText: '导入商品', allowBlank: true,
                         listeners: {
                             change: function () {
+                                var typefield = this.up("form").down("radiogroup"), type = typefield.getValue();
                                 var val = this.getValue();
                                 this.up("form").getForm().submit({
                                     clientValidation: false,
                                     waitMsg: '正在导入商品信息...',
+                                    params: {
+                                        type: type.type
+                                    },
                                     url: apiBaseUrl + '/index.php/Purchasing/Buyer/importPurchaseOrderProduct',
                                     success: function (form, action) {
                                         var data = action.result.data;
-                                        console.log(data);
+                                        //console.log(data);
                                         me.products = data;
                                         var store = Ext.create('Ext.data.Store', {
                                             fields: ["style_no", "name", 'color', 'size', 'num', 'batch_price', 'total_price', 'retail_price'],
@@ -153,7 +236,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                                                     icon: Ext.Msg.QUESTION,
                                                     fn: function (btn) {
                                                         if (btn === 'yes') {
-                                                            ipc.send("save-file",action.result.filePath);
+                                                            ipc.send("save-file", action.result.filePath);
                                                         } else {
 
                                                         }
@@ -230,23 +313,29 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                     {text: '数量', dataIndex: 'orderinfo_amount'},
                     {text: '加价率', dataIndex: 'rate'},
                     {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
-                    {text: '加价率批发价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                    {
+                        text: '加价率批发价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                         var batch_price = parseFloat(record.get("orderinfo_wholesale")),
                             rate = parseFloat(record.get("rate"));
-                        return batch_price*rate+batch_price;
-                    }},
-                    {text: '总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        return batch_price * rate + batch_price;
+                    }
+                    },
+                    {
+                        text: '总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                         var num = parseFloat(record.get("orderinfo_amount")),
                             batch_price = parseFloat(record.get("orderinfo_wholesale"));
-                        console.log(num,batch_price);
-                        return num*batch_price;
-                    }},
-                    {text: '加价率总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        //console.log(num,batch_price);
+                        return num * batch_price;
+                    }
+                    },
+                    {
+                        text: '加价率总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                         var batch_price = parseFloat(record.get("orderinfo_wholesale")),
                             num = parseFloat(record.get("orderinfo_amount")),
                             rate = parseFloat(record.get("rate"));
-                        return (batch_price*rate+batch_price)*num;
-                    }},
+                        return (batch_price * rate + batch_price) * num;
+                    }
+                    },
                     {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
                 ]
             }

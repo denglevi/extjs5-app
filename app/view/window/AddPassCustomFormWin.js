@@ -1,9 +1,9 @@
 /**
- * Created by Administrator on 2015-06-18.
+ * Created by Administrator on 2015-08-26.
  */
-Ext.define('erp.view.window.AddPassCustomWin', {
+Ext.define('erp.view.window.AddPassCustomFormWin', {
     extend: 'Ext.window.Window',
-    xtype: 'addpasscustomwin',
+    xtype: 'addpasscustomformwin',
     requires: [
         'Ext.Ajax',
         'Ext.Array',
@@ -19,12 +19,12 @@ Ext.define('erp.view.window.AddPassCustomWin', {
     layout: 'fit',
     initComponent: function () {
         var me = this, res;
-        var next_status_id = me.next_status.is_last == 1 ? 0 : me.next_status.id
+        var next_status_id = 0;
         Ext.apply(me, {
             items: [
                 {
                     xtype: 'form',
-                    url: apiBaseUrl + '/index.php/Purchasing/Customs/addPassCustomOrder',
+                    url: apiBaseUrl + '/index.php/Purchasing/Customs/addPassCustomOrderByBatchNo',
                     method: 'POST',
                     width: 650,
                     layout: 'column',
@@ -36,10 +36,10 @@ Ext.define('erp.view.window.AddPassCustomWin', {
                         disabled: false,
                         margin: 5,
                         columnWidth: 0.5,
-                        labelAlign:'right',
+                        labelAlign: 'right',
                         labelWidth: 120
                     },
-                    items: this.getFieldItems(me.batch_no, me.order_no, next_status_id, me.next_status.is_last),
+                    items: this.getFieldItems(me.batch_no, me.order_no),
                     buttons: this.getBtns()
                 }
             ],
@@ -57,12 +57,20 @@ Ext.define('erp.view.window.AddPassCustomWin', {
                                 fields: ['id', 'name'],
                                 data: res.custom_company
                             }));
+                            var batchs = res.batch_nos;
                             form.down("combo[name=cu_name]").setDisabled(false);
-                            form.down("combo[name=logistics_no]").setStore(Ext.create('Ext.data.Store', {
-                                fields: ['logistics_no'],
-                                data: res.logistics_no
-                            }));
-                            form.down("combo[name=logistics_no]").setDisabled(false);
+                            var batch_nos = [];
+                            if(batchs == null) return;
+                            for(var i=0;i<batchs.length;i++){
+                                var batch_no = batchs[i];
+                                batch_nos.push({boxLabel: batch_no.batch_no, name: 'batch_no[]', inputValue: batch_no.batch_no});
+                            }
+                            form.down("checkboxgroup").add(batch_nos);
+                            //form.down("combo[name=logistics_no]").setStore(Ext.create('Ext.data.Store', {
+                            //    fields: ['logistics_no'],
+                            //    data: res.logistics_no
+                            //}));
+                            //form.down("combo[name=logistics_no]").setDisabled(false);
                         }
                     });
                 }
@@ -70,19 +78,18 @@ Ext.define('erp.view.window.AddPassCustomWin', {
         });
         this.callParent();
     },
-    getFieldItems: function (batch_no, order_no, next_status, is_last) {
+    getFieldItems: function (batch_no, order_no) {
         var fields = [
-            {fieldLabel: '供货单号', name: 'supply_no', value: batch_no, editable: false},
-            {fieldLabel: '采购单号', name: 'order_no', value: order_no, editable: false},
-            {
-                fieldLabel: '物流单号',
-                name: 'logistics_no',
-                editable: false,
-                xtype: 'combo',
-                disabled:true,
-                displayField: 'logistics_no',
-                valueField: 'logistics_no'
-            },
+            //{
+            //    fieldLabel: '物流单号',
+            //    name: 'logistics_no',
+            //    editable: false,
+            //    xtype: 'combo',
+            //    disabled: true,
+            //    displayField: 'logistics_no',
+            //    valueField: 'logistics_no'
+            //},
+            //{fieldLabel: '采购单号', name: 'order_no', value: order_no, editable: false},
             {
                 fieldLabel: '报关公司',
                 name: 'cu_name',
@@ -90,7 +97,7 @@ Ext.define('erp.view.window.AddPassCustomWin', {
                 xtype: 'combo',
                 displayField: 'name',
                 valueField: 'name',
-                disabled:true,
+                disabled: true,
                 listeners: {
                     change: function (obj) {
                         var items = obj.getStore().getData().items, company_id = obj.getValue();
@@ -109,9 +116,17 @@ Ext.define('erp.view.window.AddPassCustomWin', {
             },
             {fieldLabel: '报关公司联系人', name: 'cu_contaits', editable: false},
             {fieldLabel: '报关公司联系电话', name: 'cu_tel', editable: false},
-            {xtype: 'hiddenfield', name: 'next_status', value: next_status},
-            {xtype: 'hiddenfield', name: 'is_last_status', value: is_last},
-            {fieldLabel: '报关公司联系地址', name: 'cu_address', xtype: 'textarea', editable: false,columnWidth:1}
+            {fieldLabel: '报关公司联系地址', name: 'cu_address', xtype: 'textarea', editable: false, columnWidth: 1},
+            {
+                xtype: 'checkboxgroup',
+                fieldLabel: '供货单号',
+                columnWidth:1,
+                name: 'supply_no',
+                layout:'column',
+                defaults:{
+                  margin:'0 50 0 0'
+                }
+            }
         ];
 
         return fields;
@@ -131,6 +146,7 @@ Ext.define('erp.view.window.AddPassCustomWin', {
                 disabled: true,
                 handler: function () {
                     var form = this.up('form').getForm();
+                    //console.log(form.getValues());return;
                     if (form.isValid()) {
                         form.submit({
                             waitMsg: '正在保存...',
@@ -149,4 +165,3 @@ Ext.define('erp.view.window.AddPassCustomWin', {
         ];
     }
 });
-

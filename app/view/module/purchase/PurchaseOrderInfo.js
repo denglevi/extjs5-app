@@ -45,6 +45,11 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
     },
     initComponent: function () {
         var me = this, res = this.res,model=this.getViewModel();
+        if(res.order_info.order_state == "spot_purchase_order"){
+            me.columns = me.getSpotPurchaseOrderColumns();
+        }else{
+            me.columns = me.getFuturePurchaseOrderColumns();
+        }
         var product_info = res.product_info,
             log = res.log,
             order_info = res.order_info,
@@ -53,7 +58,6 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             next_status = res.next_status,
             barContainer = me.getBarContainer(batchs,order_info),
             infoGrid = me.getInfoGrid(product_info);
-        //console.log(model);
         model.set("purchaseOrderStatus",status);
         //console.log(res);
         me.res = res;
@@ -435,18 +439,34 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             win.show();
             win.on("beforedestroy",me.changeOrderData,me);
         } else if ("申请报关" == next_status.name) {
-            var win = Ext.create('erp.view.window.AddPassCustomWin', {
-                title: next_status.name,
-                order_no: order_info.order_nos,
-                batch_no: batchs[0].batch_no,
-                next_status: next_status,
-                url: url
+            var me = this;
+            //console.log(order_info.order_nos, batchs[0].batch_no);
+            Ext.getBody().mask("正在提交...");
+            Ext.Ajax.request({
+                async: true,
+                url: apiBaseUrl + '/index.php/Purchasing/Buyer/applyPassCustom',
+                method:'POST',
+                params:{
+                    order_no:order_info.order_nos,
+                    batch_no:batchs[0].batch_no
+                },
+                success:function(res){
+                    var text = Ext.decode(res.responseText);
+                    if (!text.success) {
+                        Ext.Msg.alert("系统提示", text.msg);
+                        Ext.getBody().unmask();
+                        return;
+                    }
+                    Ext.getBody().unmask();
+                    me.changeOrderData();
+                },
+                failure:function(res){
+
+                }
             });
-            win.on("beforedestroy",me.changeOrderData,me);
-            win.show();
         } else if ("完成报关" == next_status.name || "收货确认" == next_status.name || "完成付款" == next_status.name) {
             me.handlerPurchaseOrder(order_info.order_nos, batchs[0].batch_no);
-            me.changeOrderData();
+            //me.changeOrderData();
         } else if ("关单" == next_status.name) {
             me.uploadCloseFile(order_info.order_nos);
         }
@@ -476,6 +496,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
     },
     getInfoGrid: function (product_info) {
         var me = this;
+        console.log(me.columns);
         return {
             title: '商品信息',
             xtype: 'grid',
@@ -483,35 +504,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             flex: 1,
             width: '100%',
             sortableColumns: false,
-            columns: [
-                {text: '品牌', dataIndex: 'brand'},
-                {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
-                {text: '商品名称', dataIndex: 'orderinfo_name'},
-                {text: '颜色', dataIndex: 'orderinfo_color'},
-                {text: '尺码', dataIndex: 'orderinfo_group'},
-                {text: '性别', dataIndex: 'sex'},
-                {text: '年份季节', dataIndex: 'year_season'},
-                {text: '数量', dataIndex: 'orderinfo_amount'},
-                {text: '加价率', dataIndex: 'rate'},
-                {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
-                {text: '加价率批发价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
-                    var batch_price = parseFloat(record.get("orderinfo_wholesale")),
-                        rate = parseFloat(record.get("rate"));
-                    return batch_price*rate+batch_price;
-                }},
-                {text: '总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
-                    var num = parseFloat(record.get("orderinfo_amount")),
-                        batch_price = parseFloat(record.get("orderinfo_wholesale"));
-                    return num*batch_price;
-                }},
-                {text: '加价率总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
-                    var batch_price = parseFloat(record.get("orderinfo_wholesale")),
-                        num = parseFloat(record.get("orderinfo_amount")),
-                        rate = parseFloat(record.get("rate"));
-                    return (batch_price*rate+batch_price)*num;
-                }},
-                {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
-            ],
+            columns: me.columns,
             store: Ext.create('Ext.data.Store', {
                 fields: [],
                 data: product_info
@@ -597,16 +590,29 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 me.destroy();
             });
         } else if ("申请报关" == status_name) {
-            var win = Ext.create('erp.view.window.AddPassCustomWin', {
-                title: status_name,
-                order_no: bat.order_no,
-                batch_no: bat.batch_no,
-                next_status: status
+            var me = this;
+            Ext.getBody().mask("正在提交...");
+            Ext.Ajax.request({
+                async: true,
+                url: apiBaseUrl + '/index.php/Purchasing/Buyer/applyPassCustom',
+                method:'POST',
+                params:{
+                    order_no:bat.order_no,
+                    batch_no:bat.batch_no
+                },
+                success:function(res){
+                    Ext.getBody().unmask();
+                    var text = Ext.decode(res.responseText);
+                    if (!text.success) {
+                        Ext.Msg.alert("系统提示", text.msg);
+                        return;
+                    }
+                    me.destroy();
+                },
+                failure:function(res){
+
+                }
             });
-            win.on("beforedestroy",function(){
-                me.destroy();
-            },me);
-            win.show();
         } else if ("申请报关付款" == status_name) {
             var win = Ext.create('erp.view.window.ApplyPassCustomPayWin', {
                 title: status_name,
@@ -873,6 +879,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 var text = Ext.decode(response.responseText);
                 if (!text.success) {
                     Ext.Msg.alert("系统提示", text.msg);
+                    Ext.getBody().unmask();
                     return;
                 }
                 Ext.getBody().unmask();
@@ -940,5 +947,74 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         win.on("beforedestroy",function(){
             me.destroy();
         });
+    },
+    getSpotPurchaseOrderColumns:function(){
+       return [
+            {text: '品牌', dataIndex: 'brand'},
+            {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
+            {text: '商品名称', dataIndex: 'orderinfo_name'},
+            {text: '颜色', dataIndex: 'orderinfo_color'},
+            {text: '尺码', dataIndex: 'orderinfo_group'},
+            {text: '性别', dataIndex: 'sex'},
+            {text: '年份季节', dataIndex: 'year_season'},
+            {text: '数量', dataIndex: 'orderinfo_amount'},
+            {text: '折扣率', dataIndex: 'rate'},
+            {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
+            {
+                text: '折扣率批发价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
+                var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                    rate = parseFloat(record.get("rate"));
+                return parseFloat((batch_price - batch_price * rate)/1.22).toFixed(2);
+            }
+            },
+            {
+                text: '总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
+                var num = parseFloat(record.get("orderinfo_amount")),
+                    batch_price = parseFloat(record.get("orderinfo_wholesale"));
+                //console.log(num,batch_price);
+                return num * batch_price;
+            }
+            },
+            {
+                text: '折扣率总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
+                var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                    num = parseFloat(record.get("orderinfo_amount")),
+                    rate = parseFloat(record.get("rate")),price = (batch_price - batch_price * rate)/1.22;
+                return parseFloat(price * num).toFixed(2);
+            }
+            },
+            {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
+        ];
+    },
+    getFuturePurchaseOrderColumns:function(){
+        return [
+            {text: '品牌', dataIndex: 'brand'},
+            {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
+            {text: '商品名称', dataIndex: 'orderinfo_name'},
+            {text: '颜色', dataIndex: 'orderinfo_color'},
+            {text: '尺码', dataIndex: 'orderinfo_group'},
+            {text: '性别', dataIndex: 'sex'},
+            {text: '年份季节', dataIndex: 'year_season'},
+            {text: '数量', dataIndex: 'orderinfo_amount'},
+            {text: '加价率', dataIndex: 'rate'},
+            {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
+            {text: '加价率批发价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                    rate = parseFloat(record.get("rate"));
+                return batch_price*rate+batch_price;
+            }},
+            {text: '总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                var num = parseFloat(record.get("orderinfo_amount")),
+                    batch_price = parseFloat(record.get("orderinfo_wholesale"));
+                return num*batch_price;
+            }},
+            {text: '加价率总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                var batch_price = parseFloat(record.get("orderinfo_wholesale")),
+                    num = parseFloat(record.get("orderinfo_amount")),
+                    rate = parseFloat(record.get("rate"));
+                return (batch_price*rate+batch_price)*num;
+            }},
+            {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
+        ];
     }
 });

@@ -105,9 +105,9 @@ Ext.define('erp.view.module.purchase.PassCustomList', {
 
     },
     columns: [
-        {text: '采购订单号', dataIndex: 'order_no', flex: 1},
+        //{text: '采购订单号', dataIndex: 'order_no', flex: 1},
         {text: '供货单号', dataIndex: 'supply_no', flex: 1},
-        {text: '物流单号', dataIndex: 'logistics_no', flex: 1},
+        //{text: '物流单号', dataIndex: 'logistics_no', flex: 1},
         {text: '报关公司', dataIndex: 'cu_name', flex: 1},
         {text: '联系人', dataIndex: 'cu_contaits', flex: 1},
         {text: '报关状态', dataIndex: 'status_name'}
