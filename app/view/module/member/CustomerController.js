@@ -160,7 +160,7 @@ Ext.define('erp.view.module.member.CustomerController', {
                 {fieldLabel: '省份', name: 'customer_province', xtype: 'textfield'},
                 {fieldLabel: '城市', name: 'customer_city', xtype: 'textfield'},
                 {fieldLabel: '地区', name: 'customer_area', xtype: 'textfield'},
-                {fieldLabel: '备注', name: 'customer_backups', xtype: 'textareafield', columnWidth: 1},
+                {fieldLabel: '备注', name: 'customer_backups', xtype: 'textareafield', columnWidth: 1,allowBlank:true},
             ],
             buttons: [
                 {
@@ -224,7 +224,7 @@ Ext.define('erp.view.module.member.CustomerController', {
         return form;
     },
     viewCustomerInfo: function (grid, rowIndex, colIndex, item, e, record, row) {
-        var grid = this.getCustomerInfoGrid(0),me=this;
+        var grid = this.getCustomerInfoGrid(record),me=this;
         var win = Ext.create('Ext.window.Window', {
             title: '查看顾客信息',
             width: 600,
@@ -269,7 +269,8 @@ Ext.define('erp.view.module.member.CustomerController', {
                     defaults: {
                         xtype: 'button',
                         margin: 5,
-                        handler:me.onCustmoerInfoBtnClick
+                        handler:me.onCustmoerInfoBtnClick,
+                        record_id:record.get("id")
                     },
                     items: [
                         {
@@ -287,39 +288,77 @@ Ext.define('erp.view.module.member.CustomerController', {
                 grid
             ],
             buttons:[
-                {text:'发卡'}
+                {text:'发卡',
+                    handler:function(){
+                        var id = record.get("id");
+                        Ext.Ajax.request({
+                            waitMsg: '正在提交...',
+                            url:apiBaseUrl+'/index.php/Membership/Customer/issueCard',
+                            method: 'POST',
+                            params:{id:id},
+                            success: function (action) {
+                                this.up('win').destroy();
+                            },
+                            failur: function ( action) {
+                                if (action.result.msg) {
+                                    Ext.toast(action.result.msg, "系统提示");
+                                    return;
+                                }
+                                Ext.toast("网络请求错误,请检查网络!", "系统提示");
+                            }
+                        });
+                    }
+                }
             ]
         });
         win.show();
     },
-    getCustomerInfoGrid: function (mark) {
-        var columns,store;
-            columns = [
-                {text: '消费信息', dataIndex: 'key',flex:1},
-                {text: '消费值', dataIndex: 'val',flex:1}
-            ];
-            store = Ext.create('Ext.data.Store', {
-                fields: [],
-                data: [
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                ]
-            });
+    getCustomerInfoGrid: function (record) {
+        var columns = [
+            {text: '消费信息', dataIndex: 'key',flex:1},
+            {text: '参数', dataIndex: 'val',flex:1}
+        ];
+        var ref = record.get("id");
 
-        var grid = {
+        var grid = Ext.create("Ext.grid.Panel",{
             xtype: 'grid',
             flex: 1,
             width: '100%',
             columns: columns,
             sortableColumns:false,
-            store: store
-        }
-
+            //store: store
+        });
+        Ext.Ajax.request({
+            async:true,
+            url:apiBaseUrl + '/index.php/Membership/Customer/chaConsumeInfo',
+            method:'POST',
+            params:{id:ref},
+            success:function(res){
+                var json = Ext.decode(res.responseText),
+                    bResult = json.data,
+                    data = [
+                        {key: '首次消费日期', val:bResult.min_time},
+                        {key: '首次消费数量', val: bResult.max_num},
+                        {key: '首次消费金额', val: bResult.min_money},
+                        {key: '首次关联单号', val: bResult.min_code},
+                        {key: '累计消费次数', val: bResult.count_cishu},
+                        {key: '累计消费数量', val: bResult.count_num},
+                        {key: '累计消费金额', val: bResult.count_money},
+                        {key: '最近消费日', val: bResult.max_time},
+                        {key: '最近消费数量', val: bResult.max_num},
+                        {key: '最近消费金额', val: bResult.max_money}
+                    ],
+                    store = Ext.create('Ext.data.Store',{
+                        fields: [],
+                        data:data
+                    });
+                grid.setStore(store);
+            }
+        });
         return grid;
     },
     onCustmoerInfoBtnClick:function(btn){
+        var record_id = this.record_id;
         var text = btn.getText(),
             items = btn.up("container").items.items,
             store,columns,
@@ -331,63 +370,91 @@ Ext.define('erp.view.module.member.CustomerController', {
         if("消费信息" == text){
             columns = [
                 {text: '消费信息', dataIndex: 'key',flex:1},
-                {text: '消费值', dataIndex: 'val',flex:1}
+                {text: '参数', dataIndex: 'val',flex:1}
             ];
-            store = Ext.create('Ext.data.Store', {
-                fields: [],
-                data: [
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                ]
+            Ext.Ajax.request({
+                async:true,
+                url:apiBaseUrl + '/index.php/Membership/Customer/chaConsumeInfo',
+                method:'POST',
+                params:{id:record_id},
+                success:function(res){
+                    var json = Ext.decode(res.responseText),
+                        bResult = json.data,
+                        data = [
+                            {key: '首次消费日期', val:bResult.min_time},
+                            {key: '首次消费数量', val: bResult.max_num},
+                            {key: '首次消费金额', val: bResult.min_money},
+                            {key: '首次关联单号', val: bResult.min_code},
+                            {key: '累计消费次数', val: bResult.count_cishu},
+                            {key: '累计消费数量', val: bResult.count_num},
+                            {key: '累计消费金额', val: bResult.count_money},
+                            {key: '最近消费日', val: bResult.max_time},
+                            {key: '最近消费数量', val: bResult.max_num},
+                            {key: '最近消费金额', val: bResult.max_money}
+                        ],
+                        store = Ext.create('Ext.data.Store',{
+                            fields: [],
+                            data:data
+                        });
+                    grid.setStore(store);
+                }
             });
         }else if("消费流水" == text){
             columns = [
-                {text: '单号', dataIndex: 'val',flex:1},
-                {text: '营业日期', dataIndex: 'key',flex:1},
-                {text: '名称', dataIndex: 'val',flex:1},
-                {text: '终端', dataIndex: 'val',flex:1},
-                {text: '数量', dataIndex: 'val',flex:1},
-                {text: '消费金额', dataIndex: 'val',flex:1},
-                {text: '积分', dataIndex: 'val',flex:1}
+                {text: '单号', dataIndex: 'numbers_no',flex:1},
+                {text: '营业日期', dataIndex: 'numbers_time',flex:1},
+                {text: '名称', dataIndex: 'numbers_status',flex:1},
+                {text: '终端', dataIndex: 'shops_name',flex:1},
+                {text: '数量', dataIndex: 'numbers_num',flex:1},
+                {text: '消费金额', dataIndex: 'numbers_money',flex:1},
+                {text: '积分', dataIndex: 'numbers_integral',flex:1}
             ];
-            store = Ext.create('Ext.data.Store', {
-                fields: [],
-                data: [
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                ]
+            Ext.Ajax.request({
+                async:true,
+                url:apiBaseUrl + '/index.php/Membership/Customer/chaConsumeNumbers',
+                method:'POST',
+                params:{id:record_id},
+                success:function(res){
+                    var json = Ext.decode(res.responseText),
+                        bResult = json.data;
+                    store = Ext.create('Ext.data.Store',{
+                        fields: [],
+                        data:bResult
+                    });
+                    grid.setStore(store);
+                }
             });
         }else if("消费商品明细" == text){
             columns = [
-                {text: '营业日期', dataIndex: 'key',flex:1},
-                {text: '终端', dataIndex: 'key',flex:1},
-                {text: '状态', dataIndex: 'key',flex:1},
-                {text: '商品代码', dataIndex: 'key',flex:2},
-                {text: '商品名称', dataIndex: 'key',flex:1},
-                {text: '商品品牌', dataIndex: 'key',flex:1},
-                {text: '颜色', dataIndex: 'key',flex:1},
-                {text: '尺码', dataIndex: 'key',flex:1},
-                {text: '数量', dataIndex: 'key',flex:1},
-                {text: '参考价', dataIndex: 'key',flex:1},
-                {text: '折扣', dataIndex: 'key',flex:1},
-                {text: '单价', dataIndex: 'key',flex:1},
-                {text: '金额', dataIndex: 'val',flex:1}
+                {text: '营业日期', dataIndex: 'numbers_time',flex:1},
+                {text: '终端', dataIndex: 'shops_name',flex:1},
+                {text: '状态', dataIndex: 'numbers_status',flex:1},
+                {text: '商品代码', dataIndex: 'detail_code',flex:2},
+                {text: '商品名称', dataIndex: 'detail_name',flex:1},
+                {text: '商品品牌', dataIndex: 'detail_brand',flex:1},
+                {text: '颜色', dataIndex: 'detail_color',flex:1},
+                {text: '尺码', dataIndex: 'detail_size',flex:1},
+                {text: '参考价', dataIndex: 'detail_price',flex:1},
+                {text: '折扣', dataIndex: 'detail_discount',flex:1},
+                {text: '会员折扣', dataIndex: 'vip_discount',flex:1},
+                {text: '金额', dataIndex: 'detail_money',flex:1}
             ];
-            store = Ext.create('Ext.data.Store', {
-                fields: [],
-                data: [
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                    {key: '首次消费日期', val: '1'},
-                ]
+            Ext.Ajax.request({
+                async:true,
+                url:apiBaseUrl + '/index.php/Membership/Customer/chaConsumeDetail',
+                method:'POST',
+                params:{id:record_id},
+                success:function(res){
+                    var json = Ext.decode(res.responseText),
+                        bResult = json.data;
+                    store = Ext.create('Ext.data.Store',{
+                        fields: [],
+                        data:bResult
+                    });
+                    grid.setStore(store);
+                }
             });
         }
-
-        grid.reconfigure(store,columns);
+        grid.reconfigure(columns);
     }
 });

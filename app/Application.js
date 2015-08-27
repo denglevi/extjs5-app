@@ -29,7 +29,7 @@ Ext.define('erp.Application', {
         'GiftCardSaleStore','GiftCardPutLimitStore','VIPListStore','GoodsDeliveryNoticeStore','WarehouseDeliveryOrderStore',
         'GroupStore','RoleStore','ModuleStore','UserStore','SystemLogStore','AuthorityStore','CouponSortList','SingleList',
         //整单促销STORE
-        'WholeOrderPromotionStore'
+        'WholeOrderPromotionStore','ReturnWarehouseStore','ReturnIntoWarehouseStore'
         // TODO: add global / shared stores here
     ],
     //views:['erp.view.login.Login','erp.view.main.Main'],

@@ -341,27 +341,31 @@ Ext.define('erp.view.module.goods.GoodsController', {
                         listeners:{
                             change:function(val){
                                 var box = this;
-                                if(box.getValue() == true) {
-                                    Ext.Ajax.request({
-                                        aysnc: true,
-                                        method: 'POST',
-                                        url: apiBaseUrl + '/index.php/Commodity/Distribution/getMinStore',
-                                        success: function (res) {
-                                            var json = Ext.decode(res.responseText);
-                                            if (!json.success) {
-                                                Ext.toast(json.msg, "系统提示");
-                                                return;
-                                            }
-                                            console.log(json);
-                                            var store = Ext.create('Ext.data.Store', {
-                                                fields: ['type', 'val'],
-                                                data: json.data
-                                            });
-                                            var brandField = form.down("#min_shops");
-                                            brandField.setStore(store);
+                                var max_shops=box.getValue();
+                                var sub = box.up("form").down("combo[name=min_shops]");
+                                Ext.Ajax.request({
+                                    aysnc: true,
+                                    method: 'POST',
+                                    url: apiBaseUrl + '/index.php/Commodity/Distribution/getMinStore',
+                                    params: {
+                                        max_shops:max_shops
+                                    },
+                                    success: function (res) {
+                                        var json = Ext.decode(res.responseText);
+                                        if (!json.success) {
+                                            Ext.toast(json.msg, "系统提示");
+                                            return;
                                         }
-                                    })
-                                }
+
+                                        sub.clearValue();
+                                        sub.setStore(Ext.create('Ext.data.Store', {
+                                            fields: ['id', 'name'],
+                                            data: json.data
+                                        }));
+                                        sub.setDisabled(false);
+                                    }
+                                })
+
                             }
                         }
                     },
@@ -451,7 +455,8 @@ Ext.define('erp.view.module.goods.GoodsController', {
             params: {
                 shop: 1,
                 warehouse: 1,
-                brand: 1
+                brand: 1,
+                max_shop:1
             },
             success: function (res) {
                 var json = Ext.decode(res.responseText), data = json.data;
@@ -465,7 +470,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
                     brand = form.down("combo[name=brand_id]"),
                     shop_store = Ext.create('Ext.data.Store', {
                         fields: [],
-                        data: data.shop
+                        data: data.max_shop
                     }),
                     warehouse_store = Ext.create('Ext.data.Store', {
                         fields: [],
@@ -494,6 +499,20 @@ Ext.define('erp.view.module.goods.GoodsController', {
         var sel = del_btn.up('grid').getSelection(), ids = [], names = [], mark = 0;
         if (sel.length == 0) {
             Ext.Msg.alert('系统提示', '请选择要删除的配货通知单');
+            return;
+        }
+        Ext.each(sel, function (record) {
+
+            if(record.get("notice_status")==0){
+                ids.push(record.get("id"));
+                names.push(record.get("notice_no"));
+            }else
+                mark.push(record.get("notice_no"));
+
+        });
+
+        if(mark.length!=0){
+            Ext.Msg.alert('系统提示', '已下任务单不允许删除!<br>'+mark.join('<br>'));
             return;
         }
         Ext.each(sel, function (record) {
@@ -540,7 +559,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
             }
         });
     },
-    getNoticeDetailItems: function () {
+    getNoticeDetailItems: function (record) {
         var id = this.getViewModel().get("goods_delivery_notice_id");
         this.products = [];
         this.logs = [];
@@ -574,6 +593,9 @@ Ext.define('erp.view.module.goods.GoodsController', {
                                 waitMsg: '正在导入商品信息...',
                                 url: apiBaseUrl + '/index.php/Commodity/Distribution/importDeliveryGoods',
                                 method: 'POST',
+                                params: {
+                                    warehouse_id:record.get("warehouse_id")
+                                },
                                 success: function (form, action) {
                                     if (!action.result.success) {
                                         Ext.toast(action.result.msg, "系统提示");
@@ -607,12 +629,12 @@ Ext.define('erp.view.module.goods.GoodsController', {
             tpl: new Ext.XTemplate(
                 '<div class="col-md-12">',
                 '<div class="col-md-4">通知单号：{notice_no}</div>',
-                '<div class="col-md-4">商店：{store}</div>',
-                '<div class="col-md-4">仓库：{warehouse_id}</div>',
+                '<div class="col-md-4">大店：{shops_name}</div>',
+                '<div class="col-md-4">小店：{min_shop_name}</div>',
                 '</div>',
                 '<div class="col-md-12">',
+                '<div class="col-md-4">仓库：{warehouse_id}</div>',
                 '<div class="col-md-4">订单号：{order_no}</div>',
-                '<div class="col-md-4">发货类型：{send_type}</div>',
                 '<div class="col-md-4">价格选定：{price_select}</div>',
                 '</div>',
                 '<div class="col-md-12">',
@@ -622,6 +644,8 @@ Ext.define('erp.view.module.goods.GoodsController', {
                 '</div>',
                 '<div class="col-md-12">',
                 '<div class="col-md-4">渠道：{challne}</div>',
+                '<div class="col-md-4">发货类型：{send_type}</div>',
+                '<div class="col-md-4">备注：{reamke}</div>',
                 '</div>'
             ),
             dockedItems: {
@@ -676,14 +700,41 @@ Ext.define('erp.view.module.goods.GoodsController', {
                                 {text: '颜色', dataIndex: 'color', flex: 1},
                                 {text: '尺码', dataIndex: 'size', flex: 1},
                                 {text: '数量', dataIndex: 'num', flex: 1},
-                                {text: '库存数', dataIndex: 'warehouse_num', flex: 1}
+                                {text: '库存数', dataIndex: 'sum', flex: 1},
+                                {
+                                    text: '数据状态', dataIndex: 'type', flex: 1, renderer: function (val) {
+                                    if (1 == val) return "<span style='color: green'>数据正确</span>";
+                                    if (2 == val) return "<span style='color: red'>数据错误</span>";
+                                    if (3 == val) return "<span style='color: #003300'>库存不足</span>";
+                                }
+                                }
                             ];
                         } else {
                             columns = [
-                                {text: '操作类型', dataIndex: 'no', flex: 1},
-                                {text: '操作人', dataIndex: 'no', flex: 1},
-                                {text: '操作时间', dataIndex: 'no', flex: 1}
+                                {text: '操作类型', dataIndex: 'node', flex: 1},
+                                {text: '操作人', dataIndex: 'node_username', flex: 1},
+                                {text: '操作时间', dataIndex: 'creat_time', flex: 1}
                             ];
+                            Ext.Ajax.request({
+                                async: true,
+                                method: 'POST',
+                                url: apiBaseUrl + '/index.php/Commodity/Distribution/getNoticeLogList',
+                                params: {
+                                    id: id,
+                                },
+                                success: function (res) {
+                                    var data = Ext.decode(res.responseText);
+                                    store = Ext.create('Ext.data.Store',{
+                                        fields: [],
+                                        data:data.data
+                                    });
+                                    grid.reconfigure(store, columns);
+
+                                },
+                                failure: function () {
+                                    Ext.toast("网络链接错误,请检查网络,稍后再试!", "系统提示");
+                                }
+                            });
                         }
                         grid.setTitle(text);
                         grid.reconfigure(store, columns);
@@ -706,14 +757,21 @@ Ext.define('erp.view.module.goods.GoodsController', {
                     {text: '颜色', dataIndex: 'color', flex: 1},
                     {text: '尺码', dataIndex: 'size', flex: 1},
                     {text: '数量', dataIndex: 'num', flex: 1},
-                    {text: '库存数', dataIndex: 'warehouse_num', flex: 1}
+                    {text: '库存数', dataIndex: 'sum', flex: 1},
+                    {text: '数据状态', dataIndex: 'type', flex: 1, renderer: function (val) {
+                        if (1 == val) return "<span style='color: green'>数据正确</span>";
+                        if (2 == val) return "<span style='color: red'>数据错误</span>";
+                        if (3 == val) return "<span style='color: #003300'>库存不足</span>";
+                    }
+
+                    },
                 ]
             }
         ];
     },
     onGoodsDeliveryNoticeGridDblClick: function (gp, record) {
 
-        var id = record.get("eid"),
+        var id = record.get("id"),
             notice_status = record.get("notice_status"),
             me = this,
             order = gp.up("goodsdeliveryorder"),
@@ -721,18 +779,20 @@ Ext.define('erp.view.module.goods.GoodsController', {
             model = order.getViewModel();
         model.set("goods_delivery_notice_id", id);
         model.set("notice_status", notice_status == 1 ? true : false);
-console.log(record);
+//console.log(record);
         model.set("notice_info", {
             notice_no: record.get("notice_no"),
-            store: record.get("shops_name"),
+            shops_name: record.get("shops_name"),
+            min_shop_name: record.get("min_shop_name"),
             warehouse_id: record.get("storage_name"),
             order_no: record.get("order_no"),
             send_type: record.get("send_type"),
             price_select: record.get("price_select"),
             discount: record.get("discount"),
             expected_send_date: record.get("expected_send_date"),
-            brand_id: record.get("brand_id"),
-            challne: record.get("challne")
+            brand_id: record.get("name_en"),
+            challne: record.get("challne"),
+            reamke:record.get("reamke")
         });
 
         if (panel.items.items.length > 0) {
@@ -761,14 +821,17 @@ console.log(record);
         if (len == 0) return;
         for (var i = 0; i < len; i++) {
             var item = items[i];
-            tmp.push({
-                supply_style_no: item.get("supply_style_no"),
-                system_style_no: item.get("system_style_no"),
-                name: item.get("name"),
-                color: item.get("color"),
-                size: item.get("size"),
-                num: item.get("num")
-            });
+            if(item.get("type")==1)
+            {
+                tmp.push({
+                    supply_style_no:item.get("supply_style_no"),
+                    system_style_no:item.get("system_style_no"),
+                    name:item.get("name"),
+                    color:item.get("color"),
+                    size:item.get("size"),
+                    num:item.get("extra_num")
+                });
+            }
         }
         var status = btn.getText() == "申请配货" ? 1 : 0;
         Ext.Ajax.request({
@@ -791,6 +854,7 @@ console.log(record);
                     me.getViewModel().set("notice_status", true);
                     Ext.StoreManager.lookup("GoodsDeliveryNoticeStore").load();
                 }
+                Ext.StoreManager.lookup("delivery_goods_notice_store").load();
             },
             failure: function () {
                 Ext.toast("网络链接错误,请检查网络,稍后再试!", "系统提示");
