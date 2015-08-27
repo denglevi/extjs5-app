@@ -134,7 +134,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     '<div class="col-md-12">',
                     '<div class="col-md-3">订单类型：{[this.getType(values.order_state)]}</div>',
                     '<div class="col-md-3">商品数量：{product_num}</div>',
-                    '<div class="col-md-3">订单金额：{product_total_price}</div>',
+                    '<div class="col-md-3">订单金额：{product_total_price}</div>','{[this.getNum(values.order_state,values.product_remain_num)]}',
+                    //'<div class="col-md-3">剩余订货件数：{product_total_price}</div>',
                     '</div>',
                     {
                         getType: function (type) {
@@ -143,6 +144,9 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                             if (type == 'futures_purchase_order') return '期货';
 
                             return '未定义';
+                        },
+                        getNum:function(type,remain_num){
+                            if(type == 'futures_purchase_order') return '<div class="col-md-3">剩余订货件数：'+remain_num+'</div>';
                         }
                     }
                 )
@@ -496,7 +500,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
     },
     getInfoGrid: function (product_info) {
         var me = this;
-        console.log(me.columns);
+        //console.log(me.columns);
         return {
             title: '商品信息',
             xtype: 'grid',

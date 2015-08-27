@@ -43,6 +43,10 @@ Ext.define('erp.view.main.MainController', {
         'erp.view.module.warehouse.WarehouseCheckTaskOrder',
         'erp.view.module.warehouse.WarehouseCheckOrder',
         'erp.view.module.warehouse.WarehouseExhibitGoods',
+        /*新增退货模块*/
+        'erp.view.module.warehouse.ReturnWarehouseOrder',
+        'erp.view.module.warehouse.ReturnIntoWarehouseOrder',
+        /*新增退货模块*/
         'erp.view.module.operation.ResultsAllot',
         'erp.view.module.operation.PaymentMethod',
         'erp.view.module.operation.BundledSales',

@@ -337,6 +337,42 @@ Ext.define('erp.view.module.goods.GoodsController', {
                         disabled: true,
                         valueField: 'id',
                         displayField: 'shops_name',
+                        editable: false,
+                        listeners:{
+                            change:function(val){
+                                var box = this;
+                                if(box.getValue() == true) {
+                                    Ext.Ajax.request({
+                                        aysnc: true,
+                                        method: 'POST',
+                                        url: apiBaseUrl + '/index.php/Commodity/Distribution/getMinStore',
+                                        success: function (res) {
+                                            var json = Ext.decode(res.responseText);
+                                            if (!json.success) {
+                                                Ext.toast(json.msg, "系统提示");
+                                                return;
+                                            }
+                                            console.log(json);
+                                            var store = Ext.create('Ext.data.Store', {
+                                                fields: ['type', 'val'],
+                                                data: json.data
+                                            });
+                                            var brandField = form.down("#min_shops");
+                                            brandField.setStore(store);
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                    },
+                    {
+                        fieldLabel: '小店',
+                        name: 'min_shops',
+                        xtype: 'combo',
+                        disabled: true,
+                        valueField: 'id',
+                        displayField: 'shops_name',
+                        itemId:'min_shops',
                         editable: false
                     },
                     {

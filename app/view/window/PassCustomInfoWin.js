@@ -60,12 +60,14 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                         {
                             getDot:function(id,last){
                                 if(sort === null) return 'green';
-                                if(id > sort) return 'red';
+                                var id = parseInt(id),last = parseInt(last);
+                                if(parseInt(id) > parseInt(sort)) return 'red';
                                 if(id == sort && last == 0) return 'blue';
                                 if(id == sort && last == 1) return 'green';
                                 return 'green';
                             },
                             getLine:function(id,index){
+                                var id = parseInt(id),index = parseInt(index);
                                 if(index == status.length) return 'hide';
                                 if(sort === null) return 'green';
                                 if(id >= sort) return 'red';
@@ -87,7 +89,7 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                         xtype: 'textfield',
                         allowBlank: false,
                         disabled: false,
-                        margin: 10,
+                        margin: 5,
                         columnWidth: 0.5,
                         labelWidth:120,
                         editable:false
@@ -181,6 +183,10 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                 handler: function () {
                     if("关税缴纳" == text){
                         var win = me.getWin(id,status_id);
+                        win.show();
+                        return;
+                    }else if("申请报关付款" == text){
+                        var win = me.getApplyPassCustomsPayWin(id,status_id);
                         win.show();
                         return;
                     }
@@ -282,6 +288,17 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                     ]
                 }
             ]
+        });
+        return win;
+    },
+    getApplyPassCustomsPayWin:function(id,status_id){
+        var me = this;
+        var win = Ext.create('erp.view.window.ApplyPassCustomPayWin',{
+            title:'申请报关付款',
+            width:600,
+            pass_customs_id:id,
+            pass_customs_status:me.record.get('cu_status'),
+            pass_customs_next_status:status_id
         });
         return win;
     }

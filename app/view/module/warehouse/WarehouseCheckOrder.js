@@ -25,7 +25,7 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrder', {
         {text: '盘点单号', dataIndex: 'inventory_no', flex: 1},
         {text: '任务单号', dataIndex: 'receipts_no', flex: 1},
         {text: '盘点日期', dataIndex: 'inventory_data'},
-        {text: '实盘数', dataIndex: 'sum_length1'},
+        //{text: '实盘数', dataIndex: 'sum_length1'},
         {text: '制单人工号', dataIndex: 'inventory_user'},
         {text: '制单日期', dataIndex: 'create_time'}
     ],

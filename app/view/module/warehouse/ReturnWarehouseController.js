@@ -1,9 +1,9 @@
 /**
- * Created by Administrator on 2015-07-02.
+ * Created by Administrator on 2015-08-24.
  */
-Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
+Ext.define('erp.view.module.warehouse.ReturnWarehouseController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.warehousecheck',
+    alias: 'controller.returnwarehouse',
 
     requires: [
         'Ext.Ajax',
@@ -19,45 +19,45 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
         'Ext.layout.container.Anchor',
         'Ext.layout.container.Column',
         'Ext.window.Window',
-        'erp.view.module.warehouse.WarehouseCheckOrderInfo',
-        'erp.view.module.warehouse.WarehouseCheckTaskOrderInfo'
+        'erp.view.module.warehouse.ReturnWarehouseDetail',
+        'erp.view.module.warehouse.ReturnIntoWarehouseDetail',
     ],
 
     init: function () {
 
     },
-    onWarehouseCheckTaskOrderGridDblClick: function (gp, record) {
-        var tab = gp.up("tabpanel"), ref = 'warehousechecktaskorderinfo-' + record.get("id"),
-            item = tab.down('#' + ref);
-        if (item != null) {
+    onReturnWarehouseGridDblClick:function(gp,record){
+        var tab = gp.up("tabpanel"),ref = 'returnwarehousedetail-'+record.get("id"),
+            item = tab.down('#'+ref);
+        if(item != null){
             tab.setActiveTab(item);
             return;
         }
         tab.setActiveTab({
-            itemId: ref,
-            xtype: 'warehousechecktaskorderinfo',
-            record: record,
-            title: '任务单详情',
-            closable: true
+            itemId:ref,
+            xtype:'returnwarehousedetail',
+            record:record,
+            title:'通知单详情',
+            closable:true
         });
     },
-    onWarehouseCheckOrderGridDblClick: function (gp, record) {
-        var tab = gp.up("tabpanel"), ref = 'warehousecheckorderinfo-' + record.get("id"),
-            item = tab.down('#' + ref);
-        if (item != null) {
+    onReturnIntoWarehouseGridDblClick:function(gp,record){
+        var tab = gp.up("tabpanel"),ref = 'returnintowarehousedetail-'+record.get("id"),
+            item = tab.down('#'+ref);
+        if(item != null){
             tab.setActiveTab(item);
             return;
         }
         tab.setActiveTab({
-            itemId: ref,
-            xtype: 'warehousecheckorderinfo',
-            record: record,
-            title: '盘点单详情',
-            closable: true
+            itemId:ref,
+            xtype:'returnintowarehousedetail',
+            record:record,
+            title:'退仓单详情',
+            closable:true
         });
     },
 
-    addTaskOrder: function () {
+    addTaskOrder:function(){
         var me = this,
             model = this.getViewModel();
         var store = Ext.create('Ext.data.Store', {
@@ -73,9 +73,9 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
             title: '新增任务单',
             bodyPadding: 20,
             modal: true,
-            items: [
+            items:[
                 {
-                    xtype: 'form',
+                    xtype:'form',
                     width: 600,
                     layout: 'column',
                     defaults: {
@@ -85,42 +85,27 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                         columnWidth: 0.5,
                         xtype: 'combo',
                         hidden: isHide,
-                        msgTarget: 'side',
-                        disabled: true
+                        msgTarget:'side',
+                        disabled:true
                     },
                     items: [
+                        {disabled:false,xtype: 'datefield', fieldLabel: '盘点日期', format: 'Y-m-d', value: new Date(), name: 'date',hidden:false,editable: false,allowBlank:false},
                         {
-                            disabled: false,
-                            xtype: 'datefield',
-                            fieldLabel: '盘点日期',
-                            format: 'Y-m-d',
-                            value: new Date(),
-                            name: 'date',
-                            hidden: false,
-                            editable: false,
-                            allowBlank: false
+                            name:'warehouse',fieldLabel: '盘点仓库',displayField: 'storage_name',valueField: 'id',editable: false,
+                            disabled:true,hidden:false
                         },
                         {
-                            name: 'warehouse',
-                            fieldLabel: '盘点仓库',
-                            displayField: 'storage_name',
-                            valueField: 'id',
-                            editable: false,
-                            disabled: true,
-                            hidden: false
-                        },
-                        {
-                            disabled: false,
+                            disabled:false,
                             fieldLabel: '盘点类型',
                             store: store,
-                            allowBlank: false,
+                            allowBlank:false,
                             displayField: 'type',
                             valueField: 'val',
                             name: 'type',
                             editable: false,
                             hidden: false,
                             listeners: {
-                                change: function () {
+                                change: function(){
                                     var val = this.getValue();
                                     if (val == 1) {
                                         win.down("combo[name=brand]").setDisabled(true);
@@ -151,13 +136,13 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                             method: 'POST',
                                             url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseData',
                                             params: {
-                                                brand: 0
+                                                brand:0
                                             },
                                             success: function (res) {
                                                 var json = Ext.decode(res.responseText);
                                                 console.log(json);
-                                                if (!json.success) {
-                                                    Ext.toast(json.msg, "系统提示");
+                                                if(!json.success){
+                                                    Ext.toast(json.msg,"系统提示");
                                                     return;
                                                 }
                                                 var store = Ext.create('Ext.data.Store', {
@@ -170,7 +155,7 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                                 brandField.setHidden(false);
                                             },
                                             failure: function (res) {
-                                                Ext.toast("请求错误,请检查网络!", "系统提示");
+                                                Ext.toast("请求错误,请检查网络!","系统提示");
                                             }
                                         });
                                     }
@@ -178,25 +163,23 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                         Ext.Ajax.request({
                                             aysnc: true,
                                             method: 'POST',
-                                            //url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseData',
                                             url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseList',
                                             params: {
-                                                brand: 0,
-                                                year_season: 0,
-                                                large_class: 0,
-                                                sex: 0
+                                                brand:0,
+                                                year_season:0,
+                                                large_class:0,
+                                                sex:0
                                             },
                                             success: function (res) {
                                                 var json = Ext.decode(res.responseText);
-                                                console.log(json);
 
-                                                if (!json.success) {
-                                                    Ext.toast(json.msg, "系统提示");
+                                                if(!json.success){
+                                                    Ext.toast(json.msg,"系统提示");
                                                     return;
                                                 }
                                                 var store = Ext.create('Ext.data.Store', {
                                                     fields: ['type', 'val'],
-                                                    data: json.data.brand
+                                                    data: json.data.brand,
                                                 });
                                                 var yearSeasonStore = Ext.create('Ext.data.Store', {
                                                     fields: ['type', 'val'],
@@ -230,125 +213,51 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                                                 sexField.setHidden(false);
                                             },
                                             failure: function (res) {
-                                                Ext.toast("请求错误,请检查网络!", "系统提示");
+                                                Ext.toast("请求错误,请检查网络!","系统提示");
                                             }
                                         });
                                     }
                                 }
                             }
                         },
-                        {
-                            xtype: 'tagfield',
-                            fieldLabel: '品牌',
-                            displayField: 'name_en',
-                            valueField: 'name_en',
-                            name: 'brand',
-                            editable: true
-                        },
-                        {
-                            xtype: 'tagfield',
-                            fieldLabel: '年季',
-                            displayField: 'name',
-                            valueField: 'no',
-                            name: 'year_season',
-                            editable: true,
-                            store: store
-                        },
-                        //{fieldLabel: '品牌',displayField: 'name_en',valueField: 'id',name:'brand',editable: false},
-                        //{xtype:'tagfield',fieldLabel: '年季',displayField: 'public_name',valueField: 'id',name: 'year_season',editable:true,store:store},
-                        //{xtype:'tagfield',fieldLabel: '大类',displayField: 'name',valueField: 'id',name: 'large_class',listeners:{
-                        //    change:function(){
-                        //        var val = this.getValue();
-                        //        Ext.Ajax.request({
-                        //            aysnc: true,
-                        //            method: 'POST',
-                        //            url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseData',
-                        //            params: {
-                        //                small_class:0
-                        //            },
-                        //            success: function (res) {
-                        //                var json = Ext.decode(res.responseText);
-                        //                console.log(json);
-                        //                if(!json.success){
-                        //                    Ext.toast(json.msg,"系统提示");
-                        //                    return;
-                        //                }
-                        //                var store = Ext.create('Ext.data.Store', {
-                        //                    fields: ['type', 'val'],
-                        //                    data: json.data.small_class
-                        //                });
-                        //                var smallClassField = win.down("tagfield[name=small_class]");
-                        //                smallClassField.setStore(store);
-                        //                smallClassField.setDisabled(false);
-                        //                smallClassField.setHidden(false);
-                        //            },
-                        //            failure: function (res) {
-                        //                Ext.toast("请求错误,请检查网络!","系统提示");
-                        //            }
-                        //        });
-                        //    }
-                        //}},
-                        {
-                            xtype: 'tagfield',
-                            fieldLabel: '大类',
-                            displayField: 'name',
-                            valueField: 'base_data_id',
-                            itemId: 'large_class',
-                            name: 'large_class[]',
-                            listeners: {
-                                change: function () {
-                                    var val = this.getValue();
-                                    var str = val.join(',');
-                                    Ext.Ajax.request({
-                                        aysnc: true,
-                                        method: 'POST',
-                                        url: apiBaseUrl + '/index.php/Warehouse/TaskList/getExtBigClass',
-                                        params: {
-                                            large_class: str
-                                        },
-                                        success: function (res) {
-                                            var json = Ext.decode(res.responseText);
-                                            console.log(json);
-                                            if (!json.success) {
-                                                Ext.toast(json.msg, "系统提示");
-                                                return;
-                                            }
-                                            var store = Ext.create('Ext.data.Store', {
-                                                fields: ['type', 'val'],
-                                                data: json.data
-                                            });
-                                            var smallClassField = win.down("tagfield[name=small_class]");
-                                            smallClassField.setStore(store);
-                                            smallClassField.setDisabled(false);
-                                            smallClassField.setHidden(false);
-                                        },
-                                        failure: function (res) {
-                                            Ext.toast("请求错误,请检查网络!", "系统提示");
+                        {xtype:'tagfield',fieldLabel: '品牌',displayField: 'name_en',valueField: 'name_en',name:'brand',editable: true},
+                        {xtype:'tagfield',fieldLabel: '年季',displayField: 'name',valueField: 'no',name: 'year_season',editable:true,store:store},
+                        {xtype:'tagfield',fieldLabel: '大类',displayField: 'name',valueField: 'base_data_id',itemId:'large_class',name: 'large_class[]',listeners:{
+                            change:function(){
+                                var val= this.getValue();
+                                var str=val.join(',');
+                                Ext.Ajax.request({
+                                    aysnc: true,
+                                    method: 'POST',
+                                    url: apiBaseUrl + '/index.php/Warehouse/TaskList/getExtBigClass',
+                                    params: {
+                                        large_class:str
+                                    },
+                                    success: function (res) {
+                                        var json = Ext.decode(res.responseText);
+                                        console.log(json);
+                                        if(!json.success){
+                                            Ext.toast(json.msg,"系统提示");
+                                            return;
                                         }
-                                    });
-                                }
+                                        var store = Ext.create('Ext.data.Store', {
+                                            fields: ['type', 'val'],
+                                            data: json.data
+                                        });
+                                        var smallClassField = win.down("tagfield[name=small_class]");
+                                        smallClassField.setStore(store);
+                                        smallClassField.setDisabled(false);
+                                        smallClassField.setHidden(false);
+                                    },
+                                    failure: function (res) {
+                                        Ext.toast("请求错误,请检查网络!","系统提示");
+                                    }
+                                });
                             }
-                        },
-                        {
-                            xtype: 'tagfield',
-                            fieldLabel: '小类',
-                            displayField: 'name',
-                            valueField: 'name',
-                            name: 'small_class'
-                        },
-                        {xtype: 'tagfield', fieldLabel: '性别', displayField: 'name', valueField: 'name', name: 'sex'},
-                        //{xtype:'tagfield',fieldLabel: '小类',displayField: 'name',valueField: 'id',name: 'small_class'},
-                        //{xtype:'tagfield',fieldLabel: '性别',displayField: 'public_name',valueField: 'id',name: 'sex'},
-                        {
-                            disabled: false,
-                            columnWidth: 1,
-                            xtype: 'textarea',
-                            fieldLabel: '备注',
-                            name: 'mark',
-                            editable: true,
-                            allowBlank: true,
-                            hidden: false
-                        }
+                        }},
+                        {xtype:'tagfield',fieldLabel: '小类',displayField: 'name',valueField: 'name',name: 'small_class'},
+                        {xtype:'tagfield',fieldLabel: '性别',displayField: 'name',valueField: 'name',name: 'sex'},
+                        {disabled:false,columnWidth: 1,xtype: 'textarea',fieldLabel: '备注',name: 'mark',editable: true,allowBlank: true,hidden: false}
                     ]
                 }
             ]
@@ -359,9 +268,9 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
 
                     var form = this.up("window").down("form").getForm(),
                         vals = form.getValues();
-                    console.log(vals);
-                    if (vals.type === "" || vals.date === "") {
-                        Ext.Msg.alert("系统提示", "必填项不能为空");
+
+                    if(vals.type === "" || vals.date === ""){
+                        Ext.Msg.alert("系统提示","必填项不能为空");
                         return;
                     }
 
@@ -370,14 +279,14 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                         method: 'POST',
                         url: apiBaseUrl + '/index.php/Warehouse/TaskList/addWarehouseCheckTaskOrder',
                         params: {
-                            vals: Ext.encode(vals),
-                            warehouse_id: vals.warehouse
+                            vals:Ext.encode(vals),
+                            warehouse_id:vals.warehouse
                         },
                         success: function (res) {
                             console.log(res);
                             var json = Ext.decode(res.responseText);
-                            if (!json.success) {
-                                Ext.toast(json.msg, "系统提示");
+                            if(!json.success){
+                                Ext.toast(json.msg,"系统提示");
                                 return;
                             }
 
@@ -385,7 +294,7 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                             Ext.StoreManager.lookup("WarehouseCheckTaskOrderStore").load();
                         },
                         failure: function (res) {
-                            Ext.toast("请求错误,请检查网络!", "系统提示");
+                            Ext.toast("请求错误,请检查网络!","系统提示");
                         }
                     });
                 }
@@ -393,19 +302,18 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
             ]
         });
         Ext.Ajax.request({
-            async: true,
+            async:true,
             url: apiBaseUrl + '/index.php/Warehouse/TaskList/getBaseData',
             params: {
-                warehouse: 0
+                warehouse:0
             },
-            method: 'POST',
-            success: function (res) {
+            method:'POST',
+            success:function(res){
                 var json = Ext.decode(res.responseText);
-                if (!json.success) {
-                    Ext.toast(json.msg, "系统提示");
+                if(!json.success){
+                    Ext.toast(json.msg,"系统提示");
                     return;
                 }
-                console.log(json.data);
                 var store = Ext.create('Ext.data.Store', {
                     fields: [],
                     data: json.data.warehouse
@@ -414,111 +322,101 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                 warehouse.setStore(store);
                 warehouse.setDisabled(false);
             },
-            failure: function () {
-                Ext.toast("请求数据错误,请检查网络,重试!", "系统提示");
+            failure:function(){
+                Ext.toast("请求数据错误,请检查网络,重试!","系统提示");
             }
         });
         win.show();
     },
-    addCheckOrder: function () {
+    addCheckOrder:function(){
 
         var store;
         Ext.Ajax.request({
-            async: false,
+            async:false,
             url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/getWarehouseCheckTaskOrderNo',
-            method: 'POST',
-            success: function (res) {
+            method:'POST',
+            success:function(res){
                 var json = Ext.decode(res.responseText);
-                if (!json.success) {
-                    Ext.toast(json.msg, "系统提示");
+                if(!json.success){
+                    Ext.toast(json.msg,"系统提示");
                     return;
                 }
 
-                store = Ext.create('Ext.data.Store', {
-                    fields: [],
-                    data: json.data
+                store = Ext.create('Ext.data.Store',{
+                    fields:[],
+                    data:json.data
                 });
             },
-            failure: function (res) {
+            failure:function(res){
 
             }
         });
-        var win = Ext.create('Ext.window.Window', {
-            title: '新增盘点单',
-            bodyPadding: 20,
-            layout: 'anchor',
-            width: 400,
-            modal: true,
-            defaults: {
-                anchor: '100%',
-                fieldWidth: 70,
-                allowBlank: false
+        var win = Ext.create('Ext.window.Window',{
+            title:'新增盘点单',
+            bodyPadding:20,
+            layout:'anchor',
+            width:400,
+            modal:true,
+            defaults:{
+                anchor:'100%',
+                fieldWidth:70,
+                allowBlank:false
             },
-            items: [
-                {
-                    editable: false,
-                    xtype: 'combo',
-                    fieldLabel: '任务单号',
-                    name: 'task_no',
-                    valueField: 'id',
-                    displayField: 'no',
-                    store: store
-                },
-                {xtype: 'datefield', fieldLabel: '盘点日期', editable: false, name: 'date', format: 'Y-m-d'},
-                {xtype: 'textfield', fieldLabel: '盘点人工号', name: 'work_no'},
+            items:[
+                {editable:false,xtype:'combo',fieldLabel:'任务单号',name:'task_no',valueField:'id',displayField:'no',store:store},
+                {xtype:'datefield',fieldLabel:'盘点日期',editable:false,name:'date',format:'Y-m-d'},
+                {xtype:'textfield',fieldLabel:'盘点人工号',name:'work_no'},
             ],
-            buttons: [
-                {
-                    text: '提交', handler: function () {
+            buttons:[
+                {text:'提交',handler:function(){
                     var task_no = win.down("combo").getValue(),
                         date = win.down("datefield").getValue(),
                         work_no = win.down("textfield[name=work_no]").getValue();
 
-                    if ("" == task_no || "" == date || "" == Ext.String.trim(work_no)) {
-                        Ext.Msg.alert("系统提示", "必填项不能空");
+                    if("" == task_no || "" == date || "" == Ext.String.trim(work_no)){
+                        Ext.Msg.alert("系统提示","必填项不能空");
                         return;
                     }
 
                     Ext.Ajax.request({
-                        aysnc: false,
+                        aysnc:false,
                         url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/addWarehouseCheckOrder',
-                        params: {
-                            date: date,
-                            work_no: work_no,
-                            task_no: task_no
+                        params:{
+                            date:date,
+                            work_no:work_no,
+                            task_no:task_no
                         },
-                        method: 'POST',
-                        success: function (res) {
+                        method:'POST',
+                        success:function(res){
                             var json = Ext.decode(res.responseText);
-                            if (!json.success) {
-                                Ext.toast(json.msg, "系统提示");
+                            if(!json.success){
+                                Ext.toast(json.msg,"系统提示");
                                 return;
                             }
                             Ext.StoreManager.lookup("WarehouseCheckOrderStore").load();
                             win.destroy();
                         },
-                        failure: function (res) {
-                            Ext.toast("网络请求错误,请检查网络是否正常!", "系统提示");
+                        failure:function(res){
+                            Ext.toast("网络请求错误,请检查网络是否正常!","系统提示");
                         }
                     });
-                }
-                }
+                }}
             ]
         });
 
         win.show();
     },
-    editCheckStatus: function (grid, rowIndex, colIndex, item, e, record) {
-        var id = record.get("pid"), status = item.val;
+    editCheckStatus:function(grid, rowIndex, colIndex, item, e, record){
+        var id=record.get("pid"), status=item.val;
         Ext.Ajax.request({
-            async: true,
-            url: apiBaseUrl + '/index.php/Warehouse/TaskList/editStats',
-            method: 'POST',
-            params: {
-                status: status,
-                id: id,
+            async:true,
+            url: apiBaseUrl +'/index.php/Warehouse/TaskList/editStats',
+            method:'POST',
+            params:{
+                status:status,
+                id:id,
             },
-            success: function (res) {
+            success:function(res){
                 var json = Ext.decode(res.responseText);
                 if (!json.success) {
                     Ext.toast(json.msg, "系统提示");
@@ -532,22 +430,22 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
             }
         });
     },
-    delWarehouseCheckOrder: function (btn) {
+    delWarehouseCheckOrder:function(btn){
         var grid = btn.up("grid");
-        var sel = grid.getSelection(), ids = [], nos = [], nodel = [];
+        var sel = grid.getSelection(), ids = [], nos = [],nodel=[];
         if (sel.length == 0) {
             Ext.Msg.alert('系统提示', '请选择要删除的任务单');
             return;
         }
 
         Ext.each(sel, function (record) {
-            if (record.get("status") == 0) {
+            if(record.get("status")==0){
                 ids.push(record.get("pid"));
                 nos.push(record.get("receipts_no"));
-            } else nodel.push(record.get("receipts_no"));
+            }else nodel.push(record.get("receipts_no"));
         });
-        if (nodel.length != 0) {
-            Ext.Msg.alert('系统提示', '已下任务单不允许删除!<br>' + nodel.join('<br>'));
+        if(nodel.length!=0){
+            Ext.Msg.alert('系统提示', '已下任务单不允许删除!<br>'+nodel.join('<br>'));
             return;
         }
         Ext.Msg.show({
@@ -581,23 +479,23 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
             }
         });
     },
-    delWarehouseCheckTaskOrder: function (btn) {
+    delWarehouseCheckTaskOrder:function(btn){
         var grid = btn.up("grid");
-        var sel = grid.getSelection(), ids = [], nos = [], nodel = [], takeid = [];
+        var sel = grid.getSelection(), ids = [], nos = [],nodel=[],takeid=[];
 
         if (sel.length == 0) {
             Ext.Msg.alert('系统提示', '请选择要删除的盘点单');
             return;
         }
         Ext.each(sel, function (record) {
-            if (record.get("status") == 0) {
+            if(record.get("status")==0){
                 ids.push(record.get("pid"));
                 nos.push(record.get("receipts_no"));
                 takeid.push(record.get("tasklist_no"));
-            } else nodel.push(record.get("receipts_no"));
+            }else nodel.push(record.get("receipts_no"));
         });
-        if (nodel.length != 0) {
-            Ext.Msg.alert('系统提示', '以下盘点单不允许删除!<br>' + nodel.join('<br>'));
+        if(nodel.length!=0){
+            Ext.Msg.alert('系统提示', '以下盘点单不允许删除!<br>'+nodel.join('<br>'));
             return;
         }
         Ext.Msg.show({
@@ -612,7 +510,7 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
                         waitMsg: '正在删除...',
                         params: {
                             ids: ids.join(','),
-                            takeid: takeid.join(',')
+                            takeid:takeid.join(',')
                         },
                         success: function (data) {
                             var res = Ext.decode(data.responseText);
@@ -633,4 +531,5 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckController', {
             }
         });
     }
+
 });

@@ -9,7 +9,8 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckTaskOrder', {
         'Ext.toolbar.Fill',
         'Ext.toolbar.Paging',
         'erp.view.module.warehouse.WarehouseCheckController',
-        'erp.view.module.warehouse.WarehouseModel'
+        'erp.view.module.warehouse.WarehouseModel',
+        'erp.view.module.warehouse.WarehouseCheckTaskOrderInfo'
     ],
     viewModel: {
         type: 'warehouse'
@@ -46,22 +47,25 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckTaskOrder', {
             flex: 1,
             width: 50,
             items:[
-                {getClass:function(val){
-                    if(val == 0) return 'columnActionIcon1';
-                    return 'hide';
-                },tooltip: '执行'},
-                //{getClass:function(val){
-                //    if(val > 0) return 'columnActionIcon2';
-                //    return 'hide';
-                //},tooltip: '确认'},
-                //{getClass:function(val){
-                //    if(val > 0) return 'columnActionIcon3';
-                //    return 'hide';
-                //},tooltip: '盈亏'},
-                {getClass:function(val){
-                    if(val > 0) return 'columnActionIcon4';
-                    return 'hide';
-                },tooltip: '终止'}
+                {
+                    getClass: function (val) {
+                        if (val == 0) return 'columnActionIcon1';
+                        return 'hide';
+                    }, tooltip: '执行', val: 1, handler: 'editCheckStatus'
+                },
+                {
+                    getClass:function(val){
+                        if(val == 1) return 'columnActionIcon4';
+                        return 'hide';
+                    },tooltip: '终止',val:2,handler:'editCheckStatus'
+                },
+                {
+                    getClass:function(val){
+                        if(val == 2) return 'viewIcon columnAction';
+                        return 'hide';
+                    },tooltip: '查看',view:'warehousecheck'
+                },
+
             ]
         }
     ],

@@ -135,6 +135,12 @@ Ext.define('erp.view.main.MainModel', {
                 {text: "任务单", leaf: true, view: 'warehousechecktaskorder',iconCls:'childNodeIcon'},
                 {text: "盘点单", leaf: true, view: 'warehousecheckorder',iconCls:'childNodeIcon'}
             ]
+            },
+            {
+                text: "终端退仓",iconCls:'parentNodeIcon', expanded: false, children: [
+                {text: "退仓通知单", leaf: true, view: 'returnwarehouseorder',iconCls:'childNodeIcon'},
+                {text: "退仓单", leaf: true, view: 'returnintowarehouseorder',iconCls:'childNodeIcon'}
+            ]
             }
         ],
         operateMngMenus:[

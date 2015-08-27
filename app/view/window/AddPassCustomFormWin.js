@@ -60,7 +60,12 @@ Ext.define('erp.view.window.AddPassCustomFormWin', {
                             var batchs = res.batch_nos;
                             form.down("combo[name=cu_name]").setDisabled(false);
                             var batch_nos = [];
+                            console.log(batchs);
                             if(batchs == null) return;
+                            if(batchs.length == 0) {
+                                form.down("checkboxgroup").setHtml("没有需要报关的商品");
+                                return;
+                            }
                             for(var i=0;i<batchs.length;i++){
                                 var batch_no = batchs[i];
                                 batch_nos.push({boxLabel: batch_no.batch_no, name: 'batch_no[]', inputValue: batch_no.batch_no});
@@ -149,10 +154,10 @@ Ext.define('erp.view.window.AddPassCustomFormWin', {
                     //console.log(form.getValues());return;
                     if (form.isValid()) {
                         form.submit({
-                            waitMsg: '正在保存...',
+                            waitMsg: '正在提交...',
                             success: function (form, action) {
-                                me.destroy();
-                                console.log(action.result);
+                                me.fireEvent("addPassCustomsOrder");
+                                //console.log(action.result);
                             },
                             failure: function (form, action) {
                                 console.log(action);

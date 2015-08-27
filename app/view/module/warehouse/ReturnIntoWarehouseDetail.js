@@ -1,9 +1,9 @@
 /**
- * Created by Administrator on 2015-07-03.
+ * Created by Administrator on 2015-08-25.
  */
-Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
+Ext.define('erp.view.module.warehouse.ReturnIntoWarehouseDetail', {
     extend: 'Ext.Container',
-    xtype: 'warehousecheckorderinfo',
+    xtype: 'returnintowarehousedetail',
 
     requires: [
         'Ext.Ajax',
@@ -23,21 +23,6 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
 
     initComponent: function () {
         var me = this;
-        console.log(me.record);
-        //Ext.Ajax.request({
-        //    async: false,
-        //    url: apiBaseUrl + '/index.php/Warehouse/TaskList/getWarehouseCheckTaskOrderInfo',
-        //    method: 'POST',
-        //    params: {
-        //        id:me.record.get("id");
-        //    },
-        //    success: function () {
-        //
-        //    },
-        //    failure: function () {
-        //
-        //    }
-        //});
         Ext.apply(me, {
             layout: {
                 type: 'vbox',
@@ -50,22 +35,19 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                     layout: 'column',
                     defaults: {
                         xtype: 'displayfield',
-                        columnWidth: 0.2,
+                        columnWidth: 0.3,
                         labelAlign: 'right',
                         labelWidth: 70
                     },
                     items: [
-                        {fieldLabel: '盘点单号', value: me.record.get("inventory_no")},
-                        {fieldLabel: '任务单号', value: me.record.get("receipts_no")},
-                        {fieldLabel: '盘点日期', value: me.record.get("inventory_data")},
-                        {
-                            fieldLabel: '盘点人员工号',
-                            labelWidth: 100,
-                            columnWidth: 0.4,
-                            value: me.record.get("inventory_user")
-                        },
-                        {fieldLabel: '盘点金额', value: me.record.get("inventory_money")},
-                        {fieldLabel: '盘点数量', value: me.record.get("inventory_count")}
+
+                        {fieldLabel: '单据编号', value: me.record.get("refund_into_no")},
+                        {fieldLabel: '申请单号', value: me.record.get("teturned_no")},
+                        {fieldLabel: '通知单号', value: me.record.get("refund_no")},
+                        {fieldLabel: '日期', value: me.record.get("create_time")},
+                        {fieldLabel: '收货仓库', value: me.record.get("storage_name")},
+                        {fieldLabel: '申请门店', value: me.record.get("shops_name")},
+
                     ],
                     buttons: me.getActionButtons()
                 },
@@ -81,18 +63,17 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                 enableColumnHide: false,
                 enableColumnResize: false,
                 columns: [
-                    {text: '唯一码', flex: 1, dataIndex: 'no'},
-                    {text: '系统款号', flex: 1, dataIndex: 'system_style_no'},
-                    {text: '商品名称', flex: 1, dataIndex: 'name_zh'},
-                    {text: '折扣', dataIndex: 'discount'},
-                    {text: '单价', dataIndex: 'retail_price'}
+                    {text: '唯一码', flex: 1,dataIndex:'goods_no'},
+                    {text: '系统款号', flex: 1,dataIndex:'system_style_no'},
+                    {text: '颜色', flex: 1,dataIndex:'color'},
+                    {text: '尺码',dataIndex:'size'},
                 ],
                 store: Ext.create('Ext.data.Store', {
                     fields: [],
                     autoLoad: false,
                     proxy: {
                         type: 'ajax',
-                        url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/getWarehouseCheckOrderGoods?id=' + me.record.get("id"),
+                        url: apiBaseUrl + '/index.php/Warehouse/RefundInto/getRefundIntoGoodList?id=' + me.record.get("id"),
                         reader: {
                             rootProperty: 'data',
                             type: 'json'
@@ -105,21 +86,77 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                     }
                 }
             });
-        var log = Ext.create('Ext.grid.Panel', {
+        var ReturnGoods=Ext.create('Ext.grid.Panel', {
             sortableColumns: false,
             enableColumnHide: false,
             enableColumnResize: false,
             columns: [
-                {text: '操作时间', flex: 1, dataIndex: 'operation_time'},
-                {text: '操作用户', flex: 1, dataIndex: 'operation_user'},
-                {text: '操作模块', flex: 1, dataIndex: 'operation'},
+                {text: '商品代码', flex: 1,dataIndex:'system_style_no'},
+                {text: '颜色', flex: 1,dataIndex:'color'},
+                {text: '尺码', flex: 1,dataIndex:'size'},
+                {text: '数量', flex: 1,dataIndex:'num'},
             ],
             store: Ext.create('Ext.data.Store', {
                 fields: [],
                 autoLoad: false,
                 proxy: {
                     type: 'ajax',
-                    url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/getCheckOutLogList?id=' + me.record.get("pid"),
+                    url: apiBaseUrl + '/index.php/Warehouse/RefundInto/getSetIntoWarehouseMenu?id=' + me.record.get("id"),
+                    reader: {
+                        rootProperty: 'data',
+                        type: 'json'
+                    }
+                }
+            }),
+            listeners: {
+                afterrender: function () {
+                    this.getStore().load();
+                }
+            }
+        });
+        var log=Ext.create('Ext.grid.Panel', {
+            sortableColumns: false,
+            enableColumnHide: false,
+            enableColumnResize: false,
+            columns: [
+                {text: '操作时间', flex: 1,dataIndex:'operation_time'},
+                {text: '操作用户', flex: 1,dataIndex:'operation_user'},
+                {text: '操作模块', flex: 1,dataIndex:'operation'},
+            ],
+            store: Ext.create('Ext.data.Store', {
+                fields: [],
+                autoLoad: false,
+                proxy: {
+                    type: 'ajax',
+                    url: apiBaseUrl + '/index.php/Warehouse/RefundInto/getRefundIntoLogList?id=' + me.record.get("id"),
+                    reader: {
+                        rootProperty: 'data',
+                        type: 'json'
+                    }
+                }
+            }),
+            listeners: {
+                afterrender: function () {
+                    this.getStore().load();
+                }
+            }
+        });
+        var diff=Ext.create('Ext.grid.Panel', {
+            sortableColumns: false,
+            enableColumnHide: false,
+            enableColumnResize: false,
+            columns: [
+                {text: '商品代码', flex: 1,dataIndex:'system_style_no'},
+                {text: '商品颜色', flex: 1,dataIndex:'color'},
+                {text: '商品尺码', flex: 1,dataIndex:'size'},
+                {text: '差异数', flex: 1,dataIndex:'num'},
+            ],
+            store: Ext.create('Ext.data.Store', {
+                fields: [],
+                autoLoad: false,
+                proxy: {
+                    type: 'ajax',
+                    url: apiBaseUrl + '/index.php/Warehouse/RefundInto/getRefundIntoGoodsDiff?id=' + me.record.get("id"),
                     reader: {
                         rootProperty: 'data',
                         type: 'json'
@@ -136,22 +173,35 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
             flex: 1,
             items: [
                 {
-                    title: '盘点明细',
+                    title: '入库信息',
                     itemId: 'detail',
                     items: [grid]
+                },
+                {
+                    title: '退货范围',
+                    itemId: 'apply',
+                    items: [ReturnGoods]
+                },
+                {
+                    title: '差异数',
+                    itemId: 'diff',
+                    items: [diff]
                 },
                 {
                     title: '操作日志',
                     itemId: 'log',
                     items:[log]
                 }
+
             ]
         });
 
         return tab;
     },
     getActionButtons: function () {
+
         var me = this;
+        var str=[];
         var btns = [
             {
                 text: '扫货',itemId:'goods_set', handler: function () {
@@ -175,14 +225,15 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                                 var no = obj.getValue();
                                 Ext.Ajax.request({
                                     async: false,
-                                    url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/scanGoods',
+                                    url: apiBaseUrl + '/index.php/Warehouse/RefundInto/setNoGetGoods',
                                     method: 'POST',
                                     params: {
                                         no: no,
-                                        take_no:me.record.get('tasklist_no'),
-                                        id:me.record.get('pid'),
+                                        id: me.record.get('id'),
+                                        str: str.join(',')
                                     },
                                     success: function (res) {
+
                                         var json = Ext.decode(res.responseText);
                                         var store = me.down("#detail").down("grid").getStore();
                                         if (!json.success) {
@@ -190,14 +241,17 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                                             return
                                         }
                                         obj.setValue("");
-                                        var res = store.findRecord("no", no);
-                                        if (res !== null) {
+                                       var res = store.findRecord("no",no);
+                                        if(res !== null){
                                             Ext.toast("此商品已在扫描", "系统提示");
                                             return;
                                         }
+                                        str.push(json.data.str);
+
                                         json.data.mark = 0;
                                         json.data.inventory_id = me.record.get("id");
-                                        store.insert(0, json.data);
+                                        store.insert(0,json.data);
+
                                     },
                                     failure: function (res) {
                                         Ext.toast("服务请求错误,请检查网络连接!", "系统提示");
@@ -208,38 +262,41 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                     }]
                 });
                 win.show();
-            }
+            },hidden:me.record.get('status')==1
             },
-            {text: '保存',itemId:'save',handler:me.saveWarehouseCheckOrder,scope:me},
-            {text: '确认',itemId:'status_yes',handler:me.editWarehouseCheckStatus,scope:me},
-            {text: '取消确认',itemId:'status_no',handler:me.editWarehouseCheckStatusNo,scope:me}
+            {text: '保存',itemId:'save',handler:me.saveRefundIntoWarehouseGoods,scope:me,hidden:me.record.get('status')==1},
+            {text: '验收',val:'1',itemId:'sampled',handler:me.sampledRefundIntoGoods,scope:me,hidden:me.record.get('status')==1},
+            {text: '终止',val:'2',itemId:'stop',handler:me.sampledRefundIntoGoods,scope:me,hidden:me.record.get('status')==2},
         ];
-
         if(me.record.get("status")==0){
-            btns[3].hidden=true;
+            btns[3].hidden=false;
             btns[0].hidden=false;
             btns[1].hidden=false;
             btns[2].hidden=false;
-        }else{
+        }else if(me.record.get("status")==1){
             btns[0].hidden=true;
             btns[1].hidden=true;
             btns[2].hidden=true;
             btns[3].hidden=false;
+        }else{
+            btns[0].hidden=true;
+            btns[1].hidden=true;
+            btns[2].hidden=true;
+            btns[3].hidden=true;
         }
-
         return btns;
     },
-    saveWarehouseCheckOrder: function () {
-        var me = this, store = me.down("#detail").down("grid").getStore(), goods = [];
-        var items = store.getData().items, len = items.length;
-
-        for (var i = 0; i < len; i++) {
-            var item = items[i], mark = item.get("mark");
-            if (mark != 0) continue;
+    saveRefundIntoWarehouseGoods:function(){
+        var me=this,store = me.down("#detail").down("grid").getStore(),goods=[];
+        var items = store.getData().items,len = items.length;
+        for(var i=0;i<len;i++){
+            var item = items[i],mark = item.get("mark");
+            if(mark != 0) continue;
             goods.push({
-                no: item.get("no"),
-                system_style_no: item.get("system_style_no"),
-                inventory_id: item.get("inventory_id")
+                goods_no:item.get("goods_no"),
+                system_style_no:item.get("system_style_no"),
+                color:item.get("color"),
+                size:item.get("size")
             });
         }
         if(goods.length<1){
@@ -248,12 +305,11 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
         }
         Ext.Ajax.request({
             async: true,
-            url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/saveWarehouseCheckOrder',
+            url: apiBaseUrl + '/index.php/Warehouse/RefundInto/saveRefundIntoWarehouseGoods',
             method: 'POST',
             params: {
-                goods: Ext.encode(goods),
-                id: me.record.get("pid"),
-                status: 1
+                goods:Ext.encode(goods),
+                id:me.record.get("id"),
             },
             success: function (res) {
                 var json = Ext.decode(res.responseText);
@@ -262,64 +318,37 @@ Ext.define('erp.view.module.warehouse.WarehouseCheckOrderInfo', {
                     return
                 }
                 Ext.toast("保存成功", "系统提示");
-                var store = Ext.StoreManager.lookup("WarehouseCheckOrderStore");
-                if(store != null) store.load();
+                Ext.StoreManager.lookup("ReturnIntoWarehouseStore").load();
             },
             failure: function (res) {
                 Ext.toast("服务请求错误,请检查网络连接!", "系统提示");
             }
         });
     },
-    editWarehouseCheckStatus:function(){
-        var me=this;
+    sampledRefundIntoGoods:function(btn){
+        var status=btn.val;
         Ext.Ajax.request({
-            async: true,
-            url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/editWarehouseCheckStatus',
-            method: 'POST',
-            params: {
-                id:me.record.get("pid"),
-                status:1
+            async:true,
+            url: apiBaseUrl +'/index.php/Warehouse/RefundInto/editRefundIntoStatus',
+            method:'POST',
+            params:{
+                status:status,
+                id:this.record.get("id"),
             },
-            success: function (res) {
+            success:function(res){
                 var json = Ext.decode(res.responseText);
                 if (!json.success) {
                     Ext.toast(json.msg, "系统提示");
                     return
                 }
-                Ext.toast("操作成功", "系统提示");
-                me.down('#status_no').setHidden(false);
+                Ext.toast("修改成功", "系统提示");
                 me.down('#goods_set').setHidden(true);
                 me.down('#save').setHidden(true);
-                me.down('#status_yes').setHidden(true);
-                Ext.StoreManager.lookup("WarehouseCheckOrderStore").load();
-            },
-            failure: function (res) {
-                Ext.toast("服务请求错误,请检查网络连接!", "系统提示");
-            }
-        });
-    },
-    editWarehouseCheckStatusNo:function() {
-        var me = this;
-        Ext.Ajax.request({
-            async: true,
-            url: apiBaseUrl + '/index.php/Warehouse/CheckVouch/editWarehouseCheckStatusNo',
-            method: 'POST',
-            params: {
-                id: me.record.get("pid"),
-                status: 0
-            },
-            success: function (res) {
-                var json = Ext.decode(res.responseText);
-                if (!json.success) {
-                    Ext.toast(json.msg, "系统提示");
-                    return
-                }
-                Ext.toast("操作成功", "系统提示");
-                me.down('#status_no').setHidden(true);
-                me.down('#goods_set').setHidden(false);
-                me.down('#save').setHidden(false);
+                me.down('#sampled').setHidden(true);
+                if(status==1)
                 me.down('#status_yes').setHidden(false);
-                Ext.StoreManager.lookup("WarehouseCheckOrderStore").load();
+                if(status==2) me.down('#status_yes').setHidden(true);
+                Ext.StoreManager.lookup("WarehouseCheckTaskOrderStore").load();
             },
             failure: function (res) {
                 Ext.toast("服务请求错误,请检查网络连接!", "系统提示");

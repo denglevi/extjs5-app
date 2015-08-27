@@ -42,7 +42,7 @@ Ext.define('erp.view.module.operation.OperationController', {
             },
             items: [
                 {fieldLabel: '职位名称', name: 'operations_post'},
-                {fieldLabel: '英文名称', name: 'operations_post_en'},
+                {fieldLabel: '英文名称', name: 'operations_post_en',allowBlank:true},
                 {fieldLabel: '最低折扣范围', name: 'operations_low_discount'},
                 {xtype: 'hidden', name: 'operations_post_status', value: 0},
                 {fieldLabel: '最高折扣范围', name: 'operations_tall_discount'}

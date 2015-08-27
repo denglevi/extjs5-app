@@ -42,7 +42,8 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                     '<div class="col-md-12">',
                     '<div class="col-md-2">总箱数：{box_num}</div>',
                     '<div class="col-md-3">总件数：{num}</div>',
-                    '<div class="col-md-7">备注：{mark}</div>',
+                    '<div class="col-md-2">总金额：{total_price}</div>',
+                    '<div class="col-md-5">备注：{mark}</div>',
                     '</div>'
                 )
             },
@@ -82,8 +83,9 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                                     success: function(response){
                                         var text = Ext.decode(response.responseText);
                                         if(text.data == null) return;
-                                        var goods = text.data,len = goods.length,num= 0,box_num='',diff = text.diff;
+                                        var goods = text.data,len = goods.length,num= 0,box_num='',diff = text.diff,total_price=0;
                                         for(var i=0;i<len;i++){
+                                            total_price += parseFloat(goods[i].total_price||0);
                                             if(goods[i].num == undefined || goods[i].box_no == undefined) continue;
                                             num += parseInt(goods[i].num);
                                             if(box_num.indexOf(goods[i].box_no+'|-') != -1) continue;
@@ -93,6 +95,7 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                                         var len = box_num.split("|-").length;
                                         //console.log(box_num.split("|-"),box_num.split("|-").length);
                                         data.box_num = len-1;
+                                        data.total_price = total_price;
                                         me.down("#check_product_info").setData(data);
                                         var store = Ext.create('Ext.data.Store',{
                                             fields:[],

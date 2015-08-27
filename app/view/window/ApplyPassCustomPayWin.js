@@ -35,15 +35,14 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                     return;
                 }
                 console.log(json.data);
-                var coustom_company = me.down("#custom_pay").down("textfield[name=receive_money_company]"),
+                var customs_company = me.down("#custom_pay").down("textfield[name=customs_receive_money_company]"),
                     store = Ext.create("Ext.data.Store",{
                         fields:[],
-                        data:json.data.custom_compay
+                        data:json.data.custom_company
                     });
-                coustom_company.setStore(store);
-
-                coustom_company.setDisabled(false);
-                var logistics_company = me.down("#logistics_pay").down("textfield[name=receive_money_company]"),
+                customs_company.setStore(store);
+                customs_company.setDisabled(false);
+                var logistics_company = me.down("#logistics_pay").down("textfield[name=logistics_receive_money_company]"),
                     store = Ext.create("Ext.data.Store",{
                         fields:[],
                         data:json.data.logistics_company
@@ -60,12 +59,12 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
         me.items=[
             {
                 xtype:'form',
-                url:apiBaseUrl+'/index.php'+me.url+'?api=1',
+                url: apiBaseUrl + '/index.php/Purchasing/Customs/applyPassCustomPay',
                 method:'POST',
                 defaults:{
                     anchor: '100%',
                     allowBlank: false,
-                    margin: 10
+                    margin: 5
                 },
                 bodyPadding:10,
                 items:[
@@ -85,18 +84,19 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                         items:[
                             {
                                 fieldLabel: '报关公司',
-                                name: 'receive_money_company',
+                                name: 'customs_receive_money_company',
                                 xtype:'combo',
                                 displayField:'name',
                                 valueField:'name',
+                                disabled:true,
                                 editable:false,
                                 listeners:{
                                     change:function(obj,newVal,oldVal){
                                         var items = obj.getStore().getData().items,len=items.length;
                                         for(var i=0;i<len;++i){
                                             if(newVal == items[i].get("name")){
-                                                var no =obj.up("fieldset").down("textfield[name=company_bank_no]"),
-                                                    bank = obj.up("fieldset").down("textfield[name=company_open_bank]");
+                                                var no =obj.up("fieldset").down("textfield[name=customs_company_bank_no]"),
+                                                    bank = obj.up("fieldset").down("textfield[name=customs_company_open_bank]");
                                                 no.setValue(items[i].get("bank_account"));
                                                 bank.setValue(items[i].get("address"));
 
@@ -107,28 +107,27 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                                         }
 
                                     }
-                                },
-                                disabled:true
+                                }
                             },
                             {
                                 fieldLabel: '公司账号',
-                                name: 'company_bank_no',
+                                name: 'customs_company_bank_no',
                                 disabled:true
                             },
                             {
                                 fieldLabel: '开户行',
-                                name: 'company_open_bank',
+                                name: 'customs_company_open_bank',
                                 disabled:true
                             },
                             {
                                 fieldLabel: '付款金额',
                                 xtype:'numberfield',
-                                name: 'money',
+                                name: 'customs_money',
                                 value:me.total
                             },
                             {
                                 fieldLabel: '最后付款日期',
-                                name: 'last_pay_day',
+                                name: 'customs_last_pay_day',
                                 xtype: 'datefield',
                                 editable: false,
                                 format: 'Y-m-d',
@@ -137,7 +136,7 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                             },
                             {
                                 fieldLabel: '用途',
-                                name: 'pay_function',
+                                name: 'customs_pay_function',
                                 xtype: 'textarea',
                                 allowBlank:true
                             }
@@ -158,7 +157,7 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                         items:[
                             {
                                 fieldLabel: '物流公司',
-                                name: 'receive_money_company',
+                                name: 'logistics_receive_money_company',
                                 xtype:'combo',
                                 displayField:'name',
                                 valueField:'name',
@@ -168,8 +167,8 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                                         var items = obj.getStore().getData().items,len=items.length;
                                         for(var i=0;i<len;++i){
                                             if(newVal == items[i].get("name")){
-                                                var no =obj.up("fieldset").down("textfield[name=company_bank_no]"),
-                                                    bank = obj.up("fieldset").down("textfield[name=company_open_bank]");
+                                                var no =obj.up("fieldset").down("textfield[name=logistics_company_bank_no]"),
+                                                    bank = obj.up("fieldset").down("textfield[name=logistics_company_open_bank]");
                                                 no.setValue(items[i].get("bank_account"));
                                                 bank.setValue(items[i].get("address"));
 
@@ -185,23 +184,23 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                             },
                             {
                                 fieldLabel: '公司账号',
-                                name: 'company_bank_no',
+                                name: 'logistics_company_bank_no',
                                 disabled:true
                             },
                             {
                                 fieldLabel: '开户行',
-                                name: 'company_open_bank',
+                                name: 'logistics_company_open_bank',
                                 disabled:true
                             },
                             {
                                 fieldLabel: '付款金额',
                                 xtype:'numberfield',
-                                name: 'money',
+                                name: 'logistics_money',
                                 value:me.total
                             },
                             {
                                 fieldLabel: '最后付款日期',
-                                name: 'last_pay_day',
+                                name: 'logistics_last_pay_day',
                                 xtype: 'datefield',
                                 editable: false,
                                 format: 'Y-m-d',
@@ -210,33 +209,12 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                             },
                             {
                                 fieldLabel: '用途',
-                                name: 'pay_function',
+                                name: 'logistics_pay_function',
                                 xtype: 'textarea',
                                 allowBlank:true
                             }
                         ]
                     }
-                    //{
-                    //    fieldLabel: '选择付款人',
-                    //    name: 'payer',
-                    //    xtype: 'combo',
-                    //    editable: false,
-                    //    displayField: 'username',
-                    //    valueField: 'id',
-                    //    //queryMode:'local',
-                    //    store:Ext.create('Ext.data.Store',{
-                    //        //autoLoad:true,
-                    //        fields:['id','username'],
-                    //        proxy: {
-                    //            type: 'ajax',
-                    //            url: apiBaseUrl+'/index.php/Purchasing/Buyer/getPayer',
-                    //            reader: {
-                    //                type: 'json',
-                    //                rootProperty: 'data'
-                    //            }
-                    //        }
-                    //    })
-                    //}
                 ],
                 buttons: [
                     {
@@ -254,10 +232,9 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                             if (form.isValid()) {
                                 form.submit({
                                     params:{
-                                        status_id:me.status_id,
-                                        order_no:me.order_no,
-                                        batch_no:me.batch_no,
-                                        pay_type:me.title
+                                        id:me.pass_customs_id,
+                                        next_status:me.pass_customs_next_status,
+                                        status:me.pass_customs_status
                                     },
                                     waitMsg:'正在提交...',
                                     success: function (form, action) {

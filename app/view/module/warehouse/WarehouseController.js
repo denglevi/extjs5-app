@@ -1754,6 +1754,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
     getWarehouseDeliveryGoodsDetailItems: function (model,record) {
         var me = this,
             status = record.get("status");
+        var nos=[];
         return [{
             xtype: 'panel',
             name: "info",
