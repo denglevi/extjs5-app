@@ -72,7 +72,7 @@ Ext.define('erp.view.module.operation.SalesActivityController', {
                     {boxLabel: '否', name: 'is_assist_time', inputValue: 0}
                 ],listeners:{
                     change:function(btn,newVal,oldVal){
-                        if(newVal.has_time_limit == 1) {
+                        if(newVal.is_assist_time == 1) {
 
                             //form.down("timefield[name=start_time]").setHidden(false);
                             form.down("timefield[name=start_time]").setDisabled(false);

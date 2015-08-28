@@ -62,7 +62,7 @@ Ext.define('erp.view.module.operation.WholeOrderPromotion', {
                     if (0 == val) return "未审核";
                     if (1 == val) return "已审核";
                     if (2 == val) return "已启动";
-                    if (2 == val) return "已结束";
+                    if (3 == val) return "已结束";
                 }
                 },
                 {text: '制单人', dataIndex: 'assist_handlername', flex: 1},
@@ -71,7 +71,8 @@ Ext.define('erp.view.module.operation.WholeOrderPromotion', {
             store: 'WholeOrderPromotionStore',
             bbar: ['->', {
                 xtype: 'pagingtoolbar',
-                store: 'WholeOrderPromotionStore'
+                store: 'WholeOrderPromotionStore',
+                displayInfo:true
             }],
             listeners: {
                 afterrender: function () {

@@ -60,7 +60,8 @@ Ext.define('erp.view.module.operation.PaymentMethod', {
             store:'PaymentMethodStore',
             bbar:['->', {
                 xtype: 'pagingtoolbar',
-                store: 'PaymentMethodStore'
+                store: 'PaymentMethodStore',
+                displayInfo:true
             }],
             listeners:{
                 afterrender:function(){

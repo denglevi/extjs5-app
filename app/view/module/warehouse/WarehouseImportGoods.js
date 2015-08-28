@@ -21,10 +21,6 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
     controller: 'warehouse',
     initComponent: function () {
         var me = this;
-        me.layout = {
-            type: 'hbox',
-            stretch: true
-        };
 
         var import_list = this.getImportList();
         var panel = this.getInfoPanel();
