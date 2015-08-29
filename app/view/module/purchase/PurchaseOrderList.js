@@ -142,7 +142,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderList', {
     columns: [
         {text: '订单号', dataIndex: 'order_nos',flex:1},
         {text: '供应商', dataIndex: 'name',flex:1},
-        {text: '买手', dataIndex: 'order_buyer'},
+        {text: '买手', dataIndex: 'nickname'},
         {text: '订单类型', dataIndex: 'order_state',renderer:function(value, cellmeta, record, rowIndex, columnIndex, store){
             if(value == 'spot_purchase_order'){
                 return '现货';

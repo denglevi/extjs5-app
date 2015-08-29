@@ -28,18 +28,21 @@ Ext.define('erp.view.module.operation.BundledSales', {
             sortableColumns: false,
             enableColumnHide: false,
             tbar: [
-                {text: '新增',
-                    //glyph: 0xf067,
-                    iconCls:'addIcon',
-                    handler: 'addBundledSales'},
-                {text: '删除',
-                    //glyph: 0xf1f8,
-                    iconCls:'delIcon',
-                    handler: 'delBundledSales'},
-                {text: '修改',
-                    //glyph: 0xf044,
-                    iconCls:'editIcon',
-                    handler: 'editBundledSales'}, '->',
+                {
+                    text: '新增',
+                    handler: 'addBundledSales',
+                    iconCls: 'addIcon'
+                },
+                {
+                    text: '删除',
+                    iconCls: 'delIcon',
+                    handler: 'delBundledSales'
+                },
+                //{
+                //    text: '修改',
+                //    handler: 'editBundledSales',
+                //    iconCls: 'editIcon',},
+                '->',
                 {xtype: 'textfield', fieldLabel: '开始日期', labelAlign: 'right'},
                 {xtype: 'textfield', fieldLabel: '结束日期', labelAlign: 'right'},
                 {text: '搜索'}
@@ -56,7 +59,7 @@ Ext.define('erp.view.module.operation.BundledSales', {
                     if (0 == val) return "未审核";
                     if (1 == val) return "已审核";
                     if (2 == val) return "已启动";
-                    if (2 == val) return "已结束";
+                    if (3 == val) return "已结束";
                 }
                 },
                 {text: '操作', dataIndex: 'cleraing_condition', flex: 1}
@@ -97,10 +100,10 @@ Ext.define('erp.view.module.operation.BundledSales', {
             defaultType: 'button',
             items: [
                 {
-                    itemId: 'exchange_goods',
-                    text: '换购商品',
+                    itemId: 'promotion_item',
+                    text: '促销商品',
                     scope: this,
-                    handler: this.onShowOfficesClick
+                    handler: this.onShowPromotionClick
                 },
                 {
                     itemId: 'showEmployees',
@@ -121,7 +124,7 @@ Ext.define('erp.view.module.operation.BundledSales', {
                     margin: '0 0 0 10',
                     text: '结算方式',
                     scope: this,
-                    handler: this.onShowEmployeesClick
+                    handler: this.onSettlementClick
                 },
                 {
                     itemId: 'showVIP',
@@ -132,6 +135,31 @@ Ext.define('erp.view.module.operation.BundledSales', {
                 }
             ]
         };
+    },
+    /*结算方式显示*/
+    onSettlementClick:function(){
+        var grid = this.down('grid'),me=this;
+        Ext.suspendLayouts();
+        grid.setTitle('VIP权益');
+        var item = grid.getDockedItems('toolbar[dock="top"]');
+        if ('分级让利' == title) {
+            var store = Ext.create('Ext.data.Store', {
+                fields: [], data: []
+            });
+            item[0].down("button").setHidden(false);
+            item[0].down("button").setText("新增");
+            grid.reconfigure(me.vip_store, [
+                {text: '类别', dataIndex: 'vip_name'},
+                {text: '常规折扣', dataIndex: 'vip_rule_dis'},
+                {text: '促销折扣', dataIndex: 'rescu_dis'},
+                {text: '基本金额积分比', dataIndex: 'basic_int', flex: 1},
+                {text: '积分倍率', dataIndex: 'intv_rate'},
+                {text: '操作', dataIndex: ''}
+            ]);
+            //this.down('#showOffices').enable();
+            //this.down('#showEmployees').disable();
+            Ext.resumeLayouts(true);
+        }
     },
     onShowVIP: function () {
         var grid = this.down('grid'),me=this;
@@ -198,7 +226,8 @@ Ext.define('erp.view.module.operation.BundledSales', {
                 dock: 'top',
                 items: ['->', {
                     text: '导入换购商品',
-                    handler: me.btnClick
+                    handler: me.btnOnClick,
+                    scope:me
                 }]
             }]
         };
@@ -306,9 +335,9 @@ Ext.define('erp.view.module.operation.BundledSales', {
                         ]);
                     } else if ("分级促销" == title) {
                         grid.reconfigure(null, [
-                            {text: '购买件数', dataIndex: ''},
-                            {text: '折扣', dataIndex: ''},
-                            {text: '备注', dataIndex: ''},
+                            {text: '购买件数', dataIndex: 'buy_num'},
+                            {text: '折扣', dataIndex: 'num_money'},
+                            {text: '备注', dataIndex: 'restu_text'},
                             {text: '操作', dataIndex: ''}
                         ]);
                         item[0].down("button").setHidden(false);

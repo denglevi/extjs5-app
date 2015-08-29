@@ -71,11 +71,6 @@ Ext.define('erp.view.window.AddPassCustomFormWin', {
                                 batch_nos.push({boxLabel: batch_no.batch_no, name: 'batch_no[]', inputValue: batch_no.batch_no});
                             }
                             form.down("checkboxgroup").add(batch_nos);
-                            //form.down("combo[name=logistics_no]").setStore(Ext.create('Ext.data.Store', {
-                            //    fields: ['logistics_no'],
-                            //    data: res.logistics_no
-                            //}));
-                            //form.down("combo[name=logistics_no]").setDisabled(false);
                         }
                     });
                 }
@@ -85,16 +80,6 @@ Ext.define('erp.view.window.AddPassCustomFormWin', {
     },
     getFieldItems: function (batch_no, order_no) {
         var fields = [
-            //{
-            //    fieldLabel: '物流单号',
-            //    name: 'logistics_no',
-            //    editable: false,
-            //    xtype: 'combo',
-            //    disabled: true,
-            //    displayField: 'logistics_no',
-            //    valueField: 'logistics_no'
-            //},
-            //{fieldLabel: '采购单号', name: 'order_no', value: order_no, editable: false},
             {
                 fieldLabel: '报关公司',
                 name: 'cu_name',
@@ -156,7 +141,10 @@ Ext.define('erp.view.window.AddPassCustomFormWin', {
                         form.submit({
                             waitMsg: '正在提交...',
                             success: function (form, action) {
-                                me.fireEvent("addPassCustomsOrder");
+                                var store = Ext.StoreManager.lookup("PassCustomListStore");
+                                if(store != null) store.load();
+                                me.destroy();
+                                //me.fireEvent("addPassCustomsOrder");
                                 //console.log(action.result);
                             },
                             failure: function (form, action) {

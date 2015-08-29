@@ -230,6 +230,7 @@ Ext.define('erp.view.module.member.CustomerController', {
             width: 600,
             height: 500,
             modal: true,
+            maximizable:true,
             layout: {
                 type: 'vbox',
                 align: 'strech'
@@ -291,13 +292,22 @@ Ext.define('erp.view.module.member.CustomerController', {
                 {text:'发卡',
                     handler:function(){
                         var id = record.get("id");
+                        var win = Ext.create("Ext.window.Window",{
+                            title:'发卡',
+                            width:400,
+                            items:[
+                                {
+                                    xtype:'form'
+                                }
+                            ]
+                        });
                         Ext.Ajax.request({
                             waitMsg: '正在提交...',
                             url:apiBaseUrl+'/index.php/Membership/Customer/issueCard',
                             method: 'POST',
                             params:{id:id},
                             success: function (action) {
-                                this.up('win').destroy();
+                                win.destroy();
                             },
                             failur: function ( action) {
                                 if (action.result.msg) {

@@ -116,25 +116,27 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
         var bar = ['->'], me = this;
         //if (this.record.get("sku_set") == 1) bar.push({text: '添加导入商品范围', handler: me.addGoodsArea});
         if (this.record.get("status") == 0) {
-            return bar.concat({text: '审核', handler: me.checkInfo}, {
-                text: '修改', handler: function () {
-                    var model = me.getViewModel();
-                    model.set("bundledSalesInfoEditable", !model.get("bundledSalesInfoEditable"));
-                    if(this.getText() == "修改") this.setText("保存");
-                    else this.setText("修改");
-                }
-            });
+            return bar.concat({text: '审核', handler: me.handlerWholeOrderPromotionStatus}
+            //    , {
+            //    text: '修改', handler: function () {
+            //        var model = me.getViewModel();
+            //        model.set("bundledSalesInfoEditable", !model.get("bundledSalesInfoEditable"));
+            //        if (this.getText() == "修改") this.setText("保存");
+            //        else this.setText("修改");
+            //    }
+            //}
+            );
         }
         if (this.record.get("status") == 1) return bar.concat({text: '终止'});
         if (this.record.get("status") == 2) return null;
     },
     getBarContainer: function () {
         var me = this;
-        var items = [{text: '促销商品范围',pressed:true}];
-        if(me.record.get("sku_set") == 1){
+        var items = [{text: '促销商品范围', pressed: true}];
+        if (me.record.get("sku_set") == 1) {
             items.push({itemId: 'exchange_goods', text: '促销商品信息'});
         }
-        if(me.record.get("colse_type") == 1){
+        if (me.record.get("colse_type") == 1) {
             items.push({itemId: 'payment_method', text: '结算方式'});
         }
         items.push({itemsId: 'multi_sales', text: '分级促销'});
@@ -148,7 +150,7 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
                     var title = button.getText(),
                         grid = container.up("wholeorderpromotioninfo").down("grid"), columns, store;
                     grid.setTitle(title);
-                    var item = grid.getDockedItems('toolbar[dock="top"]'),btn = item[0].down("button");
+                    var item = grid.getDockedItems('toolbar[dock="top"]'), btn = item[0].down("button");
                     btn.setHidden(false);
                     //if ("促销商品信息" == title) btn.setText("导入商品");
                     //else item[0].down("button").setText("新增");
@@ -159,7 +161,15 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
                         btn.setText("新增促销商品范围");
                         store = me.goods_range_store;
                         columns = [
-                            {text: '商品范围', dataIndex: 'range',flex:1},
+                            {
+                                text: '商品范围', dataIndex: 'range', flex: 1, renderer: function (value) {
+                                if (value == 0) return '通用';
+                                if (value == 1) return '按尺码';
+                                if (value == 2) return '按颜色';
+                                if (value == 3) return '按SKU';
+                                return value;
+                            }
+                            },
                             {
                                 text: '操作',
                                 xtype: 'actioncolumn',
@@ -167,7 +177,8 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
                                     {
                                         iconCls: 'delIcon',
                                         tooltip: '删除',
-                                        handler: me.editCloseDel  //删除方法
+                                        handler: me.delPromotionGoodsRange,
+                                        scope: me
                                     }
                                 ]
                             }
@@ -176,28 +187,27 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
                     else if ("促销商品信息" == title) {
                         btn.setText("导入促销商品");
                         store = me.goods_info;
-                        console.log(me.record.get("sku_set"))
+                        console.log(me.record.get("sku_set"));
                         columns = [
-                            {text: '商品代码', dataIndex: 'system_suply_no'},
-                            {text: '颜色', dataIndex: 'color'},
-                            {text: '折扣', dataIndex: 'discount'},
-                            {text: '商品库存', dataIndex: 'num'},
-                            {text: '数据状态'}
+                            {text: '商品代码', dataIndex: 'assist_import_code',flex:1},
+                            {text: '颜色', dataIndex: 'assist_import_color'},
+                            {text: '尺码', dataIndex: 'assist_import_size'},
+                            {text: '折扣', dataIndex: 'discount'}
                         ];
                     }
                     else if ("分级促销" == title) {
                         btn.setText("新增");
                         store = me.multi_promotion_store;
                         columns = [
-                            {text: '整单金额', dataIndex: 'promotion_money',flex:1},
-                            {text: '整单立减', dataIndex: 'promotion_type',flex:1}
+                            {text: '整单金额', dataIndex: 'promotion_money', flex: 1},
+                            {text: '整单立减', dataIndex: 'promotion_type', flex: 1}
                         ];
                     }
                     else if ("结算方式" == title) {
                         btn.setText("新增");
                         store = me.payment_method_store;
                         columns = [
-                            {text: '结算名称', dataIndex: 'cleraing_name',flex: 1},
+                            {text: '结算名称', dataIndex: 'cleraing_name', flex: 1},
                             {
                                 text: '操作',
                                 xtype: 'actioncolumn',
@@ -211,7 +221,8 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
                                 ]
                             }
                         ];
-                    };
+                    }
+                    ;
 
                     grid.reconfigure(store, columns);
                 }
@@ -240,25 +251,18 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
 
             }
         });
-console.log(me.gridsData);
+        console.log(me.gridsData);
+        console.log(me.record);
         var json = [];
-        if(me.record.get("sku_set") == 1){
-            if(me.record.get("goods_range_info") == 0){
-                json.push({range:'通用'});
+        if (me.record.get("sku_set") == 1 && me.record.get("goods_range_info") != null) {
+            json.push({range: me.record.get("goods_range_info")});
+        } else if (me.record.get("sku_set") == 0) {
+            var data = me.gridsData.assist, len = data.length, str = "";
+            if (len > 0) {
+                var range = data[0];
+                str = "品牌:" + range.assist_type_brand + "<br />大类:" + range.assist_type_broad + "<br />年季:" + range.assist_type_year + "<br />性别:" + range.assist_type_sex + "<br />小雷:" + range.assist_type_subclass;
+                json.push({range: str});
             }
-            if(me.record.get("goods_range_info") == 1){
-                json.push({range:'按尺码'});
-            }
-            if(me.record.get("goods_range_info") == 2){
-                json.push({range:'按颜色'});
-            }
-            if(me.record.get("goods_range_info") == 3){
-                json.push({range:'按SKU'});
-            }
-        }else{
-            var data = me.gridsData.assist,len = data.length,str="",range = data[0];
-            str = "品牌:"+range.assist_type_brand+"<br />大类:"+range.assist_type_broad+"<br />年季:"+range.assist_type_year+"<br />性别:"+range.assist_type_sex+"<br />小雷:"+range.assist_type_subclass;
-            json.push({range:str});
         }
 
         me.goods_range_store = Ext.create('Ext.data.Store', { //整单范围
@@ -273,13 +277,22 @@ console.log(me.gridsData);
         me.payment_method_store = Ext.create('Ext.data.Store', { //结算方式
             fields: [], data: me.gridsData.closing
         });
+        console.log(json);
         return {
             xtype: 'grid',
             title: '促销商品范围',
             width: '100%',
             flex: 1,
             columns: [
-                {text: '商品范围', dataIndex: 'range',flex: 1},
+                {
+                    text: '商品范围', dataIndex: 'range', flex: 1, renderer: function (value) {
+                    if (value == 0) return '通用';
+                    if (value == 1) return '按尺码';
+                    if (value == 2) return '按颜色';
+                    if (value == 3) return '按SKU';
+                    return value;
+                }
+                },
                 {
                     text: '操作',
                     xtype: 'actioncolumn',
@@ -287,29 +300,8 @@ console.log(me.gridsData);
                         {
                             iconCls: 'delIcon',
                             tooltip: '删除',
-                            handler: function(){
-                                //Ext.Msg.alert("确定要删除此范围?","系统提示");
-                                Ext.Ajax.request({
-                                    async: false,
-                                    method: 'POST',
-                                    url: apiBaseUrl + '/index.php/Operations/Entire/delPromotionGoodsRange',
-                                    params: {
-                                        id: me.record.get("id"),
-                                        sku_set: me.record.get("sku_set")
-                                    },
-                                    success: function (res) {
-                                        var json = Ext.decode(res.responseText);
-                                        if(!json.success){
-                                            Ext.toast(json.msg,"系统提示");
-                                            return;
-                                        }
-                                        me.down("grid").setStore(null);
-                                    },
-                                    failure: function (res) {
-
-                                    }
-                                });
-                            }
+                            handler: me.delPromotionGoodsRange,
+                            scope: me
                         }
                     ]
                 }
@@ -319,9 +311,9 @@ console.log(me.gridsData);
             dockedItems: [{
                 xtype: 'toolbar',
                 dock: 'top',
-                bind: {
-                    hidden: '{bundledSalesInfoEditable}'
-                },
+                //bind: {
+                //    hidden: '{bundledSalesInfoEditable}'
+                //},
                 items: ['->', {
                     text: '新增促销商品范围',
                     handler: me.btnClick,
@@ -457,103 +449,134 @@ console.log(me.gridsData);
         });
     },
     //添加商品范围
-    addGoodsRange:function(){
+    addGoodsRange: function () {
         var me = this;
-        var data = me.goods_range_store.getData(),
-            items = data.items,len=0;
+        var data = me.down("grid").getStore().getData(),
+            items = data.items, len = 0;
         console.log(items);
-        if(items != null){
+        if (items != null) {
             len = items.length;
         }
-        if(len >0){
-            Ext.Msg.alert("系统提示","请先删除已有的商品范围");
+        if (len > 0) {
+            Ext.Msg.alert("系统提示", "请先删除已有的商品范围");
             return;
         }
-        console.log(me.record,me.goods_range_store.getData().items);
-        var win = Ext.create("Ext.window.Window",{
-            title:'新增促销商品范围',
-            width:400,
-            modal:true,
-            resizable:false,
-            items:[
+        console.log(me.record, me.goods_range_store.getData().items);
+        var win = Ext.create("Ext.window.Window", {
+            title: '新增促销商品范围',
+            width: 400,
+            modal: true,
+            resizable: false,
+            items: [
                 {
-                    xtype:'form',
-                    bodyPadding:10,
-                    defaults:{
-                        anchor:'100%',
-                        allowBlank:false,
-                        labelAlign:'right',
+                    xtype: 'form',
+                    bodyPadding: 10,
+                    defaults: {
+                        anchor: '100%',
+                        allowBlank: false,
+                        labelAlign: 'right',
                     },
-                    buttons:[
-                        {text:'重置',handler:function(){
+                    buttons: [
+                        {
+                            text: '重置', handler: function () {
                             this.up("form").getForm().reset();
-                        }},
-                        {text:'提交',formBind:true,disabled:true,handler:function(){
-                            var form = this.up("form").getForm(),vals = form.getValues();
+                        }
+                        },
+                        {
+                            text: '提交', formBind: true, disabled: true, handler: function () {
+                            var form = this.up("form").getForm(), vals = form.getValues();
                             console.log(form.getValues());
-                            if(form.isValid()){
+                            if (form.isValid()) {
                                 form.submit({
                                     url: apiBaseUrl + '/index.php/Operations/Entire/addPromotionGoodsRange',
-                                    params:{
-                                        sku_set:me.record.get("sku_set"),
-                                        id:me.record.get("id")
+                                    params: {
+                                        sku_set: me.record.get("sku_set"),
+                                        id: me.record.get("id")
                                     },
-                                    waitMsg:'正在提交...',
-                                    success:function(form,action){
+                                    waitMsg: '正在提交...',
+                                    success: function (form, action) {
                                         console.log(action.result);
-                                        if(!action.result.success){
-                                            Ext.toast(action.result.msg,"系统提示");
+                                        if (!action.result.success) {
+                                            Ext.toast(action.result.msg, "系统提示");
                                             return;
                                         }
                                         var store = null;
-                                        if(me.record.get("sku_set")==1){
-                                            store = Ext.create("Ext.data.Store",{
-                                                fields:[],
-                                                    data:[{range:vals.range}]
+                                        if (me.record.get("sku_set") == 1) {
+                                            store = Ext.create("Ext.data.Store", {
+                                                fields: [],
+                                                data: [{range: vals.range}]
                                             });
-                                            me.down("grid").setStore(store);
+                                        }else{
+                                            store = Ext.create("Ext.data.Store", {
+                                                fields: [],
+                                                data: [{range: Ext.encode(vals)}]
+                                            });
                                         }
-
+                                        me.goods_range_store = store;
+                                        me.down("grid").setStore(store);
                                         win.destroy();
                                     },
-                                    failure:function(form,action){
-                                        Ext.toast("新增商品范围失败!","系统提示");
+                                    failure: function (form, action) {
+                                        Ext.toast("新增商品范围失败!", "系统提示");
                                     }
                                 });
                             }
-                        }}
+                        }
+                        }
                     ]
                 }
             ]
         });
-        if(me.record.get("sku_set") == 1){
+        if (me.record.get("sku_set") == 1) {
             win.down("form").add([
                 {
-                    xtype:'combo',
-                    store:Ext.create("Ext.data.Store",{
-                        fields:[],
-                        data:[
-                            {name:'通用',val:'0'},
-                            {name:'按尺码',val:'1'},
-                            {name:'按颜色',val:'2'},
-                            {name:'按SKU',val:'3'}
+                    xtype: 'combo',
+                    store: Ext.create("Ext.data.Store", {
+                        fields: [],
+                        data: [
+                            {name: '通用', val: '0'},
+                            {name: '按尺码', val: '1'},
+                            {name: '按颜色', val: '2'},
+                            {name: '按SKU', val: '3'}
                         ]
                     }),
-                    name:'range',
-                    anchor:'100%',
-                    displayField:'name',
-                    valueField:'val',
-                    editable:false,
-                    labelAlign:'right',
-                    fieldLabel:'请选择商品范围'
+                    name: 'range',
+                    anchor: '100%',
+                    displayField: 'name',
+                    valueField: 'val',
+                    editable: false,
+                    labelAlign: 'right',
+                    fieldLabel: '请选择商品范围'
                 }
             ]);
         }
-        if(me.record.get("sku_set") == 0){
+        if (me.record.get("sku_set") == 0) {
             win.down("form").add([
-                {xtype: 'tagfield',fieldLabel: '品牌',itemId: 'brand',displayField: 'name_en',valueField: 'base_data_id',name: 'brand[]',editable: true},
-                {xtype: 'tagfield',fieldLabel: '年季',itemId: 'year_season',displayField: 'name',valueField: 'base_data_id',name: 'year_season[]',editable: true},
-                {xtype: 'tagfield',fieldLabel: '大类',displayField: 'name',valueField: 'base_data_id',itemId: 'large_class',name: 'large_class[]',
+                {
+                    xtype: 'tagfield',
+                    fieldLabel: '品牌',
+                    itemId: 'brand',
+                    displayField: 'name_en',
+                    valueField: 'base_data_id',
+                    name: 'brand[]',
+                    editable: true
+                },
+                {
+                    xtype: 'tagfield',
+                    fieldLabel: '年季',
+                    itemId: 'year_season',
+                    displayField: 'name',
+                    valueField: 'base_data_id',
+                    name: 'year_season[]',
+                    editable: true
+                },
+                {
+                    xtype: 'tagfield',
+                    fieldLabel: '大类',
+                    displayField: 'name',
+                    valueField: 'base_data_id',
+                    itemId: 'large_class',
+                    name: 'large_class[]',
                     listeners: {
                         change: function () {
                             var val = this.getValue();
@@ -588,8 +611,23 @@ console.log(me.gridsData);
                         }
                     }
                 },
-                {xtype: 'tagfield',fieldLabel: '小类',itemId: 'small_class',displayField: 'name',valueField: 'base_data_id',name: 'small_class[]',allowBlank:true},
-                {xtype: 'tagfield', fieldLabel: '性别',itemId: 'sex', displayField: 'name', valueField: 'base_data_id', name: 'sex[]'}
+                {
+                    xtype: 'tagfield',
+                    fieldLabel: '小类',
+                    itemId: 'small_class',
+                    displayField: 'name',
+                    valueField: 'base_data_id',
+                    name: 'small_class[]',
+                    allowBlank: true
+                },
+                {
+                    xtype: 'tagfield',
+                    fieldLabel: '性别',
+                    itemId: 'sex',
+                    displayField: 'name',
+                    valueField: 'base_data_id',
+                    name: 'sex[]'
+                }
             ]);
             Ext.Ajax.request({
                 aysnc: true,
@@ -652,8 +690,121 @@ console.log(me.gridsData);
         win.show();
     },
     //导入商品信息
-    importGoodsInfo:function(){
-        var me = this;
+    importGoodsInfo: function () {
+        var me = this,win;
+        win = Ext.create("Ext.window.Window",{
+           title:'导入促销商品信息',
+            width:400,
+            items:[
+                {
+                    xtype:'form',
+                    bodyPadding:10,
+                    items:[
+                        {
+                            xtype:'fileuploadfield',
+                            fieldLabel:'选择导入信息',
+                            labelAlign:'right',
+                            allowBlank:false,
+                            anchor:'100%',
+                            buttonText:'导入文件',
+                            name:'promotion_goods_info'
+                        }
+                    ],
+                    buttons: [
+                        {
+                            text: '重置',
+                            handler: function () {
+                                this.up("form").getForm().reset();
+                            }
+                        },
+                        {
+                            text: '提交',
+                            formBind: true,
+                            disabled: false,
+                            handler: function (btn) {
+                                var form = this.up("form").getForm();
+                                if (form.isValid()) {
+                                    form.submit({
+                                        waitMsg: '正在提交...',
+                                        url: apiBaseUrl + '/index.php/Operations/Entire/importPromotionGoodsInfo',
+                                        method: 'POST',
+                                        params:{
+                                            id:me.record.get("id")
+                                        },
+                                        success: function (form, action) {
+                                            me.goods_info = Ext.create('Ext.data.Store', {
+                                                fields: [], data: action.result.data
+                                            });
+                                            me.down("grid").setStore(me.goods_info);
+                                            win.destroy();
+                                            Ext.toast("导入成功!", "系统提示");
+                                        },
+                                        failur: function (form, action) {
+                                            if (action.result.msg) {
+                                                Ext.toast(action.result.msg, "系统提示");
+                                                return;
+                                            }
+                                            Ext.toast("网络请求错误,请检查网络!", "系统提示");
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        });
+        win.show();
         console.log(me.record);
+    },
+    //删除商品范围
+    delPromotionGoodsRange: function () {
+        //Ext.Msg.alert("确定要删除此范围?","系统提示");
+        var me = this;
+        Ext.Ajax.request({
+            async: false,
+            method: 'POST',
+            url: apiBaseUrl + '/index.php/Operations/Entire/delPromotionGoodsRange',
+            params: {
+                id: me.record.get("id"),
+                sku_set: me.record.get("sku_set")
+            },
+            success: function (res) {
+                var json = Ext.decode(res.responseText);
+                if (!json.success) {
+                    Ext.toast(json.msg, "系统提示");
+                    return;
+                }
+                me.down("grid").setStore(Ext.create('Ext.data.Store', {fields: [], data: []}));
+            },
+            failure: function (res) {
+
+            }
+        });
+    },
+    handlerWholeOrderPromotionStatus:function(){
+        var me = this;
+        var status = me.record.get("status"),id=me.record.get("id");
+        Ext.Ajax.request({
+            async: false,
+            method: 'POST',
+            url: apiBaseUrl + '/index.php/Operations/Entire/handlerPromotionStatus',
+            params: {
+                id: me.record.get("id"),
+                status:parseInt(status)+1
+            },
+            success: function (res) {
+                var json = Ext.decode(res.responseText);
+                if (!json.success) {
+                    Ext.toast(json.msg, "系统提示");
+                    return;
+                }
+                me.destroy();
+                //me.down("grid").setStore(Ext.create('Ext.data.Store', {fields: [], data: []}));
+            },
+            failure: function (res) {
+
+            }
+        });
     }
 });

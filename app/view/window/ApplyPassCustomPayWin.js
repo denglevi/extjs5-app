@@ -234,7 +234,8 @@ Ext.define('erp.view.window.ApplyPassCustomPayWin',{
                                     params:{
                                         id:me.pass_customs_id,
                                         next_status:me.pass_customs_next_status,
-                                        status:me.pass_customs_status
+                                        status:me.pass_customs_status,
+                                        pass_customs_no:me.pass_customs_no
                                     },
                                     waitMsg:'正在提交...',
                                     success: function (form, action) {

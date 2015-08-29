@@ -38,7 +38,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                         res = text.data;
                         var form = me.down("form");
                         form.down("combo[name=buyer]").setStore(Ext.create('Ext.data.Store', {
-                            fields: ['id', 'username'],
+                            fields: ['id', 'nickname'],
                             data: res.buyer
                         }));
                         form.down("combo[name=supplier]").setStore(Ext.create('Ext.data.Store', {
@@ -95,7 +95,7 @@ Ext.define('erp.view.module.purchase.AddPurchaseOrder', {
                         name: 'buyer',
                         xtype: 'combo',
                         editable: false,
-                        displayField: 'username',
+                        displayField: 'nickname',
                         valueField: 'id',
                         disabled: true
                     },

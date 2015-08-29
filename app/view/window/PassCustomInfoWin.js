@@ -269,7 +269,8 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                                         params:{
                                             id:id,
                                             next_status:status_id,
-                                            status:me.record.get('cu_status')
+                                            status:me.record.get('cu_status'),
+                                            pass_customs_no:me.record.get('pass_customs_no')
                                         },
                                         waitMsg: '正在更新...',
                                         success: function (form, action) {
@@ -297,8 +298,12 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
             title:'申请报关付款',
             width:600,
             pass_customs_id:id,
+            pass_customs_no:me.record.get('pass_customs_no'),
             pass_customs_status:me.record.get('cu_status'),
             pass_customs_next_status:status_id
+        });
+        win.on("beforedestroy",function(){
+           me.destroy();
         });
         return win;
     }

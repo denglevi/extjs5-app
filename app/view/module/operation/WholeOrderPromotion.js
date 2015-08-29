@@ -39,12 +39,6 @@ Ext.define('erp.view.module.operation.WholeOrderPromotion', {
                     //glyph: 0xf1f8,
                     iconCls: 'delIcon',
                     handler: 'delWholeOrderPromotion'
-                },
-                {
-                    text: '修改',
-                    //glyph: 0xf044,
-                    iconCls: 'editIcon',
-                    handler: 'editWholeOrderPromotion'
                 }, '->',
                 {xtype: 'datefield', editable: false, fieldLabel: '开始日期', labelAlign: 'right', format: 'Y-m-d'},
                 {xtype: 'datefield', editable: false, fieldLabel: '结束日期', labelAlign: 'right', format: 'Y-m-d'},
@@ -66,13 +60,25 @@ Ext.define('erp.view.module.operation.WholeOrderPromotion', {
                 }
                 },
                 {text: '制单人', dataIndex: 'assist_handlername', flex: 1},
-                {text: '操作', dataIndex: 'cleraing_condition', flex: 1}
+                {
+                    text: '操作',
+                    xtype: 'actioncolumn',
+                    dataIndex: 'status',
+                    items: [
+                        {
+                            getClass: function (val) {
+                                if (val == 0 || val == 1) return 'editIcon';
+                                return 'hide';
+                            }, tooltip: '修改', val: 1, handler: 'editWholeOrderPromotion'
+                        }
+                    ]
+                }
             ],
             store: 'WholeOrderPromotionStore',
             bbar: ['->', {
                 xtype: 'pagingtoolbar',
                 store: 'WholeOrderPromotionStore',
-                displayInfo:true
+                displayInfo: true
             }],
             listeners: {
                 afterrender: function () {

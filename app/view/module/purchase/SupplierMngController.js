@@ -132,10 +132,10 @@ Ext.define('erp.view.module.purchase.SupplierMngController', {
     },
     addPassCustomOrder: function (gp, record) {//PassCustomListStore
         var win = Ext.create("erp.view.window.AddPassCustomFormWin", {title: '新增报关单'});
-        win.on("addPassCustomsOrder", function () {
-            win.destroy();
-            gp.getStore().load();
-        });
+        //win.on("addPassCustomsOrder", function () {
+        //    win.destroy();
+        //    gp.getStore().load();
+        //});
         win.show();
     },
     deletePassCustomOrder: function (del_btn) {

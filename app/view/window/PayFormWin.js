@@ -28,7 +28,7 @@ Ext.define('erp.view.window.PayFormWin', {
                 xtype: 'form',
                 url: apiBaseUrl + '/index.php/Financial/Index/pay',
                 method: 'POST',
-                bodyPadding: 10,
+                bodyPadding: 5,
                 layout: 'column',
                 defaults: {
                     anchor: '100%',
@@ -53,6 +53,7 @@ Ext.define('erp.view.window.PayFormWin', {
             var items = record.get("items");
             var json = Ext.decode(items);
             var items = [
+                {fieldLabel:'报关单号',xtype:'displayfield',value:record.get("order_no")},
                 {fieldLabel:'申请人',xtype:'displayfield',value:record.get("applier_name")},
                 {fieldLabel:'订货单号',value:record.get("order_no"),xtype:'displayfield'},
                 {fieldLabel:'到货单号',value:json.logistics_no,xtype:'displayfield'},
@@ -63,63 +64,101 @@ Ext.define('erp.view.window.PayFormWin', {
                 {fieldLabel:'报关总金额(欧元)',value:json.money_EUR,xtype:'displayfield'},
                 {fieldLabel:'关税总金额(人民币)',value:json.money_RMB,xtype:'displayfield'},
                 {fieldLabel:'增值税(人民币)',value:json.tax,xtype:'displayfield'},
-                {fieldLabel:'缴税总额',value:record.get("money"),xtype:'displayfield'},
-                {fieldLabel:'最后付款日期',xtype:'displayfield',value:record.get("last_pay_day")},
-                {fieldLabel:'缴纳关税相关文件',value:'xxxx',xtype:'displayfield'},
-                {fieldLabel:'实际付款金额(人民币)',name:'pay_money'},
-                {
-                    fieldLabel: '付款凭证',
-                    name: 'fileinfo[]',
-                    xtype: 'filefield',
-                    buttonText: '上传',
-                    allowBlank: false,
-                    disabled: false,
-                    editable: false,
-                },
-                {fieldLabel: '备注', name: 'mark', xtype: 'textarea', allowBlank: true, columnWidth: 1}
+                {fieldLabel:'缴税总额',value:record.get("money"),xtype:'displayfield',itemId:'total'},
+                {fieldLabel:'缴纳关税相关文件',value:'xxxx',xtype:'displayfield'}
             ]
-
-            return items;
+            if(record.get("status") == 0){
+                return items.concat([
+                    {fieldLabel:'最后付款日期',xtype:'displayfield',value:record.get("last_pay_day")},
+                    {fieldLabel:'实际付款金额(人民币)',name:'pay_money',itemId:'pay_money',decimalPrecision:5},
+                    {
+                        fieldLabel: '付款凭证',
+                        name: 'fileinfo[]',
+                        xtype: 'filefield',
+                        buttonText: '上传',
+                        allowBlank: false,
+                        disabled: false,
+                        editable: false,
+                    },
+                    {fieldLabel: '备注', name: 'mark', xtype: 'textarea', allowBlank: true, columnWidth: 1}]);
+            }else{
+                var info = Ext.decode(record.get("info"));
+                //console.log(info);
+               return items.concat([
+                    {xtype: 'displayfield', fieldLabel: '最后付款日期', name: 'last_pay_day', value: record.get("last_pay_day")},
+                    {fieldLabel:'实际付款金额(人民币)',xtype:'displayfield',value:record.get("money")},
+                    {
+                        xtype: 'displayfield',
+                        fieldLabel: '付款凭证',
+                        name: 'fileinfo',
+                        value: info.fileinfo,
+                        renderer: function (val) {
+                            return '<a target="_blank" href="' + apiBaseUrl + val + '">付款凭证</a>';
+                        }
+                    },
+                    //{xtype: 'displayfield', fieldLabel: '备注', name: 'mark', value: info.mark, columnWidth: 1}
+                ]);
+            }
         }
 
-        if (me.record.get("pay_type") == "申请报关付款") {
+        if (me.record.get("pay_type") == "申请报关付款" || me.record.get("pay_type") == "国际物流费用" || me.record.get("pay_type") == "报关费用") {
             pay_money = {xtype: 'displayfield', fieldLabel: '申请付款金额', name: 'money', value: record.get("money")};
         } else {
             pay_money = {xtype: 'displayfield', fieldLabel: '申请付款金额(欧)', name: 'money', value: record.get("money")};
         }
-        var normal = [
-            {xtype: 'displayfield', fieldLabel: '付款申请人', name: 'applier', value: record.get("applier_name")},
-            {
-                xtype: 'displayfield',
-                fieldLabel: '收款公司',
-                name: 'receive_money_company',
-                value: record.get("receive_money_company")
-            },
-            {xtype: 'displayfield', fieldLabel: '公司账号', name: 'company_bank_no', value: record.get("company_bank_no")},
-            {xtype: 'displayfield', fieldLabel: '合同号', name: 'contract_no', value: record.get("contract_no")},
-            {xtype: 'displayfield', fieldLabel: '最后付款日期', name: 'last_pay_day', value: record.get("last_pay_day")},
-            pay_money,
-            {
-                xtype: 'displayfield',
-                fieldLabel: '开户行',
-                name: 'company_open_bank',
-                value: record.get("company_open_bank")
-            },
-            {
-                xtype: 'displayfield',
-                fieldLabel: '用途',
-                name: 'pay_function',
-                value: record.get("pay_function"),
-                columnWidth: 1
-            }
-        ];
-        console.log(record);
+        var normal = [];
+        if(me.record.get("pay_type") == "国际物流费用" || me.record.get("pay_type") == "报关费用"){
+            normal.push({fieldLabel:'报关单号',xtype:'displayfield',value:record.get("order_no")});
+        }
+        normal = normal.concat(
+            [
+                {xtype: 'displayfield', fieldLabel: '付款申请人', name: 'applier', value: record.get("applier_name")},
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: '收款公司',
+                    name: 'receive_money_company',
+                    value: record.get("receive_money_company")
+                },
+                {xtype: 'displayfield', fieldLabel: '公司账号', name: 'company_bank_no', value: record.get("company_bank_no")},
+                {xtype: 'displayfield', fieldLabel: '合同号', name: 'contract_no', value: record.get("contract_no")},
+                {xtype: 'displayfield', fieldLabel: '最后付款日期', name: 'last_pay_day', value: record.get("last_pay_day")},
+                pay_money,
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: '开户行',
+                    name: 'company_open_bank',
+                    value: record.get("company_open_bank")
+                },
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: '用途',
+                    name: 'pay_function',
+                    value: record.get("pay_function"),
+                    columnWidth: 1
+                }
+            ]
+        );
+        //console.log(record);
         if (this.status == 0) {
             var newFields;
-            if (me.record.get("pay_type") != "申请报关付款") {
+            if(me.record.get("pay_type") == "国际物流费用" || me.record.get("pay_type") == "报关费用"){
+                newFields = [
+                    {fieldLabel: '实际付款金额', name: 'RMB', allowBlank: false},
+                    {
+                        fieldLabel: '付款凭证',
+                        name: 'fileinfo[]',
+                        xtype: 'filefield',
+                        buttonText: '上传',
+                        allowBlank: false,
+                        disabled: false,
+                        editable: true,
+                    },
+                    {fieldLabel: '备注', name: 'mark', xtype: 'textarea', allowBlank: true, columnWidth: 1}
+                ];
+            } else if (me.record.get("pay_type") != "申请报关付款") {
                 newFields = [
                     {
-                        fieldLabel: '实际付款金额(欧)', name: 'EUR', allowBlank: false, xtype: 'numberfield',
+                        fieldLabel: '实际付款金额(欧)', name: 'EUR', allowBlank: false, xtype: 'numberfield',decimalPrecision:5,
                         listeners: {
                             blur: function () {
                                 var form = me.down("form"),
@@ -145,19 +184,6 @@ Ext.define('erp.view.window.PayFormWin', {
                 ];
             } else {
                 newFields = [
-                    //{
-                    //    fieldLabel: '实际付款金额(欧)', name: 'EUR', allowBlank: false, xtype: 'numberfield',
-                    //    listeners: {
-                    //        blur: function () {
-                    //            var form = me.down("form"),
-                    //                rate = form.down("field[name=rate]").getValue(),
-                    //                EUR = form.down("field[name=EUR]").getValue();
-                    //
-                    //            form.down("field[name=RMB]").setValue(parseFloat((rate * EUR).toFixed(10)));
-                    //        }
-                    //    }
-                    //},
-                    //{xtype: 'displayfield', fieldLabel: '汇率', name: 'rate', value: rate},
                     {fieldLabel: '实际付款金额', editable: true, name: 'RMB', allowBlank: false},
                     {
                         fieldLabel: '付款凭证',
@@ -174,9 +200,23 @@ Ext.define('erp.view.window.PayFormWin', {
             return Ext.Array.merge(normal, newFields);
         }
         var info = Ext.decode(record.get("info"));
-        console.log(record, info);
+        //console.log(record, info);
         var newFields;
-        if (me.record.get("pay_type") == "申请报关付款") {
+        if(me.record.get("pay_type") == "国际物流费用" || me.record.get("pay_type") == "报关费用"){
+            newFields = [
+                {xtype: 'displayfield', fieldLabel: '实际付款金额', name: 'RMB', value: info.RMB},
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: '付款凭证',
+                    name: 'fileinfo',
+                    value: info.fileinfo,
+                    renderer: function (val) {
+                        return '<a target="_blank" href="http://192.168.16.22' + val + '">付款凭证</a>';
+                    }
+                },
+                {xtype: 'displayfield', fieldLabel: '备注', name: 'mark', value: info.mark, columnWidth: 1}
+            ];
+        } else if (me.record.get("pay_type") == "申请报关付款") {
             newFields = [
                 //{xtype:'displayfield',fieldLabel: '欧元金额', name: 'EUR', value: info.EUR},
                 //{xtype:'displayfield',fieldLabel: '汇率', name: 'rate', value: info.rate},
@@ -230,13 +270,29 @@ Ext.define('erp.view.window.PayFormWin', {
                 handler: function () {
                     var form = this.up('form').getForm(),
                         vals = form.getValues();
-                    var money = this.up('form').down("displayfield[name=money]").getValue();
                     if (me.record.get("pay_type") == "申请报关付款") {
+                        var money = this.up('form').down("displayfield[name=money]").getValue();
                         if (vals.RMB != money) {
                             Ext.Msg.alert('系统提示', "实际付款金额和申请付款金额不等!");
                             return;
                         }
-                    }else{
+                    }else if(me.record.get("pay_type") == "关税缴纳"){
+                        var pay_money = this.up('form').down("#pay_money").getValue(),
+                            money = this.up('form').down("#total").getValue();
+                        if (pay_money != money) {
+                            Ext.Msg.alert('系统提示', "实际付款金额和缴税总额不等!");
+                            return;
+                        }
+                    }else if(me.record.get("pay_type") == "国际物流费用" || me.record.get("pay_type") == "报关费用"){
+                        var pay_money = this.up('form').down("displayfield[name=money]").getValue(),
+                            money = this.up('form').down("textfield[name=RMB]").getValue();
+                        if (pay_money != money) {
+                            Ext.Msg.alert('系统提示', "实际付款金额和要付款金额不等!");
+                            return;
+                        }
+                    }
+                    else{
+                        var money = this.up('form').down("displayfield[name=money]").getValue();
                         if (vals.EUR != money) {
                             Ext.Msg.alert('系统提示', "实际付款金额和申请付款金额不等!");
                             return;
@@ -246,6 +302,7 @@ Ext.define('erp.view.window.PayFormWin', {
                         form.submit({
                             params: {
                                 id: record.get("id"),
+                                pay_type:record.get("pay_type"),
                                 order_no: record.get("order_no"),
                                 batch_no: record.get("batch_no"),
                                 rate: rate

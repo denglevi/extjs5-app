@@ -59,7 +59,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             barContainer = me.getBarContainer(batchs,order_info),
             infoGrid = me.getInfoGrid(product_info);
         model.set("purchaseOrderStatus",status);
-        //console.log(res);
+        console.log(res);
         me.res = res;
         if (next_status !== null) {
             var url = next_status.action == '' ? '/Purchasing/Buyer/purchasingAction' : next_status.action;
@@ -129,7 +129,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     '<div class="col-md-3">日期：{order_time}</div>',
                     '<div class="col-md-3">供应商：{vendor_name}</div>',
                     '<div class="col-md-3">订单号：{order_nos}</div>',
-                    '<div class="col-md-3">买手：{username}</div>',
+                    '<div class="col-md-3">买手：{nickname}</div>',
                     '</div>',
                     '<div class="col-md-12">',
                     '<div class="col-md-3">订单类型：{[this.getType(values.order_state)]}</div>',
@@ -175,18 +175,14 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         var url = next_status.action == '' ? '/Purchasing/Buyer/purchasingAction' : next_status.action;
 
         if ('申请付款' == next_status.name) {
-            var total = 0;
-            Ext.each(product_info, function (product) {
-                var money = parseFloat(product.orderinfo_wholesale)*parseFloat(product.orderinfo_amount);
-                total += money;
-            });
+            console.log(next_status,order_info);
             var win = Ext.create('erp.view.window.PurchasePayWin', {
                 title: next_status.name,
                 status_id: order_info.order_status,
                 order_no: order_info.order_nos,
                 batch_no: batchs[0].batch_no,
                 url: url,
-                total: total
+                total: order_info.product_total_price
             });
             win.on("beforedestroy",me.changeOrderData,me);
             win.show();
@@ -720,6 +716,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             } else {
                 var batchs = me.res.batchs, len = batchs.length;
                 columns = [
+                    {text: '品牌', dataIndex: 'brand'},
                     {text: '国际款号', dataIndex: 'style_no', flex: 1},
                     {text: '商品名称', dataIndex: 'name'},
                     {text: '颜色', dataIndex: 'color'},

@@ -209,7 +209,7 @@ Ext.define('erp.view.module.member.VIPController', {
             title: '查看VIP信息',
             width: 600,
             height: 500,
-            resizable:false,
+            maximizable:true,
             modal: true,
             layout: {
                 type: 'vbox',

@@ -30,20 +30,87 @@ Ext.define('erp.view.module.operation.SalesActivityController', {
             width:600,
             title:'新增整单促销活动'
         });
-        var form = this.createWholeOrderPromotionForm(win);
+        var url = apiBaseUrl + '/index.php/Operations/Entire/addWholeOrderPromotion';
+        var form = this.createWholeOrderPromotionForm(win,url);
         win.add(form);
         win.show();
         win.on("beforedestroy",function(){
             btn.up("grid").getStore().load();
         });
     },
-    createWholeOrderPromotionForm:function(win){
+    editWholeOrderPromotion:function(grid, rowIndex, colIndex, item, e, record){
+        var win = Ext.create('Ext.window.Window',{
+            modal:true,
+            resizable:false,
+            width:600,
+            title:'修改整单促销活动'
+        });
+        var url = apiBaseUrl + '/index.php/Operations/Entire/addWholeOrderPromotion';
+        var form = this.createWholeOrderPromotionForm(win,url);
+        form.loadRecord(record);
+        win.add(form);
+        win.show();
+        win.on("beforedestroy",function(){
+            grid.getStore().load();
+        });
+    },
+    delWholeOrderPromotion:function(del_btn){
+        var sel = del_btn.up('grid').getSelection(), ids = [], names = [], mark = 0,is_delete = 0;
+        if (sel.length == 0) {
+            Ext.Msg.alert('系统提示', '请选择要删除的促销活动');
+            return;
+        }
+        Ext.each(sel, function (record) {
+            if (record.get("status") == 1 || record.get("status") == 2) {
+                mark = 1;
+                return;
+            }
+            ids.push(record.get("id"));
+            names.push(record.get("assist_no"));
+        });
+
+        if (1 == mark) {
+            Ext.Msg.alert('系统提示', '已经审核或者启用的促销活动不允许删除!');
+            return;
+        }
+        Ext.Msg.show({
+            title: '系统消息',
+            message: '你确定要删除以下促销活动吗？<br>' + names.join('<br>'),
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn === 'yes') {
+                    Ext.getBody().mask("正在删除...");
+                    Ext.Ajax.request({
+                        url: apiBaseUrl + '/index.php/Operations/Entire/delWholeOrderPromotion',
+                        params: {
+                            ids: ids.join(',')
+                        },
+                        success: function (data) {
+                            var res = Ext.decode(data.responseText);
+                            if (!res.success) {
+                                Ext.Msg.alert('系统提示', res.msg);
+                                return;
+                            }
+                            Ext.getBody().unmask();
+                            del_btn.up('grid').getStore().load();
+                        },
+                        failure: function (data) {
+                            Ext.getBody().unmask();
+                            Ext.Msg.alert('系统提示', "请求网络错误,请检查网络,重试!");
+                        }
+                    })
+                }
+            }
+        });
+    },
+    createWholeOrderPromotionForm:function(win,url,id){
         var form = Ext.create('Ext.form.Panel',{
             bodyPanel:10,
             layout:{
                 type:'column'
             },
-            url: apiBaseUrl + '/index.php/Operations/Entire/addWholeOrderPromotion',
+            url: url,
             method:'POST',
             defaults:{
                 xtype:'textfield',
@@ -56,6 +123,7 @@ Ext.define('erp.view.module.operation.SalesActivityController', {
             },
             items:[
                 {fieldLabel:'活动名称',name:'assist_namesion',allowBlank:false},
+                {xtype:'hiddenfield',name:'id'},
                 {fieldLabel:'大店',name:'assist_strop',xtype:'combo',editable:false,disabled:true,displayField:'shops_name',valueField:'id',allowBlank:false},
                 {fieldLabel:'开始日期',name:'start_date',xtype:'datefield',editable:false,format:'Y-m-d',allowBlank:false},
                 {fieldLabel:'结束日期',name:'end_date',xtype:'datefield',editable:false,format:'Y-m-d',allowBlank:false},
@@ -379,7 +447,58 @@ Ext.define('erp.view.module.operation.SalesActivityController', {
                 Ext.toast("获取大店数据错误!","系统提示");
             }
         });
-
         return form;
+    },
+
+    /*删除捆绑*/
+    delBundledSales:function(del_btn) {
+        var sel = del_btn.up('grid').getSelection(), ids = [], names = [], mark = 0, is_delete = 0;
+        if (sel.length == 0) {
+            Ext.Msg.alert('系统提示', '请选择要删除的促销活动');
+            return;
+        }
+        Ext.each(sel, function (record) {
+            if (record.get("status") == 1 || record.get("status") == 2) {
+                mark = 1;
+                return;
+            }
+            ids.push(record.get("id"));
+            names.push(record.get("docment_no"));
+        });
+
+        if (1 == mark) {
+            Ext.Msg.alert('系统提示', '已经审核或者启用的促销活动不允许删除!');
+            return;
+        }
+        Ext.Msg.show({
+            title: '系统消息',
+            message: '你确定要删除以下促销活动吗？<br>' + names.join('<br>'),
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn === 'yes') {
+                    Ext.getBody().mask("正在删除...");
+                    Ext.Ajax.request({
+                        url: apiBaseUrl + '/index.php/Operations/Promotion/delBundledSales',
+                        params: {
+                            ids: ids.join(',')
+                        },
+                        success: function (data) {
+                            var res = Ext.decode(data.responseText);
+                            if (!res.success) {
+                                Ext.Msg.alert('系统提示', res.msg);
+                                return;
+                            }
+                            Ext.getBody().unmask();
+                            del_btn.up('grid').getStore().load();
+                        },
+                        failure: function (data) {
+                            Ext.getBody().unmask();
+                            Ext.Msg.alert('系统提示', "请求网络错误,请检查网络,重试!");
+                        }
+                    })
+                }
+            }
+        });
     }
 })

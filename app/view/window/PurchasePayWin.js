@@ -17,7 +17,7 @@ Ext.define('erp.view.window.PurchasePayWin', {
     modal: true,
     initComponent: function () {
         var me = this, fields;
-        console.log(me.batch_no);
+        console.log(me.batch_no,me.title);
         Ext.Ajax.request({
             async: true,
             method: 'POST',
@@ -52,13 +52,13 @@ Ext.define('erp.view.window.PurchasePayWin', {
             }
         });
         me.width = 400;
-        if (me.title = "申请定金") {
+        if (me.title == "申请定金") {
             fields = [
                 {fieldLabel: '收款公司', name: 'receive_money_company', disabled: true},
                 {fieldLabel: '公司账号', name: 'company_bank_no', disabled: true},
                 {fieldLabel: '开户行', name: 'company_open_bank', disabled: true},
                 {fieldLabel: '合同号', name: 'contract_no'},
-                {fieldLabel: '付款金额(欧)', xtype: 'numberfield', name: 'total', value: me.total},
+                {fieldLabel: '付款金额(欧)', xtype: 'numberfield', name: 'total', value: me.total,decimalPrecision:5},
                 {fieldLabel: '汇率', name: 'exchange_rate'},
                 {fieldLabel: '定金百分比', xtype: 'numberfield',minValue:0,maxValue:100, name: 'percent',listeners:{
                     blur:function(){
@@ -70,7 +70,7 @@ Ext.define('erp.view.window.PurchasePayWin', {
                     }
                 },columnWidth:0.95,margin:'5 0 5 5'},
                 {xtype:'displayfield',hideLabel:true,value:'%',columnWidth:0.05,margin:'5 5 5 0'},
-                {fieldLabel: '定金付款金额(欧)', name: 'money'},
+                {fieldLabel: '定金付款金额(欧)', name: 'money',decimalPrecision:5},
                 {
                     fieldLabel: '最后付款日期',
                     name: 'last_pay_day',
@@ -88,7 +88,7 @@ Ext.define('erp.view.window.PurchasePayWin', {
                 {fieldLabel: '开户行', name: 'company_open_bank', disabled: true},
                 {fieldLabel: '合同号', name: 'contract_no'},
                 {fieldLabel: '汇率', name: 'exchange_rate'},
-                {fieldLabel: '付款金额(欧)', xtype: 'numberfield', name: 'money', value: me.total},
+                {fieldLabel: '付款金额(欧)', xtype: 'numberfield', name: 'money', value: me.total,decimalPrecision:5},
                 {
                     fieldLabel: '最后付款日期',
                     name: 'last_pay_day',
@@ -116,29 +116,7 @@ Ext.define('erp.view.window.PurchasePayWin', {
                     labelAlign: 'right'
                 },
                 bodyPadding: 10,
-                items: fields
-                //{
-                //    fieldLabel: '选择付款人',
-                //    name: 'payer',
-                //    xtype: 'combo',
-                //    editable: false,
-                //    displayField: 'username',
-                //    valueField: 'id',
-                //    //queryMode:'local',
-                //    store:Ext.create('Ext.data.Store',{
-                //        //autoLoad:true,
-                //        fields:['id','username'],
-                //        proxy: {
-                //            type: 'ajax',
-                //            url: apiBaseUrl+'/index.php/Purchasing/Buyer/getPayer',
-                //            reader: {
-                //                type: 'json',
-                //                rootProperty: 'data'
-                //            }
-                //        }
-                //    })
-                //}
-                ,
+                items: fields,
                 buttons: [
                     {
                         text: '重置',
