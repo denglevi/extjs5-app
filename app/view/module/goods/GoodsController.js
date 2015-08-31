@@ -326,8 +326,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
                     labelAlign: 'right',
                     labelWidth: 70,
                     columnWidth: 0.5,
-                    anchor: '100%',
-                    allowBlank: false
+                    anchor: '100%'
                 },
                 items: [
                     {
@@ -338,6 +337,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
                         valueField: 'id',
                         displayField: 'shops_name',
                         editable: false,
+                        allowBlank: false,
                         listeners:{
                             change:function(val){
                                 var box = this;
@@ -385,6 +385,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
                         xtype: 'combo',
                         disabled: true,
                         valueField: 'id',
+                        allowBlank: false,
                         displayField: 'storage_name',
                         editable: false
                     },
@@ -405,6 +406,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
                         name: 'brand_id',
                         xtype: 'combo',
                         disabled: true,
+                        allowBlank: false,
                         valueField: 'id',
                         displayField: 'name_en',
                         editable: false

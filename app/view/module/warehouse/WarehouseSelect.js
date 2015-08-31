@@ -81,6 +81,9 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
                 disabled: true
             },
             items: [
+                {xtype: 'textfield', fieldLabel: '唯一码', name: 'goods_no',disabled: false,editable: true},
+                {xtype: 'textfield', fieldLabel: '国际款号', name: 'supply_style_no',disabled: false,editable: true},
+                {xtype: 'textfield', fieldLabel: '系统款号', name: 'system_style_no',disabled: false,editable: true},
                 {xtype: 'combo', fieldLabel: '品牌', name: 'brand', displayField: 'name_en', valueField: 'base_data_id'},
                 {
                     xtype: 'combo', fieldLabel: '大类', name: 'large_class', listeners: {

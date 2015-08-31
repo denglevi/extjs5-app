@@ -61,9 +61,10 @@ Ext.define('erp.view.module.goods.GoodsList', {
             border: true,
             columns: [
                 {text: '导入单号', dataIndex: 'no', flex:2},
-                {text: '商品总数', dataIndex: 'goods_num', flex:1},
-                {text: '未入库数', dataIndex: 'unimport_num', flex:1},
-                {text: '已入库数', dataIndex: 'import_num', flex:1}
+                {text: '总数', dataIndex: 'goods_num', flex:1},
+                {text: '未入库', dataIndex: 'unimport_num', flex:1},
+                {text: '已入库', dataIndex: 'import_num', flex:1},
+                {text: '导入日期', dataIndex: 'create_time', flex:1}
             ],
             store: Ext.create('Ext.data.Store', {
                 fields: ['no', 'id'],
@@ -196,6 +197,8 @@ Ext.define('erp.view.module.goods.GoodsList', {
                 //}
                 //},
                 {text: '唯一码', dataIndex: 'no',width:170},
+                {text: '国际款号', dataIndex: 'supply_style_no',width:170},
+                {text: '系统款号', dataIndex: 'system_style_no',width:170},
                 {text: '名称', dataIndex: 'name_zh',width:100},
                 {text: '颜色代码', dataIndex: 'supply_color_no',width:70},
                 {text: '颜色名称', dataIndex: 'color',width:70},

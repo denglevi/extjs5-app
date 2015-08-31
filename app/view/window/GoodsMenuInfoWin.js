@@ -76,6 +76,8 @@ Ext.define('erp.view.window.GoodsMenuInfoWin', {
                             '<tr><td class="col-md-3 text-right">性别</td><td>{sex}</td></tr>',
                             '<tr><td class="col-md-3 text-right">执行标准</td><td>{execute_standard}</td></tr>',
                             '<tr><td class="col-md-3 text-right">安全级别</td><td>{safety_level}</td></tr>',
+                            '<tr><td class="col-md-3 text-right">面料成份</td><td>{material_1}</td></tr>',
+                            '<tr><td class="col-md-3 text-right">产地</td><td>{original}</td></tr>',
                             '<tr><td class="col-md-3 text-right">等级</td><td>{level}</td></tr></table>'
                         )
                     },

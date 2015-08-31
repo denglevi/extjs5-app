@@ -408,9 +408,9 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
             dockedItems: [{
                 xtype: 'toolbar',
                 dock: 'top',
-                bind:{
-                    hidden:'{bundledSalesInfoEditable}'
-                },
+                //bind:{
+                //    hidden:'{bundledSalesInfoEditable}'
+                //},
                 items: ['->', {
                     text: '新增促销商品范围',
                     handler: me.btnOnClick

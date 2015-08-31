@@ -82,7 +82,7 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                     //    displayField: 'username',
                     //    valueField: 'id',
                     //},
-                    {xtype: 'filefield',name: 'excel_file',buttonText: '导入装箱单',allowBlank: true,clearOnSubmit:false,
+                    {xtype: 'filefield',name: 'excel_file',buttonText: '导入装箱单',allowBlank: true,
                         listeners: {
                             change: function () {
                                 var val = this.getValue();
@@ -107,8 +107,14 @@ Ext.define('erp.view.module.purchase.AddCheckProductOrder', {
                                             height: '100%',
                                             sortableColumns: false,
                                             columns:[
-                                                {text:'国际款号',dataIndex:'no',flex:1},
-                                                {text:'差异数',dataIndex:'num',flex:1}
+                                                {text: '国际款号', dataIndex: 'style_no',flex:1},
+                                                {text: '颜色', dataIndex: 'color',flex:1},
+                                                {text: '尺码', dataIndex: 'size',flex:1},
+                                                {text: '单价', dataIndex: 'price',flex:1},
+                                                {text: '差异数', dataIndex: 'num',renderer:function(val){
+                                                    if(val >0) return '-'+val;
+                                                    else return Math.abs(val);
+                                                }}
                                             ],
                                             store:Ext.create('Ext.data.Store', {
                                                 fields: [],

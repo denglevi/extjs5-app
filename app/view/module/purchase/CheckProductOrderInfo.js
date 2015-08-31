@@ -19,7 +19,7 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
             vendor_name:this.record.get("name"),
             order_no:this.record.get("order_no"),
             batch_no:this.record.get("batch_no"),
-            username:this.record.get("username"),
+            nickname:this.record.get("nickname"),
             mark:this.record.get("mark"),
             id:this.record.get("id")
         }
@@ -37,7 +37,7 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                     '<div class="col-md-3">供应商：{vendor_name}</div>',
                     '<div class="col-md-2">订单号：{order_no}</div>',
                     '<div class="col-md-3">供应单号：{batch_no}</div>',
-                    '<div class="col-md-2">买手：{username}</div>',
+                    '<div class="col-md-2">买手：{nickname}</div>',
                     '</div>',
                     '<div class="col-md-12">',
                     '<div class="col-md-2">总箱数：{box_num}</div>',
@@ -111,6 +111,8 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                                                 sortableColumns:false,
                                                 columns: [
                                                     {text: '国际款号', dataIndex: 'style_no',flex:1},
+                                                    {text: '颜色', dataIndex: 'color',flex:1},
+                                                    {text: '尺码', dataIndex: 'size',flex:1},
                                                     {text: '差异数', dataIndex: 'diff'}
                                                 ],
                                                 store:Ext.create('Ext.data.Store',{

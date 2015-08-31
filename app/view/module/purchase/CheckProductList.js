@@ -90,10 +90,11 @@ Ext.define('erp.view.module.purchase.CheckProductList', {
             }
         }],
     columns:[
+        {text:'验货订单号',dataIndex:'check_no',flex:1},
         {text:'采购订单号',dataIndex:'order_no',flex:1},
         {text:'供货单号',dataIndex:'batch_no',flex:1},
         {text:'供应商',dataIndex:'name',flex:1},
-        {text:'买手',dataIndex:'username'},
+        {text:'买手',dataIndex:'nickname'},
         {text:'备注',dataIndex:'mark',flex:1},
         {text:'提交日期',dataIndex:'date'}
     ],

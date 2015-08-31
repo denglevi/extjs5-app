@@ -23,7 +23,7 @@ Ext.define('erp.view.window.GoodsInfoWin', {
     },
     //bodyPadding: 10,
     width: 650,
-    height: 600,
+
     modal:true,
     html:'<iframe id="printIframe" style="display:none;" />',
     initComponent: function () {
@@ -125,33 +125,11 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                         '<div>条形码</div>',
                         '</div>'
                     );
-                    //var area = "<div></div>";
+
                     var area = tpl.apply(info);
-                    //var printArea = '<div class="width:200px;clear:both;">' +
-                    //    '<div style="width:200px;font-family: Arial;font-weight: 900;text-align: center;font-size: large;">'+info.brand+'</div>' +
-                    //    '<div class="row" style="font-size: small;">' +
-                    //    '<div class="col-md-12">国际款号: '+info.supply_style_no+'</div>' +
-                    //    '<div class="col-md-12">系统款号: '+info.system_style_no+'</div>' +
-                    //    '<div class="col-md-6">品名: '+info.name_zh+'</div>' +
-                    //    '<div class="col-md-6">等级: '+info.level+'</div>' +
-                    //    '<div class="col-md-12">型号规格: '+info.shape+'</div>' +
-                    //    '<div class="col-md-12">颜色: '+info.color+'</div>' +
-                    //    '<div class="col-md-12">面料成份: '+info.material_1+'</div>' +
-                    //    '<div>安全技术类别: '+info.safety_level+'</div>' +
-                    //    '<div>产品执行标准: '+info.execute_standard+'</div>' +
-                    //    '<div>洗涤方法: <img src="/resources/images/wash_type/01.jpg" width="100" height="10" /></div>' +
-                    //    '<div>检验员: '+info.brand+'</div>' +
-                    //    '<div>原产地: '+info.original+'</div>' +
-                    //    '<div>价格: RMB'+info.retail_price+'</div>' +
-                    //    '</div>' +
-                    //    '<div>条形码</div>' +
-                    //    '</div>';
-                    //var options = { mode : 'iframe'};
-                    //
-                    //$(printArea).printArea( options );
                     var iframe = document.getElementById("printIframe");
                     iframe.contentWindow.document.body.innerHTML=area;
-                    iframe.contentWindow.focus();//IE will print parent window without this statement.
+                    iframe.contentWindow.focus();
                     iframe.contentWindow.print();
                 }
             }
@@ -220,6 +198,8 @@ Ext.define('erp.view.window.GoodsInfoWin', {
                             '<tr><td class="col-md-3 text-right">性别</td><td>{sex}</td></tr>',
                             '<tr><td class="col-md-3 text-right">执行标准</td><td>{execute_standard}</td></tr>',
                             '<tr><td class="col-md-3 text-right">安全级别</td><td>{safety_level}</td></tr>',
+                            '<tr><td class="col-md-3 text-right">面料成份</td><td>{material_1}</td></tr>',
+                            '<tr><td class="col-md-3 text-right">产地</td><td>{original}</td></tr>',
                             '<tr><td class="col-md-3 text-right">等级</td><td>{level}</td></tr></table>'
                         )
                     },

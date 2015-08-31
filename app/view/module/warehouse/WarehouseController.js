@@ -54,7 +54,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         });
     },
     onWarehouseImportListGridDblClick: function (gp, record) {
-        console.log(record);
+        //console.log(record);
         var id = record.get("id"),
             import_warehouse_id = record.get("import_warehouse_id"),
             me = this,
@@ -81,6 +81,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         }
 
         var items = this.getDetailItems(id, batch_no, model);
+        console.log(items,panel);
         panel.add(items);
         //this.lookupReference("import_goods_info").setStore(model.get("goods_info"));
         //this.lookupReference("purchase_goods_info").setStore(model.get("goods_info_data"));
@@ -1308,7 +1309,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 data = json.data;
             },
             failure: function (res) {
-                Ext.toast(json.msg, "系统提示");
+                Ext.toast("获取数据错误,请稍后再试!", "系统提示");
             }
         });
         var store = Ext.create('Ext.data.Store', {
@@ -1474,44 +1475,6 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                     win.show();
                                 }
                             },
-                            //{
-                            //    text: '保存',
-                            //    handler: function () {
-                            //        var grid = me.lookupReference("move_location_goods_gird");
-                            //        var store = grid.getStore();
-                            //        var items = store.getData().items;
-                            //        var goods = [];
-                            //        for (var i = 0; i < items.length; ++i) {
-                            //            var item = items[i];
-                            //            if (item.get("mark") !== 0) continue;
-                            //            goods.push({
-                            //                goods_no: item.get("goods_no"),
-                            //                move_in_location: item.get("move_in_location"),
-                            //                move_out_location: item.get("move_out_location"),
-                            //                move_in_location_id: item.get("move_in_location_id")
-                            //            });
-                            //        }
-                            //        console.log(goods, id);
-                            //        Ext.Ajax.request({
-                            //            async: true,
-                            //            url: apiBaseUrl + '/index.php/Warehouse/Manage/saveMoveLocationGoods',
-                            //            params: {
-                            //                id: model.get("move_location_order_id"),
-                            //                status: 0,
-                            //                data: Ext.encode(goods)
-                            //            },
-                            //            success: function (response) {
-                            //                var text = Ext.decode(response.responseText);
-                            //                console.log(text);
-                            //                if (!text.success) {
-                            //                    Ext.toast(no + text.msg, "系统提示", 't');
-                            //                    return;
-                            //                }
-                            //                Ext.toast("保存成功", "系统提示", 't');
-                            //            }
-                            //        });
-                            //    }
-                            //},
                             {
                                 text: '提交',
                                 handler: function () {
@@ -1571,6 +1534,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                             if ("移位商品信息" == text) {
                                 columns = [
                                     {text: '唯一码', dataIndex: 'goods_no', flex: 1},
+                                    {text: '国际款号', dataIndex: 'supply_style_no', flex: 1},
+                                    {text: '系统款号', dataIndex: 'system_style_no', flex: 1},
                                     {text: '移出库位', dataIndex: 'move_out_location'},
                                     {text: '移入库位', dataIndex: 'move_in_location'},
                                     {text: '移位时间', dataIndex: 'create_time', format: 'data(Y-m-d)', flex: 1}
@@ -1601,29 +1566,13 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                     sortableColumns: false,
                     columns: [
                         {text: '唯一码', dataIndex: 'goods_no', flex: 1},
+                        {text: '国际款号', dataIndex: 'supply_style_no', flex: 1},
+                        {text: '系统款号', dataIndex: 'system_style_no', flex: 1},
                         {text: '移出库位', dataIndex: 'move_out_location'},
                         {text: '移入库位', dataIndex: 'move_in_location'},
                         {text: '移位时间', dataIndex: 'create_time', format: 'data(Y-m-d)', flex: 1}
                     ],
                     store:model.get("move_location_goods_info_store")
-                    //listeners: {
-                    //    afterrender: function () {
-                    //        var store = Ext.create('Ext.data.Store', {
-                    //            fields: [],
-                    //            autoLoad: true,
-                    //            proxy: {
-                    //                type: 'ajax',
-                    //                url: apiBaseUrl + '/index.php/Warehouse/Manage/getMoveLocationGoods?id=' + id,
-                    //                reader: {
-                    //                    type: 'json',
-                    //                    rootProperty: 'data'
-                    //                }
-                    //            }
-                    //        });
-                    //        model.set("move_location_goods_info_store", store);
-                    //        this.setStore(store);
-                    //    }
-                    //}
                 }
             ]
         });
@@ -1634,10 +1583,6 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         var me = this,
             no = obj.getValue();
         me.nos = [];
-        //if ("" == Ext.String.trim(location)) {
-        //    Ext.toast("请先输入移入库位", "系统提示", "t");
-        //    return;
-        //}
 
         if (Ext.String.trim(no) == "") return;
         obj.setValue('');
@@ -1892,7 +1837,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                             {text: '国际款号', dataIndex: 'supply_style_no', flex: 1},
                             {text: '名称', dataIndex: 'name_zh', flex: 1},
                             {text: '颜色', dataIndex: 'color', flex: 1},
-                            {text: '尺码', dataIndex: 'size', flex: 1}
+                            {text: '尺码', dataIndex: 'size', flex: 1},
+                            {text: '库位号', dataIndex: 'location', flex: 1}
                         ];
                         store = model.get("order_goods_list_store");
                     } else if ("商品通知信息" == text) {
@@ -1935,7 +1881,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 {text: '国际款号', dataIndex: 'supply_style_no', flex: 1},
                 {text: '名称', dataIndex: 'name_zh', flex: 1},
                 {text: '颜色', dataIndex: 'color', flex: 1},
-                {text: '尺码', dataIndex: 'size', flex: 1}
+                {text: '尺码', dataIndex: 'size', flex: 1},
+                {text: '库位号', dataIndex: 'location', flex: 1}
             ]
         }
         ];

@@ -21,7 +21,10 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
     controller: 'warehouse',
     initComponent: function () {
         var me = this;
-
+        me.layout = {
+            type: 'hbox',
+            stretch: true
+        };
         var import_list = this.getImportList();
         var panel = this.getInfoPanel();
         this.items = [import_list,panel];
@@ -74,6 +77,24 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
                     iconCls:'delIcon',
                     //glyph: 0xf1f8,
                     handler:'delImportGoodsOrder'
+                },'->',
+                {
+                    xtype:'combo',
+                    fieldLabel:'状态',
+                    labelWidth:70,
+                    labelAlign:'right',
+                    displayField:'name',
+                    valueField:'val',
+                    editable:false,
+                    width:140,
+                    store:Ext.create('Ext.data.Store',{
+                        fields:[],
+                        data:[
+                            {name:'全部',val:2},
+                            {name:'未验收',val:0},
+                            {name:'已验收',val:1}
+                        ]
+                    })
                 }
             ],
             //bbar: ['->', {
