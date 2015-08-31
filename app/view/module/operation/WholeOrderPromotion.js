@@ -55,8 +55,7 @@ Ext.define('erp.view.module.operation.WholeOrderPromotion', {
                     text: '状态', dataIndex: 'status', flex: 1, renderer: function (val) {
                     if (0 == val) return "未审核";
                     if (1 == val) return "已审核";
-                    if (2 == val) return "已启动";
-                    if (3 == val) return "已结束";
+                    if (2 == val) return "已终止";
                 }
                 },
                 {text: '制单人', dataIndex: 'assist_handlername', flex: 1},

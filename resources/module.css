@@ -203,6 +203,11 @@
     background-image: url("images/save.png");
 }
 
+.downloadIcon{
+    background-size: contain;
+    background-image: url("images/file_download.png");
+}
+
 .columnAction {
     margin-left: 5px;
 }

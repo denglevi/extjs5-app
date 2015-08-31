@@ -110,6 +110,9 @@ Ext.define('erp.view.window.PayFormWin', {
         if(me.record.get("pay_type") == "国际物流费用" || me.record.get("pay_type") == "报关费用"){
             normal.push({fieldLabel:'报关单号',xtype:'displayfield',value:record.get("order_no")});
         }
+        if(me.record.get("pay_type") != "国际物流费用" && me.record.get("pay_type") != "报关费用"){
+            normal.push({xtype: 'displayfield', fieldLabel: '合同号', name: 'contract_no', value: record.get("contract_no")});
+        }
         normal = normal.concat(
             [
                 {xtype: 'displayfield', fieldLabel: '付款申请人', name: 'applier', value: record.get("applier_name")},
@@ -120,7 +123,6 @@ Ext.define('erp.view.window.PayFormWin', {
                     value: record.get("receive_money_company")
                 },
                 {xtype: 'displayfield', fieldLabel: '公司账号', name: 'company_bank_no', value: record.get("company_bank_no")},
-                {xtype: 'displayfield', fieldLabel: '合同号', name: 'contract_no', value: record.get("contract_no")},
                 {xtype: 'displayfield', fieldLabel: '最后付款日期', name: 'last_pay_day', value: record.get("last_pay_day")},
                 pay_money,
                 {

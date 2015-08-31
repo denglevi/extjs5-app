@@ -27,8 +27,8 @@ Ext.define('erp.view.module.member.CustomerMng', {
         {text: '生日', dataIndex: 'customer_birthday', flex: 1},
         {text: '年代', dataIndex: 'customer_age', flex: 1},
         {text: '手机号', dataIndex: 'customer_phone', flex: 1},
-        {text: '消费总金额', dataIndex: 'customer_sum', flex: 1},
-        {text: '最近消费日期', dataIndex: 'customer_rcdate', flex: 1},
+        {text: '消费总金额', dataIndex: 'customer_money', flex: 1},
+        {text: '最近消费日期', dataIndex: 'customer_time', flex: 1},
         {text: '备份', dataIndex: 'customer_backups', flex: 1},
         {
             text: '操作',

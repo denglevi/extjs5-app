@@ -271,8 +271,30 @@ Ext.define('erp.view.module.member.VIPController', {
             buttons:[
                 {text:'升级VIP卡'},
                 {text:'降级VIP卡'},
-                {text:'挂失'},
-                {text:'停用'},
+                //{text:'挂失'},
+                {text:'停用',
+                    handler:function(){
+                        Ext.Msg.alert('系统提示', '停用后，该卡将不在享受会员权益');
+                        var id = record.get("tan_id"),card_no = record.get('card_no'),putinfo_status = '停用';
+                        console.log(id);
+                        ;                        Ext.Ajax.request({
+                            url:apiBaseUrl+'/index.php/Membership/Member/editBlockCard',
+                            method:'POST',
+                            params:{id:id,important_card:card_no,putinfo_status:putinfo_status},
+                            success:function(data){
+                                var res = Ext.decode(data.responseText);
+                                if (!res.success) {
+                                    Ext.Msg.alert('系统提示', res.msg);
+                                    return;
+                                }
+                                //Ext.getBody().unmask();
+                                Ext.Msg.alert('系统提示', res.data);
+                                win.destroy();
+                                Ext.StoreManager.lookup("VIPListStore");
+                            }
+                        });
+                    }
+                },
                 {text:'换卡'}
             ]
         });

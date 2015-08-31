@@ -44,10 +44,10 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         type: 'suppliermng'
     },
     initComponent: function () {
-        var me = this, res = this.res,model=this.getViewModel();
-        if(res.order_info.order_state == "spot_purchase_order"){
+        var me = this, res = this.res, model = this.getViewModel();
+        if (res.order_info.order_state == "spot_purchase_order") {
             me.columns = me.getSpotPurchaseOrderColumns();
-        }else{
+        } else {
             me.columns = me.getFuturePurchaseOrderColumns();
         }
         var product_info = res.product_info,
@@ -56,16 +56,16 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             status = res.status,
             batchs = res.batchs,
             next_status = res.next_status,
-            barContainer = me.getBarContainer(batchs,order_info),
+            barContainer = me.getBarContainer(batchs, order_info),
             infoGrid = me.getInfoGrid(product_info);
-        model.set("purchaseOrderStatus",status);
+        model.set("purchaseOrderStatus", status);
         console.log(res);
         me.res = res;
         if (next_status !== null) {
             var url = next_status.action == '' ? '/Purchasing/Buyer/purchasingAction' : next_status.action;
-            var hidden = (next_status.mark == 1 || next_status.other_action == 1) && (next_status.is_last == 0)? true : false;
-            model.set("btnIsHidden",hidden);
-            model.set("nextStatusText",next_status.name);
+            var hidden = (next_status.mark == 1 || next_status.other_action == 1) && (next_status.is_last == 0) ? true : false;
+            model.set("btnIsHidden", hidden);
+            model.set("nextStatusText", next_status.name);
         }
         me.layout = 'vbox';
         me.items = [
@@ -73,7 +73,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 xtype: 'container',
                 width: '100%',
                 margin: '30 30 40 30',
-                bind:{
+                bind: {
                     data: '{purchaseOrderStatus}'
                 },
                 tpl: new Ext.XTemplate(
@@ -110,17 +110,17 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 dockedItems: [{
                     xtype: 'toolbar',
                     dock: 'bottom',
-                    bind:{
-                        hidden:'{btnIsHidden}'
+                    bind: {
+                        hidden: '{btnIsHidden}'
                     },
                     items: [
-                        '->',{
-                            bind:{
-                                text:'{nextStatusText}',
-                                disabled:'{statusBtn}'
+                        '->', {
+                            bind: {
+                                text: '{nextStatusText}',
+                                disabled: '{statusBtn}'
                             },
-                            handler:me.onNextStatusBtnClick,
-                            scope:this
+                            handler: me.onNextStatusBtnClick,
+                            scope: this
                         }
                     ]
                 }],
@@ -134,7 +134,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     '<div class="col-md-12">',
                     '<div class="col-md-3">订单类型：{[this.getType(values.order_state)]}</div>',
                     '<div class="col-md-3">商品数量：{product_num}</div>',
-                    '<div class="col-md-3">订单金额：{product_total_price}</div>','{[this.getNum(values.order_state,values.product_remain_num)]}',
+                    '<div class="col-md-3">订单金额：{product_total_price}</div>', '{[this.getNum(values.order_state,values.product_remain_num)]}',
                     //'<div class="col-md-3">剩余订货件数：{product_total_price}</div>',
                     '</div>',
                     {
@@ -145,8 +145,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
 
                             return '未定义';
                         },
-                        getNum:function(type,remain_num){
-                            if(type == 'futures_purchase_order') return '<div class="col-md-3">剩余订货件数：'+remain_num+'</div>';
+                        getNum: function (type, remain_num) {
+                            if (type == 'futures_purchase_order') return '<div class="col-md-3">剩余订货件数：' + remain_num + '</div>';
                         }
                     }
                 )
@@ -155,14 +155,14 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             infoGrid
         ];
         me.listeners = {
-            beforedestroy:function(){
+            beforedestroy: function () {
                 var store = Ext.StoreManager.lookup("PurchaseOrderListStore");
-                if(store != null) store.load();
+                if (store != null) store.load();
             }
         };
         me.callParent();
     },
-    onNextStatusBtnClick:function(){
+    onNextStatusBtnClick: function () {
         //期货状态
         var me = this,
             model = me.getViewModel(),
@@ -171,11 +171,11 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             product_info = me.res.product_info,
             batchs = me.res.batchs;
         if (next_status === null) return;
-        model.set("statusBtn",true);
+        model.set("statusBtn", true);
         var url = next_status.action == '' ? '/Purchasing/Buyer/purchasingAction' : next_status.action;
 
         if ('申请付款' == next_status.name) {
-            console.log(next_status,order_info);
+            console.log(next_status, order_info);
             var win = Ext.create('erp.view.window.PurchasePayWin', {
                 title: next_status.name,
                 status_id: order_info.order_status,
@@ -184,7 +184,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 url: url,
                 total: order_info.product_total_price
             });
-            win.on("beforedestroy",me.changeOrderData,me);
+            win.on("beforedestroy", me.changeOrderData, me);
             win.show();
         } else if ("申请部分货款" == next_status.name) {
             var store = null;
@@ -210,19 +210,25 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                             columnWidth: 0.5,
                             labelAlign: 'right',
                             labelWidth: 90,
-                            allowBlank:false
+                            allowBlank: false
                         },
                         url: apiBaseUrl + '/index.php/Purchasing/Buyer/applyPartGoodsPay',
                         items: [
-                            {fieldLabel: '订单号',value: order_info.order_nos},
+                            {fieldLabel: '订单号', value: order_info.order_nos},
                             {fieldLabel: '合同号', name: 'contract_no'},
-                            {xtype:'hiddenfield',name:'supplier',value:order_info.vendor_id},
-                            {fieldLabel: '供应商', editable:false,name: 'supplier_name',value:order_info.name,listeners:{
-                                beforerender:function(){
-                                    var rv = this.getRawValue();
-                                    this.setValue(Ext.util.Format.htmlDecode(rv));
+                            {xtype: 'hiddenfield', name: 'supplier', value: order_info.vendor_id},
+                            {
+                                fieldLabel: '供应商',
+                                editable: false,
+                                name: 'supplier_name',
+                                value: order_info.name,
+                                listeners: {
+                                    beforerender: function () {
+                                        var rv = this.getRawValue();
+                                        this.setValue(Ext.util.Format.htmlDecode(rv));
+                                    }
                                 }
-                            }},
+                            },
                             //{
                             //    xtype: 'combo',
                             //    fieldLabel: '供应商',
@@ -255,15 +261,15 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                             //    valueField: 'id',
                             //    editable: false
                             //},
-                            {fieldLabel: '收款公司',name: 'receive_money_company',value:order_info.bank_name},
-                            {fieldLabel: '公司账号',name: 'company_bank_no',value:order_info.bank_no},
-                            {fieldLabel: '开户行',name: 'company_open_bank',value:order_info.address},
-                            {fieldLabel: '汇率',name: 'exchange_rate'},
+                            {fieldLabel: '收款公司', name: 'receive_money_company', value: order_info.bank_name},
+                            {fieldLabel: '公司账号', name: 'company_bank_no', value: order_info.bank_no},
+                            {fieldLabel: '开户行', name: 'company_open_bank', value: order_info.address},
+                            {fieldLabel: '汇率', name: 'exchange_rate'},
                             {
                                 xtype: 'filefield',
                                 name: 'excel_file',
                                 buttonText: '导入商品',
-                                clearOnSubmit:false,
+                                clearOnSubmit: false,
                                 listeners: {
                                     change: function () {
                                         var val = this.getValue();
@@ -276,8 +282,8 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                 console.log(data);
                                                 me.products = data;
                                                 var total = 0;
-                                                for(var i=0;i<data.length;i++){
-                                                    var goods = data[i],num = (parseFloat(goods.rate)+1)*parseFloat(goods.orderinfo_wholesale)*parseFloat(goods.orderinfo_amount);
+                                                for (var i = 0; i < data.length; i++) {
+                                                    var goods = data[i], num = (parseFloat(goods.rate) + 1) * parseFloat(goods.orderinfo_wholesale) * parseFloat(goods.orderinfo_amount);
                                                     total += num;
                                                 }
                                                 win.down("textfield[name=money]").setValue(total);
@@ -286,7 +292,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                     data: data
                                                 });
                                                 //me.down("grid").setStore(store);
-                                                Ext.toast("导入成功",'系统提示');
+                                                Ext.toast("导入成功", '系统提示');
                                             },
                                             failure: function (form, action) {
                                                 switch (action.failureType) {
@@ -304,10 +310,29 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                     }
                                 }
                             },
-                            {fieldLabel: '付款金额(欧)',name: 'money',value: me.total,xtype: 'numberfield'},
-                            {fieldLabel: '最后付款日期',name: 'last_pay_day',xtype: 'datefield',editable: false,format: 'Y-m-d',value: new Date()},
-                            {fieldLabel:'是否为最后一批货',name:'is_last_batch',xtype:'checkbox',labelWidth:120,allowBlank:true},
-                            {fieldLabel: '备注',name: 'pay_function',xtype: 'textarea',columnWidth:1,allowBlank:true}
+                            {fieldLabel: '付款金额(欧)', name: 'money', value: me.total, xtype: 'numberfield'},
+                            {
+                                fieldLabel: '最后付款日期',
+                                name: 'last_pay_day',
+                                xtype: 'datefield',
+                                editable: false,
+                                format: 'Y-m-d',
+                                value: new Date()
+                            },
+                            {
+                                fieldLabel: '是否为最后一批货',
+                                name: 'is_last_batch',
+                                xtype: 'checkbox',
+                                labelWidth: 120,
+                                allowBlank: true
+                            },
+                            {
+                                fieldLabel: '备注',
+                                name: 'pay_function',
+                                xtype: 'textarea',
+                                columnWidth: 1,
+                                allowBlank: true
+                            }
                         ],
                         buttons: [
                             {
@@ -336,15 +361,15 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                                 products: Ext.encode(me.products),
                                                 order_no: order_info.order_nos,
                                                 status_id: order_info.order_status,
-                                                pay_type:next_status.name
+                                                pay_type: next_status.name
                                             },
                                             success: function (form, action) {
-                                                Ext.toast("提交成功","系统提示");
+                                                Ext.toast("提交成功", "系统提示");
                                                 console.log(action.result);
                                                 win.destroy();
                                                 var data = action.result.product;
                                                 me.down("segmentedbutton").add({
-                                                    text:action.result.batch_no
+                                                    text: action.result.batch_no
                                                 });
                                                 var store = Ext.StoreManager.lookup("PurchaseOrderListStore");
                                                 if (store != null) store.load();
@@ -386,7 +411,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             //        form.down("combo[name=supplier]").setDisabled(false);
             //    }
             //});
-            win.on("beforedestroy",me.changeOrderData,me);
+            win.on("beforedestroy", me.changeOrderData, me);
             win.show();
         } else if ("申请报关付款" == next_status.name) {
             console.log(batchs);
@@ -396,15 +421,15 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 order_no: order_info.order_nos,
                 batch_no: batchs[0].batch_no,
                 url: url,
-                width:600,
+                width: 600,
                 total: total
             });
-            win.on("beforedestroy",me.changeOrderData,me);
+            win.on("beforedestroy", me.changeOrderData, me);
             win.show();
         } else if ("申请定金" == next_status.name) {
             var total = 0;
             Ext.each(product_info, function (product) {
-                var money = product.orderinfo_wholesale*(parseFloat(product.rate)+1)*product.orderinfo_amount;
+                var money = product.orderinfo_wholesale * (parseFloat(product.rate) + 1) * product.orderinfo_amount;
                 total += money;
             });
             var win = Ext.create('erp.view.window.PurchasePayWin', {
@@ -415,13 +440,13 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 total: total,
             });
             win.show();
-            win.on("beforedestroy",me.changeOrderData,me);
+            win.on("beforedestroy", me.changeOrderData, me);
         } else if ("验货" == next_status.name) {
             var tab = {
                 title: next_status.name,
                 order_no: order_info.order_nos,
                 batch_no: batchs[0].batch_no,
-                order_info:order_info,
+                order_info: order_info,
                 xtype: "addcheckproductorder",
                 closable: true
             };
@@ -433,11 +458,11 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 need_notice: need_notice,
                 order_no: order_info.order_nos,
                 batch_no: batchs[0].batch_no,
-                order_info:order_info,
+                order_info: order_info,
                 url: url
             });
             win.show();
-            win.on("beforedestroy",me.changeOrderData,me);
+            win.on("beforedestroy", me.changeOrderData, me);
         } else if ("申请报关" == next_status.name) {
             var me = this;
             //console.log(order_info.order_nos, batchs[0].batch_no);
@@ -445,12 +470,12 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             Ext.Ajax.request({
                 async: true,
                 url: apiBaseUrl + '/index.php/Purchasing/Buyer/applyPassCustom',
-                method:'POST',
-                params:{
-                    order_no:order_info.order_nos,
-                    batch_no:batchs[0].batch_no
+                method: 'POST',
+                params: {
+                    order_no: order_info.order_nos,
+                    batch_no: batchs[0].batch_no
                 },
-                success:function(res){
+                success: function (res) {
                     var text = Ext.decode(res.responseText);
                     if (!text.success) {
                         Ext.Msg.alert("系统提示", text.msg);
@@ -460,7 +485,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     Ext.getBody().unmask();
                     me.changeOrderData();
                 },
-                failure:function(res){
+                failure: function (res) {
 
                 }
             });
@@ -471,7 +496,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             me.uploadCloseFile(order_info.order_nos);
         }
     },
-    changeOrderData:function(){
+    changeOrderData: function () {
         var me = this;
         Ext.Ajax.request({
             async: true,
@@ -484,12 +509,12 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 res = text.data;
                 me.res = res;
                 var model = me.getViewModel();
-                model.set("purchaseOrderStatus",res.status);
-                model.set("statusBtn",false);
-                if(res.next_status !== null){
+                model.set("purchaseOrderStatus", res.status);
+                model.set("statusBtn", false);
+                if (res.next_status !== null) {
                     var hidden = res.next_status.mark == 1 || res.next_status.other_action == 1 ? true : false;
-                    model.set("btnIsHidden",hidden);
-                    model.set("nextStatusText",res.next_status.name);
+                    model.set("btnIsHidden", hidden);
+                    model.set("nextStatusText", res.next_status.name);
                 }
             }
         });
@@ -550,7 +575,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                         Ext.Msg.alert("系统提示", text.msg);
                         return;
                     }
-                    Ext.toast("提交成功!","系统提示");
+                    Ext.toast("提交成功!", "系统提示");
                     me.destroy();
                 }
             });
@@ -561,14 +586,14 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 title: status_name,
                 order_no: bat.order_no,
                 batch_no: bat.batch_no,
-                order_info:me.res.order_info,
+                order_info: me.res.order_info,
                 xtype: "addcheckproductorder",
                 closable: true,
-                listeners:{
-                    beforedestroy:function(){
+                listeners: {
+                    beforedestroy: function () {
                         var info = tabpanel.down("purchaseorderinfo");
                         console.log(info);
-                        if(info == null) return;
+                        if (info == null) return;
                         me.changeOrderData();
                         var btn = me.down("segmentedbutton").down("button");
                         btn.setPressed(true);
@@ -583,10 +608,10 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 need_notice: need_notice,
                 order_no: bat.order_no,
                 batch_no: bat.batch_no,
-                order_info:me.res.order_info
+                order_info: me.res.order_info
             });
             win.show();
-            win.on("beforedestroy",function(){
+            win.on("beforedestroy", function () {
                 me.destroy();
             });
         } else if ("申请报关" == status_name) {
@@ -595,12 +620,12 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             Ext.Ajax.request({
                 async: true,
                 url: apiBaseUrl + '/index.php/Purchasing/Buyer/applyPassCustom',
-                method:'POST',
-                params:{
-                    order_no:bat.order_no,
-                    batch_no:bat.batch_no
+                method: 'POST',
+                params: {
+                    order_no: bat.order_no,
+                    batch_no: bat.batch_no
                 },
-                success:function(res){
+                success: function (res) {
                     Ext.getBody().unmask();
                     var text = Ext.decode(res.responseText);
                     if (!text.success) {
@@ -609,7 +634,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     }
                     me.destroy();
                 },
-                failure:function(res){
+                failure: function (res) {
 
                 }
             });
@@ -622,19 +647,28 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 url: url,
                 total: 0
             });
-            win.on("beforedestroy",function(){
+            win.on("beforedestroy", function () {
                 me.destroy();
-            },me);
+            }, me);
             win.show();
         }
     },
-    getBarContainer: function (batchs,order_info) {
+    getBarContainer: function (batchs, order_info) {
         var me = this;
-        var items = [
-            {itemId: 'goods_info', text: '商品信息',itemId:'goods_info',pressed:true},
-            {itemId: 'log', text: '操作日志'}
-        ];
-        if('spot_purchase_order' != order_info.order_state){
+        if (order_info.is_last == 1) {
+            var items = [
+                {itemId: 'goods_info', text: '商品信息', itemId: 'goods_info', pressed: true},
+                {itemId: 'log', text: '操作日志'},
+                {itemId: 'close_file', text: '关单文件'}
+            ];
+        } else {
+            var items = [
+                {itemId: 'goods_info', text: '商品信息', itemId: 'goods_info', pressed: true},
+                {itemId: 'log', text: '操作日志'}
+            ];
+        }
+
+        if ('spot_purchase_order' != order_info.order_state) {
             for (var i = 0; i < batchs.length; i++) {
                 var bat = batchs[i];
                 items.push({itemId: bat.batch_no, text: bat.batch_no})
@@ -642,7 +676,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
         }
         return {
             xtype: 'segmentedbutton',
-            margin:10,
+            margin: 10,
             //layout: 'hbox',
             //itemId: 'bar_container',
             //defaultType: 'button',
@@ -654,7 +688,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             items: items,
             listeners: {
                 toggle: me.onGridTopBtnClick,
-                scope:this
+                scope: this
             }
         };
     },
@@ -664,9 +698,9 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             item.setDisabled(false);
         });
     },
-    onGridTopBtnClick: function (container,btn,pressed) {
+    onGridTopBtnClick: function (container, btn, pressed) {
         var grid = this.down("grid"),
-            text = btn.getText(), columns, data, me = this;
+            text = btn.getText(), columns, data = [], me = this;
         //me.setBtnDisabled();
         //btn.setDisabled(true);
         grid.setTitle(text);
@@ -679,6 +713,29 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 {text: '操作人', dataIndex: 'username', flex: 1}
             ];
             data = me.res.log;
+        } else if (text == "关单文件") {
+            item[0].setHidden(true);
+            columns = [
+                {text: '文件名称', dataIndex: 'name', flex: 1},
+                {
+                    text: '下载',
+                    xtype: 'actioncolumn',
+                    flex: 1,
+                    dataIndex:'file_path',
+                    items: [
+                        {
+                            iconCls: 'downloadIcon',
+                            tooltip: '点击下载',
+                            handler:function(grid, rowIndex, colIndex, item, e, record, row){
+                                window.open(apiBaseUrl+"/.."+record.get("file_path"),"文件下载", 'height=100, width=400, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
+                                //window.location.href = apiBaseUrl+record.get("file_path");
+                            }
+                        }
+                    ]
+                }
+            ];
+            console.log(me.res.order_info);
+            data = Ext.decode(me.res.order_info.file_info);
         } else {
             if (text == "商品信息") {
                 item[0].setHidden(true);
@@ -693,23 +750,29 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     {text: '数量', dataIndex: 'orderinfo_amount'},
                     {text: '加价率', dataIndex: 'rate'},
                     {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
-                    {text: '加价率批发价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                    {
+                        text: '加价率批发价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                         var batch_price = parseFloat(record.get("orderinfo_wholesale")),
                             rate = parseFloat(record.get("rate"));
-                        return batch_price*rate+batch_price;
-                    }},
-                    {text: '总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        return batch_price * rate + batch_price;
+                    }
+                    },
+                    {
+                        text: '总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                         var num = parseFloat(record.get("orderinfo_amount")),
                             batch_price = parseFloat(record.get("orderinfo_wholesale"));
                         //console.log(num,batch_price);
-                        return num*batch_price;
-                    }},
-                    {text: '加价率总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        return num * batch_price;
+                    }
+                    },
+                    {
+                        text: '加价率总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                         var batch_price = parseFloat(record.get("orderinfo_wholesale")),
                             num = parseFloat(record.get("orderinfo_amount")),
                             rate = parseFloat(record.get("rate"));
-                        return (batch_price*rate+batch_price)*num;
-                    }},
+                        return (batch_price * rate + batch_price) * num;
+                    }
+                    },
                     {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
                 ];
                 data = me.res.product_info;
@@ -726,35 +789,41 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                     {text: '数量', dataIndex: 'num'},
                     {text: '加价率', dataIndex: 'rate'},
                     {text: '批发价(欧)', dataIndex: 'batch_price'},
-                    {text: '加价率批发价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                    {
+                        text: '加价率批发价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                         var batch_price = parseFloat(record.get("batch_price")),
                             rate = parseFloat(record.get("rate"));
-                        return batch_price*rate+batch_price;
-                    }},
-                    {text: '总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        return batch_price * rate + batch_price;
+                    }
+                    },
+                    {
+                        text: '总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                         var num = parseFloat(record.get("num")),
                             batch_price = parseFloat(record.get("batch_price"));
                         //console.log(num,batch_price);
-                        return num*batch_price;
-                    }},
-                    {text: '加价率总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                        return num * batch_price;
+                    }
+                    },
+                    {
+                        text: '加价率总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                         var batch_price = parseFloat(record.get("batch_price")),
                             num = parseFloat(record.get("num")),
                             rate = parseFloat(record.get("rate"));
-                        return (batch_price*rate+batch_price)*num;
-                    }},
+                        return (batch_price * rate + batch_price) * num;
+                    }
+                    },
                     {text: '官方零售价(欧)', dataIndex: 'retail_price', flex: 1}
                 ];
                 for (var i = 0; i < len; i++) {
                     var bat = batchs[i];
                     if (bat.batch_no == text) {
-                        if(bat.status != null && bat.status.is_last != 1){
+                        if (bat.status != null && bat.status.is_last != 1) {
                             item[0].setHidden(false)
                             var button = item[0].down("button");
                             button.setText(bat.status.name);
                             if (bat.status.other_action == 1) button.setDisabled(true);
                             else button.setDisabled(false)
-                        }else{
+                        } else {
                             item[0].setHidden(true);
                         }
                         data = bat.products;
@@ -849,15 +918,21 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                         {text: '数量', dataIndex: 'num'},
                         {text: '加价率', dataIndex: 'rate'},
                         {text: '批发价(欧)', dataIndex: 'batch_price'},
-                        {text: '加价率批发价(欧)', dataIndex: '',rerender:function(val,data,record){
-                            return record.get("batch_price")*(parseFloat(record.get("rate"))+1);
-                        }},
-                        {text: '总价(欧)', dataIndex: 'total_price',rerender:function(val,data,record){
-                            return record.get("num")*record.get("batch_price");
-                        }},
-                        {text: '加价率总价(欧)', dataIndex: '',rerender:function(val,data,record){
-                           return record.get("batch_price")*(parseFloat(record.get("rate"))+1)*record.get("num");
-                        }},
+                        {
+                            text: '加价率批发价(欧)', dataIndex: '', rerender: function (val, data, record) {
+                            return record.get("batch_price") * (parseFloat(record.get("rate")) + 1);
+                        }
+                        },
+                        {
+                            text: '总价(欧)', dataIndex: 'total_price', rerender: function (val, data, record) {
+                            return record.get("num") * record.get("batch_price");
+                        }
+                        },
+                        {
+                            text: '加价率总价(欧)', dataIndex: '', rerender: function (val, data, record) {
+                            return record.get("batch_price") * (parseFloat(record.get("rate")) + 1) * record.get("num");
+                        }
+                        },
                         {text: '官方零售价(欧)', dataIndex: 'retail_price', flex: 1}
                     ]
                 }
@@ -891,8 +966,10 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
     uploadCloseFile: function (order_no) {
         var me = this;
         var win = Ext.create('Ext.window.Window', {
-            title: "上传清关文件",
-            bodyPadding: 40,
+            title: "上传关单文件",
+            bodyPadding: 10,
+            width: 400,
+            modal: true,
             items: [
                 {
                     xtype: 'form',
@@ -904,11 +981,13 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                             name: 'excel_file[]',
                             buttonText: '上传文件',
                             allowBlank: true,
-                            id:"upload_close_purchase_order_doc_field",
+                            anchor: '100%',
+                            id: "upload_close_purchase_order_doc_field",
                             listeners: {
                                 change: function () {
+                                    var me = this;
                                     var val = this.getValue();
-                                    console.log(val);
+                                    //console.log(val);
                                     this.up("form").getForm().submit({
                                         waitMsg: '正在上传文件...',
                                         params: {
@@ -916,10 +995,13 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         },
                                         success: function (form, action) {
                                             var data = action.result.data;
-                                            Ext.toast("操作成功","系统提示");
+                                            Ext.toast("操作成功", "系统提示");
                                             win.destroy();
                                         },
                                         failure: function (form, action) {
+                                            var dom = me.el,
+                                                input = dom.select("input").last();
+                                            input.dom.multiple = true;
                                             switch (action.failureType) {
                                                 case Ext.form.action.Action.CLIENT_INVALID:
                                                     Ext.Msg.alert('系统提示', '表单验证错误');
@@ -933,10 +1015,10 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                                         }
                                     });
                                 },
-                                afterrender:function(){
+                                afterrender: function () {
                                     var dom = this.el,
                                         input = dom.select("input").last();
-                                    input.dom.multiple=true;
+                                    input.dom.multiple = true;
                                 }
                             }
                         }
@@ -945,12 +1027,12 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             ]
         });
         win.show();
-        win.on("beforedestroy",function(){
+        win.on("beforedestroy", function () {
             me.destroy();
         });
     },
-    getSpotPurchaseOrderColumns:function(){
-       return [
+    getSpotPurchaseOrderColumns: function () {
+        return [
             {text: '品牌', dataIndex: 'brand'},
             {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
             {text: '商品名称', dataIndex: 'orderinfo_name'},
@@ -965,7 +1047,7 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 text: '折扣率批发价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                 var batch_price = parseFloat(record.get("orderinfo_wholesale")),
                     rate = parseFloat(record.get("rate"));
-                return parseFloat((batch_price - batch_price * rate)/1.22).toFixed(2);
+                return parseFloat((batch_price - batch_price * rate) / 1.22).toFixed(2);
             }
             },
             {
@@ -980,14 +1062,14 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
                 text: '折扣率总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                 var batch_price = parseFloat(record.get("orderinfo_wholesale")),
                     num = parseFloat(record.get("orderinfo_amount")),
-                    rate = parseFloat(record.get("rate")),price = (batch_price - batch_price * rate)/1.22;
+                    rate = parseFloat(record.get("rate")), price = (batch_price - batch_price * rate) / 1.22;
                 return parseFloat(price * num).toFixed(2);
             }
             },
             {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
         ];
     },
-    getFuturePurchaseOrderColumns:function(){
+    getFuturePurchaseOrderColumns: function () {
         return [
             {text: '品牌', dataIndex: 'brand'},
             {text: '国际款号', dataIndex: 'orderinfo_style', flex: 1},
@@ -999,22 +1081,28 @@ Ext.define('erp.view.module.purchase.PurchaseOrderInfo', {
             {text: '数量', dataIndex: 'orderinfo_amount'},
             {text: '加价率', dataIndex: 'rate'},
             {text: '批发价(欧)', dataIndex: 'orderinfo_wholesale'},
-            {text: '加价率批发价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+            {
+                text: '加价率批发价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                 var batch_price = parseFloat(record.get("orderinfo_wholesale")),
                     rate = parseFloat(record.get("rate"));
-                return batch_price*rate+batch_price;
-            }},
-            {text: '总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                return batch_price * rate + batch_price;
+            }
+            },
+            {
+                text: '总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                 var num = parseFloat(record.get("orderinfo_amount")),
                     batch_price = parseFloat(record.get("orderinfo_wholesale"));
-                return num*batch_price;
-            }},
-            {text: '加价率总价(欧)', dataIndex: 'rate',renderer:function(val,data,record){
+                return num * batch_price;
+            }
+            },
+            {
+                text: '加价率总价(欧)', dataIndex: 'rate', renderer: function (val, data, record) {
                 var batch_price = parseFloat(record.get("orderinfo_wholesale")),
                     num = parseFloat(record.get("orderinfo_amount")),
                     rate = parseFloat(record.get("rate"));
-                return (batch_price*rate+batch_price)*num;
-            }},
+                return (batch_price * rate + batch_price) * num;
+            }
+            },
             {text: '官方零售价(欧)', dataIndex: 'orderinfo_official', flex: 1}
         ];
     }

@@ -292,24 +292,108 @@ Ext.define('erp.view.module.member.CustomerController', {
                 {text:'发卡',
                     handler:function(){
                         var id = record.get("id");
-                        var win = Ext.create("Ext.window.Window",{
-                            title:'发卡',
-                            width:400,
-                            items:[
-                                {
-                                    xtype:'form'
-                                }
-                            ]
-                        });
                         Ext.Ajax.request({
-                            waitMsg: '正在提交...',
                             url:apiBaseUrl+'/index.php/Membership/Customer/issueCard',
                             method: 'POST',
                             params:{id:id},
-                            success: function (action) {
-                                win.destroy();
+                            success: function (data) {
+                                var res = Ext.decode(data.responseText);
+                                if (!res.success) {
+                                    Ext.Msg.alert('系统提示', res.data);
+                                    return;
+                                }
+                                var win = Ext.create('Ext.window.Window', {
+                                    title: '发卡信息',
+                                    width: 400,
+                                    modal: true,
+                                    bodyPadding: 10,
+                                    layout: 'hbox',
+                                    items: [
+                                        {
+                                            xtype: 'form',
+                                            items: [
+                                                {
+                                                    xtype: 'combo',
+                                                    fieldLabel: '会员卡类别',
+                                                    displayField: 'type',
+                                                    valueField: 'type',
+                                                    store: Ext.create("Ext.data.Store", {
+                                                        fields: [],
+                                                        data: res.data
+                                                    }),
+                                                    editable: false,
+                                                    name: 'type'
+                                                },
+                                                {
+                                                    xtype: 'textfield',
+                                                    fieldLabel: '卡号',
+                                                    name: 'no'
+                                                }, {
+                                                    xtype: 'button',
+                                                    text: '查询',
+                                                    handler: function () {
+                                                        var type = win.down("combo[name=type]").getValue();
+                                                        var no = win.down("textfield[name=no]").getValue();
+                                                        Ext.Ajax.request({
+                                                            url: apiBaseUrl + '/index.php/Membership/Customer/addVipInfo',
+                                                            method: 'post',
+                                                            params: {type: type, no: no},
+                                                            success: function (data) {
+                                                                var res = Ext.decode(data.responseText);
+                                                                if (!res.success) {
+                                                                    Ext.Msg.alert('系统提示', res.data);
+                                                                    return;
+                                                                }
+                                                                win.down("#faka").setDisabled(false);
+                                                            }
+                                                        })
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    buttons: [
+                                        {
+                                            text: '发卡',
+                                            disabled: true,
+                                            xtype: 'button',
+                                            itemId: 'faka',
+                                            handler: function () {
+                                                var id = record.get("id");
+                                                var type = win.down("combo[name=type]").getValue();
+                                                var no = win.down("textfield[name=no]").getValue();
+                                                Ext.Ajax.request({
+                                                    url: apiBaseUrl + '/index.php/Membership/Customer/addVipIssCard',
+                                                    method: 'POST',
+                                                    params: {id: id, type: type, no: no},
+                                                    success: function (data) {
+                                                        var res = Ext.decode(data.responseText);
+                                                        if (!res.success) {
+                                                            Ext.Msg.alert('系统提示', res.msg);
+                                                            return;
+                                                        }
+                                                        //Ext.getBody().unmask();
+                                                        Ext.Msg.alert('系统提示', res.data);
+                                                        win.down("#faka").setDisabled(true);
+                                                        win.destroy();
+                                                    },
+                                                    failur: function (action) {
+                                                        if (action.result.data) {
+                                                            Ext.toast(action.result.data, "系统提示");
+                                                            return;
+                                                        }
+                                                        Ext.toast("网络请求错误,请检查网络!", "系统提示");
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    ]
+                                });
+                                win.show();
+                                //Ext.getBody().unmask();
+                                //win.destroy();
                             },
-                            failur: function ( action) {
+                            failure: function ( action) {
                                 if (action.result.msg) {
                                     Ext.toast(action.result.msg, "系统提示");
                                     return;

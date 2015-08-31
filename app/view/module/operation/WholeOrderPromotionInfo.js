@@ -96,8 +96,8 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
                             fieldLabel: '状态', value: record.get("status"), renderer: function (val) {
                             if (0 == val) return "未审核";
                             if (1 == val) return "已审核";
-                            if (2 == val) return "已启动";
-                            if (3 == val) return "已结束";
+                            if (2 == val) return "已终止";
+                            //if (3 == val) return "已结束";
                         }
                         },
                     ],
@@ -116,7 +116,7 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
         var bar = ['->'], me = this;
         //if (this.record.get("sku_set") == 1) bar.push({text: '添加导入商品范围', handler: me.addGoodsArea});
         if (this.record.get("status") == 0) {
-            return bar.concat({text: '审核', handler: me.handlerWholeOrderPromotionStatus}
+            return bar.concat({text: '审核', handler: me.handlerWholeOrderPromotionStatus,scope:me}
             //    , {
             //    text: '修改', handler: function () {
             //        var model = me.getViewModel();
@@ -199,9 +199,28 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
                         btn.setText("新增");
                         store = me.multi_promotion_store;
                         columns = [
-                            {text: '整单金额', dataIndex: 'promotion_money', flex: 1},
-                            {text: '整单立减', dataIndex: 'promotion_type', flex: 1}
+                            {text: '整单满购', dataIndex: 'promotion_money', flex: 1}
                         ];
+                        if(me.record.get("assist_prom_style") == 1){
+                            columns.push({text: '立减', dataIndex: 'promotion_type', flex: 1});
+                        }else if(me.record.get("assist_prom_style") == 2){
+                            columns.push({text: '送券', dataIndex: 'promotion_type', flex: 1});
+                        }else if(me.record.get("assist_prom_style") == 3){
+                            columns.push({text: '打折', dataIndex: 'promotion_type', flex: 1});
+                        }
+                        columns.push(
+                            {
+                                text: '操作',
+                                xtype: 'actioncolumn',
+                                items: [
+                                    {
+                                        iconCls: 'delIcon',
+                                        tooltip: '删除',
+                                        handler: me.delLevelPromotion,
+                                        scope: me
+                                    }
+                                ]
+                            });
                     }
                     else if ("结算方式" == title) {
                         btn.setText("新增");
@@ -222,7 +241,6 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
                             }
                         ];
                     }
-                    ;
 
                     grid.reconfigure(store, columns);
                 }
@@ -251,16 +269,16 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
 
             }
         });
-        console.log(me.gridsData);
-        console.log(me.record);
+        //console.log(me.gridsData);
+        //console.log(me.record);
         var json = [];
         if (me.record.get("sku_set") == 1 && me.record.get("goods_range_info") != null) {
             json.push({range: me.record.get("goods_range_info")});
         } else if (me.record.get("sku_set") == 0) {
-            var data = me.gridsData.assist, len = data.length, str = "";
-            if (len > 0) {
-                var range = data[0];
-                str = "品牌:" + range.assist_type_brand + "<br />大类:" + range.assist_type_broad + "<br />年季:" + range.assist_type_year + "<br />性别:" + range.assist_type_sex + "<br />小雷:" + range.assist_type_subclass;
+            var data = me.gridsData.assist, str = "";
+            if (data.length != 0) {
+                var range = data;
+                str = "品牌:" + range.brand + "<br />大类:" + range.big_class + "<br />年季:" + range.year + "<br />性别:" + range.sex + "<br />小类:" + range.small_class;
                 json.push({range: str});
             }
         }
@@ -269,15 +287,14 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
             fields: [], data: json
         });
         me.goods_info = Ext.create('Ext.data.Store', {
-            fields: [], data: me.gridsData.promotion
+            fields: [], data: me.gridsData.goods_info
         });
         me.multi_promotion_store = Ext.create('Ext.data.Store', { //分级促销
             fields: [], data: me.gridsData.promotion
         });
-        me.payment_method_store = Ext.create('Ext.data.Store', { //结算方式
+        me.payment_method_store = Ext.create('Ext.data.Store', {   //结算方式
             fields: [], data: me.gridsData.closing
         });
-        console.log(json);
         return {
             xtype: 'grid',
             title: '促销商品范围',
@@ -328,11 +345,97 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
             btn = btns.down("button[pressed=true]");
         if (btn.getText() == '促销商品范围') me.addGoodsRange();
         else if (btn.getText() == '促销商品信息')me.importGoodsInfo();
-        else if (btn.getText() == '分级促销')me.clearingForm();
+        else if (btn.getText() == '分级促销')me.addPromotionLevel();
         else if (btn.getText() == '结算方式')me.clearingForm();
     },
     //商品信息
     merchandiseInfo: function () {
+    },
+    //新增分级促销
+    addPromotionLevel:function(){
+        var me = this,
+            val = me.record.get("assist_prom_style"),title,item;
+        if (1 == val) {
+            title = "满购立减";
+            item={
+                fieldLabel:'立减',
+                name:'num'
+            };
+        }
+        else if (2 == val) {
+            title = "满购送劵";
+            item={
+                fieldLabel:'送劵',
+                name:'num'
+            };
+        }
+        else if (3 == val) {
+            title = "满购打折";
+            item={
+                fieldLabel:'打折',
+                name:'num'
+            };
+        }
+        var win = Ext.create('Ext.window.Window', {
+            modal: true,
+            resizable: false,
+            width: 400,
+            layout: 'fit',
+            title: title,
+            items: [
+                {
+                    xtype:'form',
+                    bodyPadding:10,
+                    defaults:{
+                        xtype:'textfield',
+                        allowBlank:false,
+                        anchor:'100%',
+                        labelAlign:'right'
+                    },
+                    items:[
+                        {fieldLabel:'满购',name:'money'},item
+                    ],
+                    buttons: [
+                        {
+                            text: '重置', handler: function () {
+                            this.up("form").getForm().reset();
+                        }
+                        },
+                        {
+                            text: '提交', formBind: true, disabled: true, handler: function () {
+                            var form = this.up("form").getForm(), vals = form.getValues();
+                            console.log(form.getValues());
+                            if (form.isValid()) {
+                                form.submit({
+                                    url: apiBaseUrl + '/index.php/Operations/Entire/addPromotionLevel',
+                                    params: {
+                                        id: me.record.get("id")
+                                    },
+                                    waitMsg: '正在提交...',
+                                    success: function (form, action) {
+                                        console.log(action.result);
+                                        if (!action.result.success) {
+                                            Ext.toast(action.result.msg, "系统提示");
+                                            return;
+                                        }
+                                        me.multi_promotion_store = Ext.create('Ext.data.Store', { //分级促销
+                                            fields: [], data: action.result.data
+                                        });
+                                        me.down("grid").setStore(me.multi_promotion_store);
+                                        win.destroy();
+                                    },
+                                    failure: function (form, action) {
+                                        Ext.toast("新增分级促销失败!", "系统提示");
+                                    }
+                                });
+                            }
+                        }
+                        }
+                    ]
+                }
+            ]
+        });
+        win.show();
     },
     //结算方式
     clearingForm: function () {
@@ -507,9 +610,11 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
                                                 data: [{range: vals.range}]
                                             });
                                         }else{
+                                            var range = action.result.assist;
+                                            var str = "品牌:" + range.brand + "<br />大类:" + range.big_class + "<br />年季:" + range.year + "<br />性别:" + range.sex + "<br />小类:" + range.small_class;
                                             store = Ext.create("Ext.data.Store", {
                                                 fields: [],
-                                                data: [{range: Ext.encode(vals)}]
+                                                data: [{range: str}]
                                             });
                                         }
                                         me.goods_range_store = store;
@@ -782,6 +887,34 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
             }
         });
     },
+    //删除分级促销
+    delLevelPromotion:function(grid, rowIndex, colIndex, item, e, record, row){
+        //Ext.Msg.alert("确定要删除此范围?","系统提示");
+        var me = this;
+        Ext.Ajax.request({
+            async: false,
+            method: 'POST',
+            url: apiBaseUrl + '/index.php/Operations/Entire/delLevelPromotion',
+            params: {
+                id: record.get("id"),
+                main_id:me.record.get("id")
+            },
+            success: function (res) {
+                var json = Ext.decode(res.responseText);
+                if (!json.success) {
+                    Ext.toast(json.msg, "系统提示");
+                    return;
+                }
+                me.multi_promotion_store = Ext.create('Ext.data.Store', { //分级促销
+                    fields: [], data: json.data
+                });
+                grid.setStore(me.multi_promotion_store);
+            },
+            failure: function (res) {
+                Ext.toast("删除分级促销失败,请重新操作", "系统提示");
+            }
+        });
+    },
     handlerWholeOrderPromotionStatus:function(){
         var me = this;
         var status = me.record.get("status"),id=me.record.get("id");
@@ -790,7 +923,7 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
             method: 'POST',
             url: apiBaseUrl + '/index.php/Operations/Entire/handlerPromotionStatus',
             params: {
-                id: me.record.get("id"),
+                id: id,
                 status:parseInt(status)+1
             },
             success: function (res) {
@@ -800,7 +933,8 @@ Ext.define('erp.view.module.operation.WholeOrderPromotionInfo', {
                     return;
                 }
                 me.destroy();
-                //me.down("grid").setStore(Ext.create('Ext.data.Store', {fields: [], data: []}));
+                var store = Ext.StoreManager.lookup("WholeOrderPromotionStore");
+                if(store != null) store.load();
             },
             failure: function (res) {
 
