@@ -39,8 +39,8 @@ Ext.define('erp.view.module.purchase.PassCustomList', {
         }, '->',
         {
             xtype: 'textfield',
-            fieldLabel: "采购订单号",
-            name: 'purchase_no',
+            fieldLabel: "报关单号",
+            name: 'pass_customs_no',
             labelAlign:'right'
         },
         {
@@ -55,13 +55,13 @@ Ext.define('erp.view.module.purchase.PassCustomList', {
             iconCls:'searchIcon',
             handler:function(){
                 var grid = this.up("passcustomlist"),
-                    purchase_no = grid.down("textfield[name=purchase_no]").getValue(),
+                    pass_customs_no = grid.down("textfield[name=pass_customs_no]").getValue(),
                     batch_no = grid.down("textfield[name=batch_no]").getValue(),
                     pt = grid.down("pagingtoolbar"),
                     store = grid.getStore();
                 store.setProxy({
                     extraParams: {
-                        purchase_no: purchase_no,
+                        pass_customs_no: pass_customs_no,
                         batch_no: batch_no
                     },
                     type: 'ajax',
@@ -73,7 +73,7 @@ Ext.define('erp.view.module.purchase.PassCustomList', {
                     }
                 });
                 store.on("load", function () {
-                    grid.down("textfield[name=purchase_no]").reset();
+                    grid.down("textfield[name=pass_customs_no]").reset();
                     grid.down("textfield[name=batch_no]").reset();
                 });
                 pt.moveFirst();

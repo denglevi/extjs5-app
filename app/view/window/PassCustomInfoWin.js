@@ -14,19 +14,20 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
         'Ext.layout.container.Column',
         'Ext.tab.Panel'
     ],
-    layout:{
-        type:'anchor',
-        stretch:true,
-        align:'middle'
-    },
+    //layout:{
+    //    type:'anchor',
+    //    stretch:true,
+    //    align:'middle'
+    //},
     modal:true,
-    minWidth: 650,
-    maximizable:true,
+    resizable:false,
+    //minWidth: 650,
+    //maximizable:true,
+    autoScroll: true,
     width:780,
-    minHeight:500,
+    height:600,
     initComponent: function () {
-        var me = this,res,custom_order_id = me.record.get("id");
-
+        var me = this,res,custom_order_id = me.record.get("id"),log;
         Ext.Ajax.request({
             async:false,
             url: apiBaseUrl+'/index.php/Purchasing/Customs/getPassCustomOrderInfo',
@@ -36,6 +37,7 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
             success: function(response){
                 var text = Ext.decode(response.responseText);
                 res = text.data;
+                log = text.log;
             }
         });
         var status = res.custom_status,
@@ -99,11 +101,7 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                 },
                 {
                     xtype:'tabpanel',
-                    flex:1,
-                    anchor:'100%',
-                    width: 650,
-                    height:200,
-                    items:this.getTabItems()
+                    items:this.getTabItems(log)
                 }
             ]
         });
@@ -124,36 +122,41 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
 
         return fields;
     },
-    getTabItems:function(){
-        var info = [];
+    getTabItems:function(log){
        var items = [
             {
                 title:'操作详情',
-                data:info,
+                scrollable:'y',
+                //width: '100%',
+                height:'100%',
+                data:log,
                 tpl: new Ext.XTemplate(
                     '<table class="table table-bordered">',
                     '<tr><td class="col-md-3">操作</td><td class="col-md-3">操作人</td><td class="col-md-3">备注</td><td class="col-md-3">操作时间</td></tr>',
                     '<tpl for=".">',
-                    '<tr><td class="col-md-3">{supply_color_no}</td><td class="col-md-9">{color}</td></tr>',
-                    '</tpl>',
-                    '</table>'
-                )
-            },
-            //{
-            //    title:'关税信息'
-            //},
-            {
-                title:'文件下载',
-                data:info,
-                tpl: new Ext.XTemplate(
-                    '<table class="table table-bordered">',
-                    '<tr><td class="col-md-3 text-right">文件名</td><td class="col-md-9">文件下载地址</td></tr>',
-                    '<tpl for=".">',
-                    '<tr><td class="col-md-3 text-right">{supply_color_no}</td><td class="col-md-9">{color}</td></tr>',
+                    '<tr><td class="col-md-3">{name}</td><td class="col-md-3">{nickname}</td><td class="col-md-3">{mark}</td><td class="col-md-3">{time}</td></tr>',
                     '</tpl>',
                     '</table>'
                 )
             }
+            //{
+            //    title:'关税信息'
+            //},
+            //{
+            //    title:'文件下载',
+            //    scrollable:true,
+            //    //height:'100%',
+            //    //width: '100%',
+            //    data:[],
+            //    tpl: new Ext.XTemplate(
+            //        '<table class="table table-bordered">',
+            //        '<tr><td class="col-md-3 text-right">文件名</td><td class="col-md-9">文件下载地址</td></tr>',
+            //        '<tpl for=".">',
+            //        '<tr><td class="col-md-3 text-right">{supply_color_no}</td><td class="col-md-9">{color}</td></tr>',
+            //        '</tpl>',
+            //        '</table>'
+            //    )
+            //}
         ];
         return items;
     },
@@ -238,12 +241,12 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                         allowBlank:false
                     },
                     items:[
-                        {fieldLabel:'订货单号',name:'order_no'},
+                        {fieldLabel:'订货单号',name:'order_no',value:me.record.get("supply_no")},
                         {fieldLabel:'到货单号',name:'logistics_no'},
                         {fieldLabel:'公司名',name:'pay_company'},
                         {fieldLabel:'账号',name:'pay_bank_no'},
                         {fieldLabel:'汇率',name:'exchange_rate'},
-                        {fieldLabel:'总件数',name:'total_goods',xtype:'numberfield'},
+                        {fieldLabel:'总件数',name:'total_goods',xtype:'numberfield',disabled:true,itemId:'total_goods'},
                         {fieldLabel:'报关总金额(欧元)',name:'money_EUR',xtype:'numberfield'},
                         {fieldLabel:'关税总金额(人民币)',name:'money_RMB',xtype:'numberfield'},
                         {fieldLabel:'增值税(人民币)',name:'tax',xtype:'numberfield'},
@@ -289,6 +292,24 @@ Ext.define('erp.view.window.PassCustomInfoWin', {
                     ]
                 }
             ]
+        });
+        Ext.Ajax.request({
+            async:true,
+            url: apiBaseUrl+'/index.php/Purchasing/Customs/getPassCustomSupplyInfo',
+            params: {
+                batch_nos: me.record.get("supply_no")
+            },
+            success: function(response){
+                var text = Ext.decode(response.responseText);
+                //console.log(text);
+                if(!text.success){
+                    Ext.toast(text.msg,"系统提示");
+                    return;
+                }
+                var field = win.down("#total_goods");
+                field.setValue(text.data.total);
+                field.setDisabled(false);
+            }
         });
         return win;
     },

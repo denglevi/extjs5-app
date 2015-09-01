@@ -144,44 +144,151 @@ Ext.define('erp.view.module.operation.OperationController', {
         }
         var record = sel[0];
 
-        var form = Ext.create('Ext.form.Panel', {
-            layout: 'anchor',
+        var form = Ext.create('Ext.form.Panel',{
+            layout: 'column',
             defaults: {
                 xtype: 'textfield',
                 labelAlign: 'right',
                 allowBlank: false,
+                columnWidth: 0.5,
                 anchor: '100%',
                 margin:5
             },
-            url: apiBaseUrl + '/index.php/operations/Position/saveSellerPosition',
+            url: apiBaseUrl + '/index.php/operations/Position/saveSeller',
             items: [
-                {fieldLabel: '职位名称', name: 'operations_post'},
-                {fieldLabel: '英文名称', name: 'operations_post_en'},
-                {fieldLabel: '最低折扣范围', name: 'operations_low_discount'},
-                {xtype: 'hidden', name: 'operations_post_status'},
-                {xtype: 'hidden', name: 'id'},
-                {fieldLabel: '最高折扣范围', name: 'operations_tall_discount'}
-            ],
-            buttons: [
-                {
-                    text: '重置',
-                    handler: function () {
-                        this.up('form').getForm().reset();
+                {fieldLabel: '姓名', name: 'username'},
+                {fieldLabel: '工号', name: 'job_no'},
+                {fieldLabel: '职位', name: 'post_id', xtype: 'combo', editable: false,
+                    valueField: 'id',
+                    displayField: 'operations_post',
+
+                },
+                {fieldLabel: '性别', name: 'sex', xtype: 'combo',displayField:'val',valueField:'val',editable: false,store:Ext.create("Ext.data.Store",{
+                    fields:[],
+                    data:[
+                        {val:'男'},
+                        {val:'女'}
+                    ]
+                })},
+                {fieldLabel: '电话', name: 'phone'},
+                {fieldLabel: '地址', name: 'address'},
+                {fieldLabel: '生日', name: 'birthday'},
+                {fieldLabel: '所属大店', name: 'shop_id_1', xtype: 'combo', editable: false,displayField:'shops_name',valueField:'id',
+                    listeners:{
+                        change:function(val){
+                            var box = this;
+                            var max_shops=box.getValue();
+                            var sub = box.up("form").down("combo[name=shop_id]");
+                            Ext.Ajax.request({
+                                aysnc: true,
+                                method: 'POST',
+                                url: apiBaseUrl + '/index.php/Commodity/Distribution/getMinStore',
+                                params: {
+                                    max_shops:max_shops
+                                },
+                                success: function (res) {
+                                    var json = Ext.decode(res.responseText);
+                                    if (!json.success) {
+                                        Ext.toast(json.msg, "系统提示");
+                                        return;
+                                    }
+
+                                    sub.clearValue();
+                                    sub.setStore(Ext.create('Ext.data.Store', {
+                                        fields: ['id', 'name'],
+                                        data: json.data
+                                    }));
+                                    sub.setDisabled(false);
+                                }
+                            })
+
+                        }
                     }
                 },
+                {fieldLabel: '所属小店', name: 'shop_id', xtype: 'combo', editable: false,
+                    valueField: 'id',
+                    displayField: 'shops_name',
+
+                },
+                {fieldLabel: '是否启用签名码', name: 'is_signature',xtype:'checkbox',
+                    listeners:{
+                        change:function(){
+                            var box = this;
+                            if(box.getValue())form.down("textfield[name=signature]").setDisabled(false);
+                            else{
+                                form.down("textfield[name=signature]").setValue("");
+                                form.down("textfield[name=signature]").setDisabled(true);
+                            }
+                        }
+                    }
+                },
+                {fieldLabel: '签名码',inputType:'password', name: 'signature', columnWidth: 1,disabled:true},
+                {fieldLabel: '备注', name: 'notes', columnWidth: 1,xtype:'textarea'}
+            ]
+        });
+
+        form.loadRecord(record);
+        Ext.Ajax.request({
+            async:true,
+            url: apiBaseUrl + '/index.php/Operations/Saleder/getBaseData',
+            method:'POST',
+            params: {
+                shop: 1,
+                post: 1,
+                max_shop:1,
+            },
+            success:function(res){
+                var json = Ext.decode(res.responseText), data = json.data;
+                if (data.shop === undefined || data.post === undefined || data.max_shop === undefined) {
+                    Ext.toast("数据获取错误,请重试!", "系统提示");
+                    return;
+                }
+                var form = win.down("form");
+                var shop = form.down("combo[name=shop_id_1]"),
+                    job_pos = form.down("combo[name=post_id]"),
+                    min_shop=form.down("combo[name=shop_id]"),
+                    shop_store = Ext.create('Ext.data.Store', {
+                        fields: [],
+                        data: data.max_shop
+                    }),
+                    min_shop_store=Ext.create('Ext.data.Store', {
+                        fields: [],
+                        data: data.shop
+                    }),
+                    job_pos_store = Ext.create('Ext.data.Store', {
+                        fields: [],
+                        data: data.post
+                    });
+                min_shop.setStore(min_shop_store);
+                shop.setStore(shop_store);
+                job_pos.setStore(job_pos_store);
+
+            },
+            failure:function(){
+
+            }
+        });
+        var win = Ext.create('Ext.window.Window', {
+            title: '修改店员',
+            width: 600,
+            margin: 10,
+            items: [form],
+            resizable:false,
+            modal:true,
+            buttons: [
                 {
                     text: '保存',
                     formBind: true,
-                    disabled: true,
+                    disabled: false,
                     handler: function () {
                         var form = this.up('form').getForm();
                         if (form.isValid()) {
                             form.submit({
-                                waitMsg: '正在新增...',
+                                waitMsg: '正在修改...',
                                 success: function (form, action) {
                                     console.log(action.result);
                                     win.destroy();
-                                    Ext.StoreManager.lookup("SellerPositionListStore").load();
+                                    Ext.StoreManager.lookup("SellerListStore").load();
                                 },
                                 failure: function (form, action) {
                                     console.log(action);
@@ -194,15 +301,144 @@ Ext.define('erp.view.module.operation.OperationController', {
             ]
         });
 
-        form.loadRecord(record);
-        var win = Ext.create('Ext.window.Window', {
-            title: '修改职位',
-            width: 400,
-            margin: 10,
-            items: [form]
+        win.show();
+    },
+    editStatusPost:function(btn){
+        var grid = this.lookupReference("seller_position_grid");
+
+        var sel = grid.getSelection(), ids = [], nos = [];nodel=[];
+        var status=btn.itemId;
+        if (sel.length == 0) {
+            Ext.Msg.alert('系统提示', '请选择职位');
+            return;
+        }
+        if(status=='Enabled'){
+            Ext.each(sel, function (record) {
+                if(record.get("operations_post_status")==1){
+                    nodel.push(record.get("operations_post"));
+                }
+                ids.push(record.get("id"));
+                nos.push(record.get("operations_post"));
+            });
+            if(nodel.length!=0){
+                Ext.Msg.alert('系统提示', '以下已启用职位不允许再次启用!<br>'+nodel.join('<br>'));
+                return;
+            }
+        }
+        if(status=='disable'){
+            Ext.each(sel, function (record) {
+                if(record.get("operations_post_status")==2){
+                    nodel.push(record.get("operations_post"));
+                }
+                ids.push(record.get("id"));
+                nos.push(record.get("operations_post"));
+            });
+            if(nodel.length!=0){
+                Ext.Msg.alert('系统提示', '以下已禁用职位不允许再次禁用!<br>'+nodel.join('<br>'));
+                return;
+            }
+        }
+        Ext.Msg.show({
+            title: '系统消息',
+            message: '操作职位状态时,此职位下的职员状态将一起改变,你确定要改变以下职位状态吗？<br>' + nos.join('<br>'),
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn === 'yes') {
+                    Ext.Ajax.request({
+                        url: apiBaseUrl + '/index.php/operations/Position/editSellerPositionStatus',
+                        waitMsg: '正在修改...',
+                        params: {
+                            ids: ids.join(','),
+                            status:status
+                        },
+                        success: function (data) {
+                            var res = Ext.decode(data.responseText);
+                            console.log(res);
+                            if (!res.success) {
+                                Ext.Msg.alert('系统提示', res.msg);
+                                return;
+                            }
+                            grid.getStore().load();
+                        },
+                        failure: function (data) {
+                            var res = Ext.decode(data.responseText);
+                            Ext.Msg.alert('系统提示', res.msg);
+                        }
+                    })
+                }
+            }
         });
 
-        win.show();
+    },
+    /*店员的状态修改*/
+    editStatusSeller:function(btn){
+        var grid = this.lookupReference("seller_grid");
+        var sel = grid.getSelection(), ids = [], nos = [];nodel=[];
+        var status=btn.itemId;
+        var statusno='';
+        if (sel.length == 0) {
+            Ext.Msg.alert('系统提示', '请选择职位');
+            return;
+        }
+        if(status=='Enabled'){
+            statusno=1;
+            Ext.each(sel, function (record) {
+                if(record.get("status")==1){
+                    nodel.push(record.get("username"));
+                }
+                ids.push(record.get("id"));
+                nos.push(record.get("username"));
+            });
+            if(nodel.length!=0){
+                Ext.Msg.alert('系统提示', '以下已启用职位不允许再次启用!<br>'+nodel.join('<br>'));
+                return;
+            }
+        }
+        if(status=='disable'){
+            statusno=0;
+            Ext.each(sel, function (record) {
+                if(record.get("status")==0){
+                    nodel.push(record.get("username"));
+                }
+                ids.push(record.get("id"));
+                nos.push(record.get("username"));
+            });
+            if(nodel.length!=0){
+                Ext.Msg.alert('系统提示', '以下已禁用职位不允许再次禁用!<br>'+nodel.join('<br>'));
+                return;
+            }
+        }
+        Ext.Msg.show({
+            title: '系统消息',
+            message: '操作职位状态时,此职位下的职员状态将一起改变,你确定要改变以下职位状态吗？<br>' + nos.join('<br>'),
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn === 'yes') {
+                    Ext.Ajax.request({
+                        url: apiBaseUrl + '/index.php/operations/Saleder/editStatusSeller',
+                        waitMsg: '正在修改...',
+                        params: {
+                            ids: ids.join(','),
+                            status:statusno
+                        },
+                        success: function (data) {
+                            var res = Ext.decode(data.responseText);
+                            if (!res.success) {
+                                Ext.Msg.alert('系统提示', res.msg);
+                                return;
+                            }
+                            grid.getStore().load();
+                        },
+                        failure: function (data) {
+                            var res = Ext.decode(data.responseText);
+                            Ext.Msg.alert('系统提示', res.msg);
+                        }
+                    })
+                }
+            }
+        });
     },
     addSeller: function (btn) {
         var form = {

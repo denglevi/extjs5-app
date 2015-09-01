@@ -61,8 +61,8 @@ Ext.define('erp.view.module.operation.BundledSales', {
                     if (2 == val) return "已启动";
                     if (3 == val) return "已结束";
                 }
-                },
-                {text: '操作', dataIndex: 'cleraing_condition', flex: 1}
+                }
+                //{text: '操作', dataIndex: 'cleraing_condition', flex: 1}
             ],
             store: 'BundledSalesListStore',
             bbar: ['->', {

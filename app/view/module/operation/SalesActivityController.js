@@ -354,7 +354,7 @@ Ext.define('erp.view.module.operation.SalesActivityController', {
                 {fieldLabel:'与整单促销叠加',name:'checkbox_4',xtype:'checkboxfield',editable:false,columnWidth:0.25},
                 //{fieldLabel:'调价品参与促销',name:'checkbox_5',xtype:'checkboxfield',editable:false,columnWidth:0.25},
                 {fieldLabel:'VIP积分调整',name:'checkbox_6',xtype:'checkboxfield',editable:false,columnWidth:0.25},
-                {fieldLabel:'sku设置促销品',name:'checkbox_7',xtype:'checkboxfield',editable:false,columnWidth:0.25},
+                {fieldLabel:'sku设置促销品',name:'checkbox_7',xtype:'checkboxfield',editable:false,columnWidth:0.25,value:true},
                 {fieldLabel:'允许使用折扣券',name:'checkbox_8',xtype:'checkboxfield',editable:false,columnWidth:0.25},
                 //{fieldLabel:'限额卡不参与促销',name:'checkbox_9',xtype:'checkboxfield',editable:false,columnWidth:0.25},
                 {fieldLabel:'允许退换货',name:'checkbox_10',xtype:'checkboxfield',editable:false,columnWidth:0.25,value:true},

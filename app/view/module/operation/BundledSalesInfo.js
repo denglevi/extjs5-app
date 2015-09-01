@@ -116,20 +116,24 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
 
     },
     getBbar: function () {
-        var bar = ['->'],me = this;
+        var bar = ['->'],me = this;;
         if (this.record.get("status") == 0) {
-            return bar.concat({text: '审核', handler: me.handlerSalesPromotionStatus}
+            return bar.concat({text: '审核',val:this.record.get("id"), itemId:'start', handler: me.handlerSalesPromotionStatus}
             );
         }
-        if (this.record.get("status") == 1) return bar.concat({text: '终止'});
+        if (this.record.get("status") == 1) return bar.concat({text: '终止',val:this.record.get("id"),itemId:'stop', handler: me.handlerSalesPromotionStatus});
         if (this.record.get("status") == 2) return null;
     },
     getBarContainer: function () {
         var me = this;
+        var type=me.record.get('promotion_type');
+        var typeStr='';
         var vip_set=me.record.get('vipintegral');
-
+        var status=me.record.get('status');
         var items = [{text: '促销商品范围',pressed:true}];
-
+        if(type==1){typeStr='折扣';}
+        else if(type==2){typeStr='优惠价';}
+        else if(type==3){typeStr='捆绑价';}
         if(me.record.get("sku_setupt") == 1){
             items.push({itemId: 'exchange_goods', text: '促销商品信息'});
         }
@@ -152,28 +156,39 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
             items: items,
             listeners: {
                 toggle: function (container, button, pressed) {
+
                     var title = button.getText(),
                         grid = container.up("bundledsalesinfo").down("grid"), columns, store;
                     grid.setTitle(title);
-                    var item = grid.getDockedItems('toolbar[dock="top"]'),btn = item[0].down("button");
+                    var item = grid.getDockedItems('toolbar[dock="top"]'), btn = item[0].down("button");
                     btn.setHidden(false);
                     if ("促销商品范围" == title) {
                         btn.setText("新增促销商品范围");
-                        store = me.goods_range_store;
+                        store=me.assist_store;
                         columns = [
-                            {text: '商品范围', dataIndex: 'range',flex:1},
+                            {
+                                text: '商品范围', dataIndex: 'range', flex: 1, renderer: function (value) {
+                                if (value == 0) return '通用';
+                                if (value == 1) return '按尺码';
+                                if (value == 2) return '按颜色';
+                                if (value == 3) return '按SKU';
+                                return value;},
+                            },
                             {
                                 text: '操作',
                                 xtype: 'actioncolumn',
+                                hidden:(status>0)?true:false,
                                 items: [
                                     {
                                         iconCls: 'delIcon',
                                         tooltip: '删除',
-                                        handler: me.editGoodMenuDel  //删除方法
+                                        handler: me.editGoodMenuDel,  //删除方法
+                                        disabled:(status>0)?true:false,
                                     }
                                 ]
                             }
                         ];
+
                     }
                     else if ("促销商品信息" == title) {
                         btn.setText("导入促销商品");
@@ -182,94 +197,95 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                             {text: '商品代码', dataIndex: 'code_no'},
                             {text: '颜色', dataIndex: 'color'},
                             {text: '尺码', dataIndex: 'size'},
-                            {text: '活动价', dataIndex: 'type_mon'},
+                            {text: typeStr, dataIndex: 'type_mon'},
                         ];
                     }
-                    else if("换购商品"==title){
+                    else if ("换购商品" == title) {
                         btn.setText("导入商品范围");
                         store = me.exchange_store;
                         columns = [
-                            {text: '商品名称', dataIndex: 'system_suply_no',flex:1},
-                            {text: '优惠价', dataIndex: 'style_money',flex:1},
+                            {text: '商品名称', dataIndex: 'system_suply_no', flex: 1},
+                            {text: '优惠价', dataIndex: 'style_money', flex: 1},
                         ];
                     }
                     else if ("分级促销" == title) {
                         btn.setText("新增");
                         store = me.multi_sales_store;
                         columns = [
-                            {text: '商品件数', dataIndex: 'goods_num',flex:1},
-                            {text: '折扣', dataIndex: 'goods_money',flex:1},
-                            {text: '备注', dataIndex: 'restu_texts',flex:1},
+                            {text: '商品件数', dataIndex: 'goods_num', flex: 1},
+                            {text: '折扣', dataIndex: 'goods_money', flex: 1},
+                            {text: '备注', dataIndex: 'restu_texts', flex: 1},
                             {
                                 text: '操作',
                                 xtype: 'actioncolumn',
+                                hidden:(status>0)?true:false,
                                 flex: 1,
                                 items: [
                                     {
                                         iconCls: 'delIcon',
                                         tooltip: '删除',
-                                        disabled:true,
+                                        disabled:(status>0)?true:false,
                                         handler: me.editSalePromoDel
                                     }
                                 ]
                             }
                         ];
                     }
-                    else if("分级让利"==title){
+                    else if ("分级让利" == title) {
 
                         btn.setText("新增");
                         store = me.multi_benefit_store;
                         columns = [
-                            {text: '购买件数', dataIndex: 'buy_num',flex:1},
-                            {text: '让利金额', dataIndex: 'num_money',flex:1},
-                            {text: '备注', dataIndex: 'restu_text',flex:1},
+                            {text: '购买件数', dataIndex: 'buy_num', flex: 1},
+                            {text: '让利金额', dataIndex: 'num_money', flex: 1},
+                            {text: '备注', dataIndex: 'restu_text', flex: 1},
                             {
                                 text: '操作',
                                 xtype: 'actioncolumn',
+                                hidden:(status>0)?true:false,
                                 flex: 1,
                                 items: [
                                     {
                                         iconCls: 'delIcon',
                                         tooltip: '删除',
-                                        disabled:true,
+                                        disabled:(status>0)?true:false,
                                         handler: me.editGenListDel
                                     }
                                 ]
                             }
                         ];
                     }
-                    else if("VIP权益"==title){
+                    else if ("VIP权益" == title) {
                         btn.setText("新增");
                         store = me.vip_store;
 
                         columns = [
-                            {text: '类别', dataIndex: 'vip_name',flex:1},
-                            {text: '常规折扣', dataIndex: 'vip_rule_dis',flex:1},
-                            {text: '促销折扣', dataIndex: 'rescu_dis',flex:1},
-                            {text: '基本金额积分比', dataIndex: 'basic_int',flex:1},
-                            {text: '积分倍率', dataIndex: 'intv_rate',flex:1},
+                            {text: '类别', dataIndex: 'vip_name', flex: 1},
+                            {text: '常规折扣', dataIndex: 'vip_rule_dis', flex: 1},
+                            {text: '促销折扣', dataIndex: 'rescu_dis', flex: 1},
+                            {text: '基本金额积分比', dataIndex: 'basic_int', flex: 1},
+                            {text: '积分倍率', dataIndex: 'intv_rate', flex: 1},
                             {
                                 text: '操作',
                                 xtype: 'actioncolumn',
+                                hidden:(status>0)?true:false,
                                 flex: 1,
 
                                 items: [
                                     {
                                         iconCls: 'delIcon',
                                         tooltip: '删除',
-                                        //disabled:true,
+                                        disabled:(status>0)?true:false,
                                         handler: me.editVipListDel  //删除方法
                                     },
                                     {
                                         iconCls: 'editIcon',
                                         tooltip: '修改VIP积分倍率',
-                                        hidden:vip_set=1?true:false,
-                                        //disabled:true,
+                                        disabled:(status>0)?true:false,
                                         handler: me.editVipIntegral  //删除方法
                                     },
                                 ]
                             },
-
 
 
                         ];
@@ -278,27 +294,27 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                         btn.setText("新增");
                         store = me.payment_method_store;
                         columns = [
-                            {text: '结算名称', dataIndex: 'cleraing_name',flex: 1},
+                            {text: '结算名称', dataIndex: 'cleraing_name', flex: 1},
                             {
                                 text: '操作',
                                 xtype: 'actioncolumn',
+                                hidden:(status>0)?true:false,
                                 flex: 1,
                                 items: [
                                     {
                                         iconCls: 'delIcon',
                                         tooltip: '删除',
-                                        //disabled:true,
+                                        disabled:(status>0)?true:false,
                                         handler: me.editCloseDel  //删除方法
                                     }
                                 ]
                             }
                         ];
                     };
-
                     grid.reconfigure(store, columns);
+
                 }
             }
-
         });
     },
     setBtnDisabled:function(){
@@ -327,6 +343,7 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
 
             }
         });
+        var status=me.record.get("status");
         var json = [];
         if (me.record.get("sku_setupt") == 1 && me.record.get("sele_type") != null) {
             json.push({range: me.record.get("sele_type")});
@@ -392,11 +409,13 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                 {
                     text: '操作',
                     xtype: 'actioncolumn',
+                    hidden:(status>0)?true:false,
                     items: [
                         {
                             iconCls: 'delIcon',
                             tooltip: '删除',
-                            handler: me.editCloseDel  //删除方法
+                            handler: me.editCloseDel,  //删除方法
+                            disabled:(status>0)?true:false
                         }
                     ]
                 }
@@ -408,9 +427,9 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
             dockedItems: [{
                 xtype: 'toolbar',
                 dock: 'top',
-                //bind:{
-                //    hidden:'{bundledSalesInfoEditable}'
-                //},
+                bind:{
+                    hidden:(status>0)?true:false,
+                },
                 items: ['->', {
                     text: '新增促销商品范围',
                     handler: me.btnOnClick
@@ -1420,15 +1439,16 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
     },
     handlerSalesPromotionStatus:function(){
         var me = this;
-        console.log(me.record);return;
-        var status = me.record.get("status"),id=me.record.get("id");
+        var status =me.itemId,id=me.val;
+        //console.log(me.record);return;
+        //var status = me.record.get("status"),id=me.record.get("id");
         Ext.Ajax.request({
             async: false,
             method: 'POST',
             url: apiBaseUrl + '/index.php/Operations/Promotion/handlerPromotionStatus',
             params: {
-                id: me.record.get("id"),
-                status:parseInt(status)+1
+                id: id,
+                status:status
             },
             success: function (res) {
                 var json = Ext.decode(res.responseText);

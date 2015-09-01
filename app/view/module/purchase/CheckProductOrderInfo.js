@@ -24,6 +24,87 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
             id:this.record.get("id")
         }
         me.layout = 'vbox';
+        var diff = Ext.decode(this.record.get("diff")),items=[
+            {
+                title: '商品信息',
+                xtype: 'grid',
+                scrollable:'y',
+                sortableColumns:false,
+                columns: [
+                    {text: '装箱单号', dataIndex: 'packing_no', flex: 1},
+                    {text: '品牌', dataIndex: 'brand'},
+                    {text: '国际款号', dataIndex: 'style_no',flex:1},
+                    {text: '名称', dataIndex: 'product_name'},
+                    {text: '颜色', dataIndex: 'color'},
+                    {text: '尺码', dataIndex: 'size'},
+                    {text: '性别', dataIndex: 'sex'},
+                    {text: '产地', dataIndex: 'origin'},
+                    {text: '材质', dataIndex: 'material'},
+                    {text: '数量', dataIndex: 'num'},
+                    {text: '箱号', dataIndex: 'box_no'},
+                    {text: '单价', dataIndex: 'unit_price'},
+                    {text: '总价', dataIndex: 'total_price'}
+                ],
+                listeners:{
+                    afterrender:function(gp){
+                        Ext.Ajax.request({
+                            async:true,
+                            url: apiBaseUrl+'/index.php/Purchasing/CheckProduct/getCheckProductOrderProduct',
+                            params: {
+                                id:data.id
+                            },
+                            success: function(response){
+                                var text = Ext.decode(response.responseText);
+                                if(text.data == null) return;
+                                var goods = text.data,len = goods.length,num= 0,box_num='',total_price=0;
+                                for(var i=0;i<len;i++){
+                                    total_price += parseFloat(goods[i].total_price||0);
+                                    if(goods[i].num == undefined || goods[i].box_no == undefined) continue;
+                                    num += parseInt(goods[i].num);
+                                    if(box_num.indexOf(goods[i].box_no+'|-') != -1) continue;
+                                    box_num += goods[i].box_no+'|-';
+                                }
+                                data.num = num;
+                                var len = box_num.split("|-").length;
+                                //console.log(box_num.split("|-"),box_num.split("|-").length);
+                                data.box_num = len-1;
+                                data.total_price = total_price;
+                                me.down("#check_product_info").setData(data);
+                                var store = Ext.create('Ext.data.Store',{
+                                    fields:[],
+                                    data:text.data
+                                });
+                                gp.setStore(store);
+                            }
+                        });
+                    }
+                }
+            }
+        ];
+        console.log(this.record);
+        if(diff.length > 0){
+            var grid = Ext.create("Ext.grid.Panel",{
+                title: '商品差异数',
+                xtype: 'grid',
+                scrollable:'y',
+                sortableColumns:false,
+                columns: [
+                    {text: '国际款号', dataIndex: 'style_no',flex:1},
+                    {text: '颜色', dataIndex: 'color',flex:1},
+                    {text: '尺码', dataIndex: 'size',flex:1},
+                    {text: '单价', dataIndex: 'price',flex:1},
+                    {text: '差异数', dataIndex: 'num',renderer:function(val){
+                        if(val >0) return '-'+val;
+                        else return Math.abs(val);
+                    }}
+                ],
+                store:Ext.create('Ext.data.Store',{
+                    fields:[],
+                    data:diff
+                })
+            });
+            items.push(grid);
+        }
         me.items = [
             {
                 xtype:'panel',
@@ -51,83 +132,7 @@ Ext.define('erp.view.module.purchase.CheckProductOrderInfo', {
                 xtype: 'tabpanel',
                 width: '100%',
                 flex:1,
-                items: [
-                    {
-                        title: '商品信息',
-                        xtype: 'grid',
-                        scrollable:'y',
-                        sortableColumns:false,
-                        columns: [
-                            {text: '装箱单号', dataIndex: 'packing_no', flex: 1},
-                            {text: '品牌', dataIndex: 'brand'},
-                            {text: '国际款号', dataIndex: 'style_no',flex:1},
-                            {text: '名称', dataIndex: 'product_name'},
-                            {text: '颜色', dataIndex: 'color'},
-                            {text: '尺码', dataIndex: 'size'},
-                            {text: '性别', dataIndex: 'sex'},
-                            {text: '产地', dataIndex: 'origin'},
-                            {text: '材质', dataIndex: 'material'},
-                            {text: '数量', dataIndex: 'num'},
-                            {text: '箱号', dataIndex: 'box_no'},
-                            {text: '单价', dataIndex: 'unit_price'},
-                            {text: '总价', dataIndex: 'total_price'}
-                        ],
-                        listeners:{
-                            afterrender:function(gp){
-                                Ext.Ajax.request({
-                                    async:true,
-                                    url: apiBaseUrl+'/index.php/Purchasing/CheckProduct/getCheckProductOrderProduct',
-                                    params: {
-                                        id:data.id
-                                    },
-                                    success: function(response){
-                                        var text = Ext.decode(response.responseText);
-                                        if(text.data == null) return;
-                                        var goods = text.data,len = goods.length,num= 0,box_num='',diff = text.diff,total_price=0;
-                                        for(var i=0;i<len;i++){
-                                            total_price += parseFloat(goods[i].total_price||0);
-                                            if(goods[i].num == undefined || goods[i].box_no == undefined) continue;
-                                            num += parseInt(goods[i].num);
-                                            if(box_num.indexOf(goods[i].box_no+'|-') != -1) continue;
-                                            box_num += goods[i].box_no+'|-';
-                                        }
-                                        data.num = num;
-                                        var len = box_num.split("|-").length;
-                                        //console.log(box_num.split("|-"),box_num.split("|-").length);
-                                        data.box_num = len-1;
-                                        data.total_price = total_price;
-                                        me.down("#check_product_info").setData(data);
-                                        var store = Ext.create('Ext.data.Store',{
-                                            fields:[],
-                                            data:text.data
-                                        });
-                                        gp.setStore(store);
-                                        if(diff.length != 0){
-                                            var tab = gp.up("tabpanel");
-                                            var grid = Ext.create("Ext.grid.Panel",{
-                                                title: '商品差异数',
-                                                xtype: 'grid',
-                                                scrollable:'y',
-                                                sortableColumns:false,
-                                                columns: [
-                                                    {text: '国际款号', dataIndex: 'style_no',flex:1},
-                                                    {text: '颜色', dataIndex: 'color',flex:1},
-                                                    {text: '尺码', dataIndex: 'size',flex:1},
-                                                    {text: '差异数', dataIndex: 'diff'}
-                                                ],
-                                                store:Ext.create('Ext.data.Store',{
-                                                    fields:[],
-                                                    data:text.diff
-                                                })
-                                            });
-                                            tab.add(grid);
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }
-                ],
+                items: items,
                 listeners:{
 
                 }

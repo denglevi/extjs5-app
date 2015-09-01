@@ -121,8 +121,8 @@ Ext.define('erp.view.module.operation.SellerPositionList', {
                     ],
                     store: 'SellerListStore',
                     bbar: [
-                        {text: '禁用', glyph: 0xf05e},
-                        {text: '启用', glyph: 0xf05d}, '->', {
+                        {text:'禁用',glyph:0xf05e,itemId:'disable',handler:'editStatusSeller'},
+                        {text:'启用',glyph:0xf05d,itemId:'Enabled',handler:'editStatusSeller'},'->', {
                             xtype: 'pagingtoolbar',
                             store: 'SellerListStore'
                         }]
