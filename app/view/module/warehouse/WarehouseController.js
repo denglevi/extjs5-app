@@ -1838,7 +1838,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                             {text: '名称', dataIndex: 'name_zh', flex: 1},
                             {text: '颜色', dataIndex: 'color', flex: 1},
                             {text: '尺码', dataIndex: 'size', flex: 1},
-                            {text: '库位号', dataIndex: 'location', flex: 1}
+                            {text: '库位号', dataIndex: 'library_name', flex: 1}
                         ];
                         store = model.get("order_goods_list_store");
                     } else if ("商品通知信息" == text) {

@@ -193,6 +193,11 @@
     background-image: url("images/import.png");
 }
 
+.exportIcon {
+    background-size: contain;
+    background-image: url("images/export.png");
+}
+
 .scanIcon {
     background-size: contain;
     background-image: url("images/scan.png");

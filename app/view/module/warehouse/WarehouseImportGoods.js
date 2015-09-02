@@ -77,31 +77,48 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
                     iconCls:'delIcon',
                     //glyph: 0xf1f8,
                     handler:'delImportGoodsOrder'
-                },'->',
-                {
-                    xtype:'combo',
-                    fieldLabel:'状态',
-                    labelWidth:70,
-                    labelAlign:'right',
-                    displayField:'name',
-                    valueField:'val',
-                    editable:false,
-                    width:140,
-                    store:Ext.create('Ext.data.Store',{
-                        fields:[],
-                        data:[
-                            {name:'全部',val:2},
-                            {name:'未验收',val:0},
-                            {name:'已验收',val:1}
-                        ]
-                    })
                 }
             ],
-            //bbar: ['->', {
-            //    xtype: 'pagingtoolbar',
-            //    store: store,
-            //    displayInfo: true
-            //}],
+            dockedItems: [{
+                xtype: 'toolbar',
+                dock: 'bottom',
+                layout:'vbox',
+                items: [{
+                    xtype:'radiogroup',
+                    fieldLabel:'状态',
+                    labelAlign:'right',
+                    labelWidth:30,
+                    items:[
+                        { boxLabel: '全部', name: 'is_check', inputValue: 2, checked: true},
+                        { boxLabel: '未验收', name: 'is_check', inputValue: 0,margin:'auto 10 auto auto'},
+                        { boxLabel: '已验收', name: 'is_check', inputValue: 1}
+                    ],
+                    listeners:{
+                        change:function(obj){
+                            var val = obj.getValue(),
+                                pt = import_list_grid.down("pagingtoolbar");
+                            store.setProxy({
+                                type: 'ajax',
+                                url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/getWarehouseImportList?is_check=' + val.is_check,
+                                reader: {
+                                    start:0,
+                                    type: 'json',
+                                    rootProperty: 'data',
+                                    totalProperty: 'total'
+                                }
+                            });
+                            pt.moveFirst();
+                        }
+                    }
+                },{
+                    xtype: 'pagingtoolbar',
+                    store: store,
+                    defaults:{
+                        margin:0,
+                        padding:0
+                    }
+                }]
+            }],
             listeners: {
                 afterrender: function () {
                     store.load();

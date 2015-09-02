@@ -104,8 +104,8 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
     },
     getBtns:function(){
         var me = this;
-        console.log(this.record);
-        if(this.record.get("status") == 1) return null;
+        //console.log(this.record);
+        //if(this.record.get("status") == 1) return null;
         return [
             {
                 text: '重置',
@@ -114,13 +114,13 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                 }
             },
             {
-                text: '提交收货单',
+                text: '保存',
                 formBind: true,
                 disabled: true,
                 handler: function () {
                     var grid = me.down("grid");
                     var items = grid.getStore().data.items;
-                    console.log(data);
+                    //console.log(data);
                     var data = [];
                     Ext.Array.each(items, function (item) {
                         data.push({
@@ -138,7 +138,8 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                             waitMsg: '正在提交...',
                             params: {
                                 id: me.record.get("id"),
-                                data: Ext.encode(data)
+                                data: Ext.encode(data),
+                                status:me.record.get("status")
                             },
                             success: function (form, action) {
                                 //me.down("grid").getStore().load();
@@ -167,7 +168,7 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
         ]
     },
     getFormItems:function(){
-        var date;
+        var date,me = this;
         if(this.record.get("status")==0){
             date = {
                 fieldLabel: '收货日期',
@@ -182,7 +183,7 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
             date = {
                 fieldLabel: '收货日期',
                 name: 'date',
-                value: this.record.get("create_time")
+                value: me.record.get("date")
             };
         }
 
@@ -218,7 +219,7 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
         ];
     },
     getGridPlugins:function(){
-        if(1 == this.record.get("status")) return null;
+        //if(1 == this.record.get("status")) return null;
 
         return {
             ptype: 'rowediting',

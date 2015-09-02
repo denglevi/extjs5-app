@@ -60,11 +60,11 @@ Ext.define('erp.view.module.goods.GoodsList', {
             width: 350,
             border: true,
             columns: [
-                {text: '导入单号', dataIndex: 'no', flex:2},
-                {text: '总数', dataIndex: 'goods_num', flex:1},
-                {text: '未入库', dataIndex: 'unimport_num', flex:1},
-                {text: '已入库', dataIndex: 'import_num', flex:1},
-                {text: '导入日期', dataIndex: 'create_time', flex:1}
+                {text: '导入单号', dataIndex: 'no', flex: 2},
+                {text: '总数', dataIndex: 'goods_num', flex: 1},
+                {text: '未入库', dataIndex: 'unimport_num', flex: 1},
+                {text: '已入库', dataIndex: 'import_num', flex: 1},
+                {text: '导入日期', dataIndex: 'create_time', flex: 1}
             ],
             store: Ext.create('Ext.data.Store', {
                 fields: ['no', 'id'],
@@ -94,11 +94,11 @@ Ext.define('erp.view.module.goods.GoodsList', {
             title: '商品列表',
             selModel: 'checkboxmodel',
             reference: 'goods_list_grid',
-            sortableColumns:false,
+            sortableColumns: false,
             tbar: [
                 {
-                  text:'打印',
-                    handler:function(del_btn){
+                    text: '打印',
+                    handler: function (del_btn) {
                         var sel = del_btn.up('grid').getSelection(), ids = [], names = [], mark = 0;
                         if (sel.length == 0) {
                             Ext.Msg.alert('系统提示', '请选择要打印的商品');
@@ -131,7 +131,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
                             area += tpl.apply(info);
                         });
                         var iframe = document.getElementById("printList");
-                        iframe.contentWindow.document.body.innerHTML=area;
+                        iframe.contentWindow.document.body.innerHTML = area;
                         iframe.contentWindow.focus();//IE will print parent window without this statement.
                         iframe.contentWindow.print();
                     }
@@ -186,7 +186,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
                 {
                     text: '搜索',
                     //glyph: 0xf002,
-                    iconCls:'searchIcon',
+                    iconCls: 'searchIcon',
                     handler: 'searchGoods'
                 }],
             columns: [
@@ -196,16 +196,16 @@ Ext.define('erp.view.module.goods.GoodsList', {
                 //    return '<img height=50 src="' + src + '" alt="" class="img-thumbnail" />';
                 //}
                 //},
-                {text: '唯一码', dataIndex: 'no',width:170},
-                {text: '国际款号', dataIndex: 'supply_style_no',width:170},
-                {text: '系统款号', dataIndex: 'system_style_no',width:170},
-                {text: '名称', dataIndex: 'name_zh',width:100},
-                {text: '颜色代码', dataIndex: 'supply_color_no',width:70},
-                {text: '颜色名称', dataIndex: 'color',width:70},
-                {text: '尺码', dataIndex: 'size',width:70},
-                {text: '单价', dataIndex: 'retail_price',width:70},
+                {text: '唯一码', dataIndex: 'no', width: 170},
+                {text: '国际款号', dataIndex: 'supply_style_no', width: 170},
+                {text: '系统款号', dataIndex: 'system_style_no', width: 170},
+                {text: '名称', dataIndex: 'name_zh', width: 100},
+                {text: '颜色代码', dataIndex: 'supply_color_no', width: 70},
+                {text: '颜色名称', dataIndex: 'color', width: 70},
+                {text: '尺码', dataIndex: 'size', width: 70},
+                {text: '单价', dataIndex: 'retail_price', width: 70},
                 {
-                    text: '商品状态', dataIndex: 'status',width:70, renderer: function (val) {
+                    text: '商品状态', dataIndex: 'status', width: 70, renderer: function (val) {
                     if (0 == val) return '<b class="text-danger">未入库</b>';
                     if (1 == val) return '<b class="text-success">已入库</b>';
                     if (2 == val) return '<b class="text-info">已上架</b>';
@@ -214,8 +214,8 @@ Ext.define('erp.view.module.goods.GoodsList', {
                     if (5 == val) return '<b class="text-primary">待移库</b>';
                 }
                 },
-                {text:'所在仓库',dataIndex:'warehouse_no',width:70},
-                {text:'所在库位',dataIndex:'location_no',width:70},
+                {text: '所在仓库', dataIndex: 'warehouse_no', width: 70},
+                {text: '所在库位', dataIndex: 'location_no', width: 70},
                 {
                     text: '操作',
                     xtype: 'actioncolumn',
@@ -235,13 +235,40 @@ Ext.define('erp.view.module.goods.GoodsList', {
                 }
             ],
             store: 'GoodsListStore',
-            bbar: ['->', {
-                xtype: 'pagingtoolbar',
-                store: 'GoodsListStore',
-                emptyMsg: '<b>暂无记录</b>',
-                displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
-                displayInfo: true
-            }],
+            bbar: ['->',
+                {
+                    xtype: 'pagingtoolbar',
+                    store: 'GoodsListStore',
+                    emptyMsg: '<b>暂无记录</b>',
+                    displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
+                    displayInfo: true
+                },{
+                    xtype: 'combo',
+                    displayField: 'text',
+                    valueField: 'val',
+                    width:60,
+                    editable:false,
+                    hideLabel: true,
+                    store: Ext.create("Ext.data.Store", {
+                        fields: [],
+                        data: [
+                            {text: 25, val: 25},
+                            {text: 50, val: 50},
+                            {text: 75, val: 75},
+                            {text: 100, val: 100},
+                        ]
+                    }),
+                    value: 25,
+                    listeners:{
+                        change:function(obj){
+                            var store = Ext.StoreManager.lookup("GoodsListStore");
+                            if(store != null){
+                                store.setPageSize(obj.getValue());
+                                store.load();
+                            }
+                        }
+                    }
+                }],
             listeners: {
                 afterrender: function () {
                     this.getStore().load();

@@ -33,16 +33,19 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
     sortableColumns: false,
     tbar: [
         {
-            text: '导入商品目录',
-            //glyph: 0xf067,
-            iconCls:'addIcon',
+            text: '导入',
+            iconCls:'importIcon',
             handler: 'importGoodsMenu'
         },
+        //{
+        //    text: '删除',
+        //    iconCls:'delIcon',
+        //    handler: 'deleteGoodsMenu'
+        //},
         {
-            text: '删除',
-            //glyph: 0xf1f8,
-            iconCls:'delIcon',
-            handler: 'deleteGoodsMenu'
+            text: '导出',
+            iconCls:'exportIcon',
+            handler: 'exportGoodsMenu'
         }, '->',
         {
             xtype: 'textfield',
@@ -67,6 +70,32 @@ Ext.define('erp.view.module.goods.GoodsMenu', {
         xtype: 'pagingtoolbar',
         store: 'GoodsMenuStore',
         displayInfo: true
+    },{
+        xtype: 'combo',
+        displayField: 'text',
+        valueField: 'val',
+        width:60,
+        editable:false,
+        hideLabel: true,
+        store: Ext.create("Ext.data.Store", {
+            fields: [],
+            data: [
+                {text: 25, val: 25},
+                {text: 50, val: 50},
+                {text: 75, val: 75},
+                {text: 100, val: 100},
+            ]
+        }),
+        value: 25,
+        listeners:{
+            change:function(obj){
+                var store = Ext.StoreManager.lookup("GoodsMenuStore");
+                if(store != null){
+                    store.setPageSize(obj.getValue());
+                    store.load();
+                }
+            }
+        }
     }],
     columns: [
         {text: '系统款号', dataIndex: 'system_style_no', flex: 2},

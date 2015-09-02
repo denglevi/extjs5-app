@@ -86,6 +86,31 @@ Ext.define('erp.view.module.goods.GoodsController', {
             ]
         }).show();
     },
+    exportGoodsMenu:function(export_btn){
+        var grid = export_btn.up("grid"),
+            store = grid.getStore(),
+            records = grid.getSelectionModel().getSelection();
+        if(records.length == 0){
+            Ext.Msg.alert("系统提示","请选择要导出的记录!");
+            return;
+        }
+        var menu_id = [];
+        Ext.each(records,function(record){
+            menu_id.push(record.get("id"));
+        });
+        Ext.Ajax.request({
+            async: false,
+            method: 'POST',
+            url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/exportGoodsMenuInfo',
+            params: {
+                ids: menu_id.join(',')
+            },
+            success: function (response) {
+                var res = Ext.decode(response.responseText);
+                console.log(res);
+            }
+        });
+    },
     deleteGoodsMenu: function () {
 
     },

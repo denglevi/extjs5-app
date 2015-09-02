@@ -43,7 +43,7 @@ Ext.define("erp.view.module.warehouse.WarehouseDeliveryOrder",{
     getDeliveryOrderListGrid: function () {
         var grid = Ext.create('Ext.grid.Panel', {
             title: '配货单列表',
-            width: 240,
+            width: 250,
             border:true,
             sortableColumns: false,
             enableColumnHide: false,
@@ -55,12 +55,56 @@ Ext.define("erp.view.module.warehouse.WarehouseDeliveryOrder",{
             columns: [
                 {text: '配货单号', dataIndex: 'noder_no', width:130},
                 {text: '状态', dataIndex: 'status',flex:1, renderer:function(val){
-                    if(0 == val) return '<b>未发出</b>';
-                    if(1 == val) return '<b class="text-info">已发出</b>';
-                    if(2 == val) return '<b class="text-danger">已终止</b>';
+                    if(0 == val) return '<b>未发</b>';
+                    if(1 == val) return '<b class="text-info">已发</b>';
+                    if(2 == val) return '<b class="text-danger">终止</b>';
                 }}
             ],
-            store: 'WarehouseDeliveryOrderStore'
+            store: 'WarehouseDeliveryOrderStore',
+            dockedItems: [{
+                xtype: 'toolbar',
+                dock: 'bottom',
+                layout:'vbox',
+                items: [{
+                    xtype:'radiogroup',
+                    hideLabel:true,
+                    labelAlign:'right',
+                    defaults:{
+                      margin:'0 5 0 0'
+                    },
+                    items:[
+                        { boxLabel: '全部', name: 'status', inputValue: 3, checked: true},
+                        { boxLabel: '未发', name: 'status', inputValue: 0},
+                        { boxLabel: '已发', name: 'status', inputValue: 1},
+                        { boxLabel: '终止', name: 'status', inputValue: 2}
+                    ],
+                    listeners:{
+                        change:function(obj){
+                            var val = obj.getValue(),
+                                pt = grid.down("pagingtoolbar"),
+                                store = Ext.StoreManager.lookup("WarehouseDeliveryOrderStore");
+                            store.setProxy({
+                                type: 'ajax',
+                                url: apiBaseUrl + '/index.php/Warehouse/DeliveryGoods/getDeliveryGoodsOrderList?status=' + val.status,
+                                reader: {
+                                    start:0,
+                                    type: 'json',
+                                    rootProperty: 'data',
+                                    totalProperty: 'total'
+                                }
+                            });
+                            pt.moveFirst();
+                        }
+                    }
+                },{
+                    xtype: 'pagingtoolbar',
+                    store: 'WarehouseDeliveryOrderStore',
+                    defaults:{
+                        margin:0,
+                        padding:0
+                    }
+                }]
+            }]
         });
 
         return grid;
