@@ -88,10 +88,13 @@ Ext.define('erp.view.module.warehouse.WarehouseImportGoods', {
                     fieldLabel:'状态',
                     labelAlign:'right',
                     labelWidth:30,
+                    defaults:{
+                      margin:'0 2 0 0'
+                    },
                     items:[
                         { boxLabel: '全部', name: 'is_check', inputValue: 2, checked: true},
-                        { boxLabel: '未验收', name: 'is_check', inputValue: 0,margin:'auto 10 auto auto'},
-                        { boxLabel: '已验收', name: 'is_check', inputValue: 1}
+                        { boxLabel: '未验', name: 'is_check', inputValue: 0},
+                        { boxLabel: '已验', name: 'is_check', inputValue: 1}
                     ],
                     listeners:{
                         change:function(obj){

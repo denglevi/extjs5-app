@@ -24,6 +24,7 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
             title:'新增进货单',
             layout:'fit',
             width:600,
+            modal:true,
             items:[
                 {
                     xtype: 'form',

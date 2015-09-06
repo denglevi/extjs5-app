@@ -179,7 +179,6 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
                 value: new Date()
             };
         }else{
-            //var val =
             date = {
                 fieldLabel: '收货日期',
                 name: 'date',
@@ -187,29 +186,11 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
             };
         }
 
-        return [
-            date
-            ,
-            {
-                fieldLabel: "采购订单号",
-                name: 'order_no',
-                value: this.record.get("order_no")
-            },
-            {
-                fieldLabel: "供应订单号",
-                name: 'batch_no',
-                value: this.record.get("batch_no")
-            },
-            {
-                fieldLabel: "物流单号",
-                name: 'logistics_no',
-                value: this.record.get("logistics_no")
-            },
-            {
-                fieldLabel: '供应商',
-                name: 'supplier',
-                value: this.record.get("name"),
-                listeners:{
+        return [date,
+            {fieldLabel: "采购订单号", name: 'order_no', value: this.record.get("order_no")},
+            {fieldLabel: "供应订单号", name: 'batch_no', value: this.record.get("batch_no")},
+            {fieldLabel: "物流单号", name: 'logistics_no', value: this.record.get("logistics_no")},
+            {fieldLabel: '供应商', name: 'supplier', value: this.record.get("name"), listeners:{
                     beforerender:function(){
                         var rv = this.getRawValue();
                         this.setValue(Ext.util.Format.htmlDecode(rv));
@@ -220,11 +201,7 @@ Ext.define('erp.view.module.warehouse.AddWarehouseReceive', {
     },
     getGridPlugins:function(){
         //if(1 == this.record.get("status")) return null;
-
-        return {
-            ptype: 'rowediting',
-                clicksToEdit: 1
-        }
+        return {ptype: 'rowediting',clicksToEdit: 1}
     }
 });
 

@@ -37,7 +37,7 @@ Ext.define('erp.view.module.warehouse.WarehouseSelect', {
                     Ext.toast("初始化数据错误,请重试!", "系统提示");
                     return;
                 }
-                res = text.data;
+                var res = text.data;
                 console.log(text);
                 var form = me.down("form");
                 form.down("combo[name=brand]").setStore(Ext.create('Ext.data.Store', {
