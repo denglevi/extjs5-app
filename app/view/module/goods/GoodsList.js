@@ -54,31 +54,119 @@ Ext.define('erp.view.module.goods.GoodsList', {
         me.callParent();
     },
     getImportList: function () {
+        var store = Ext.create('Ext.data.Store', {
+            fields: ['no', 'id'],
+            autoLoad: false,
+            proxy: {
+                type: 'ajax',
+                url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/getGoodsImportList',
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data',
+                    totalProperty: 'total'
+                }
+            }
+        });
         var import_list_grid = Ext.create('Ext.grid.Panel', {
             title: '导入列表',
             height: '100%',
-            width: 350,
+            width: 400,
             border: true,
+            //flex: 1,
+            selModel: 'checkboxmodel',
+            bbar: ['->',
+                {
+                    xtype: 'pagingtoolbar',
+                    store: store,
+                    emptyMsg: '<b>暂无记录</b>',
+                    displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
+                    displayInfo: false,
+                    defaults:{
+                        margin:0,
+                        padding:0
+                    }
+                }, {
+                    xtype: 'combo',
+                    displayField: 'text',
+                    valueField: 'val',
+                    width: 60,
+                    editable: false,
+                    hideLabel: true,
+                    store: Ext.create("Ext.data.Store", {
+                        fields: [],
+                        data: [
+                            {text: 25, val: 25},
+                            {text: 50, val: 50},
+                            {text: 75, val: 75},
+                            {text: 100, val: 100},
+                        ]
+                    }),
+                    value: 25,
+                    listeners: {
+                        change: function (obj) {
+                            store.setPageSize(obj.getValue());
+                            store.load();
+                        }
+                    }
+                }],
+            tbar: [
+                {
+                    text: '删除', iconCls: 'delIcon', handler: function (del_btn) {
+                    var sel = del_btn.up('grid').getSelection(), ids = [], names = [];
+                    if (sel.length == 0) {
+                        Ext.Msg.alert('系统提示', '请选择要删除的导入单');
+                        return;
+                    }
+                    Ext.each(sel, function (record) {
+                        ids.push(record.get("id"));
+                        names.push(record.get("no"));
+                    });
+                    Ext.Msg.show({
+                        title: '系统消息',
+                        message: '你确定要删除以下导入单吗？<br>' + names.join('<br>'),
+                        buttons: Ext.Msg.YESNO,
+                        icon: Ext.Msg.QUESTION,
+                        fn: function (btn) {
+                            if (btn === 'yes') {
+                                Ext.getBody().mask("正在删除...");
+                                Ext.Ajax.request({
+                                    url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/delGoodsImportOrder',
+                                    params: {
+                                        ids: ids.join(',')
+                                    },
+                                    success: function (data) {
+                                        Ext.getBody().unmask();
+                                        var res = Ext.decode(data.responseText);
+                                        if (!res.success) {
+                                            Ext.Msg.alert('系统提示', res.msg);
+                                            return;
+                                        }
+                                        //if(is_delete == 1){
+                                        //    del_btn.up('grid').up("warehouseimportgoods").down("panel[name=info]").removeAll();
+                                        //}
+                                        Ext.toast("操作成功", "系统提示");
+                                        del_btn.up('grid').getStore().load();
+                                    },
+                                    failure: function (data) {
+                                        Ext.getBody().unmask();
+                                        Ext.Msg.alert('系统提示', "请求网络错误,请检查网络,重试!");
+                                    }
+                                })
+                            }
+                        }
+                    });
+                }
+                }
+            ],
             columns: [
                 {text: '导入单号', dataIndex: 'no', flex: 2},
+                {text: '品牌', dataIndex: 'brand', flex: 2},
                 {text: '总数', dataIndex: 'goods_num', flex: 1},
                 {text: '未入库', dataIndex: 'unimport_num', flex: 1},
                 {text: '已入库', dataIndex: 'import_num', flex: 1},
-                {text: '导入日期', dataIndex: 'create_time', flex: 1}
+                {text: '导入日期', dataIndex: 'create_time', flex: 2}
             ],
-            store: Ext.create('Ext.data.Store', {
-                fields: ['no', 'id'],
-                autoLoad: false,
-                proxy: {
-                    type: 'ajax',
-                    url: apiBaseUrl + '/index.php/Commodity/CommodityMenu/getGoodsImportList',
-                    reader: {
-                        type: 'json',
-                        rootProperty: 'data',
-                        totalProperty: 'total'
-                    }
-                }
-            }),
+            store: store,
             listeners: {
                 afterrender: function () {
                     this.getStore().load();
@@ -242,12 +330,12 @@ Ext.define('erp.view.module.goods.GoodsList', {
                     emptyMsg: '<b>暂无记录</b>',
                     displayMsg: '显示 {0} - {1} 总共 {2} 条记录',
                     displayInfo: true
-                },{
+                }, {
                     xtype: 'combo',
                     displayField: 'text',
                     valueField: 'val',
-                    width:60,
-                    editable:false,
+                    width: 60,
+                    editable: false,
                     hideLabel: true,
                     store: Ext.create("Ext.data.Store", {
                         fields: [],
@@ -259,10 +347,10 @@ Ext.define('erp.view.module.goods.GoodsList', {
                         ]
                     }),
                     value: 25,
-                    listeners:{
-                        change:function(obj){
+                    listeners: {
+                        change: function (obj) {
                             var store = Ext.StoreManager.lookup("GoodsListStore");
-                            if(store != null){
+                            if (store != null) {
                                 store.setPageSize(obj.getValue());
                                 store.load();
                             }

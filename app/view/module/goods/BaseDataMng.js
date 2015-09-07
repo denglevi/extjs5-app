@@ -303,7 +303,7 @@ Ext.define('erp.view.module.goods.BaseDataMng', {
             formFields.push({
                 fieldLabel:field.name,
                 name:field.mark,
-                value:record.get(field.mark)
+                value:Ext.util.Format.htmlDecode(record.get(field.mark))
             });
         }
         formFields.push({

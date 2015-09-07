@@ -210,7 +210,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             Ext.toast(res.msg, "系统提示", 't');
             return;
         }
-        console.log(res.data);
+        //console.log(res.data);
         var info = res.data.list;
         var order = res.data.order;
         var log = res.data.log;

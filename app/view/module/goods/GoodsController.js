@@ -56,7 +56,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
                         margin: 5
                     },
                     items: [
-                        {xtype: 'combo',fieldLabel: '导入品牌',name: 'brand',displayField: 'name_en',valueField: 'base_data_id',
+                        {xtype: 'combo',fieldLabel: '导入品牌',name: 'brand',displayField: 'name_en',valueField: 'name_en',
                             allowBlank: false,disabled: true,editable: false},
                         {xtype: 'filefield',fieldLabel: '商品资料',buttonText: '上传',name: 'goods_menu',allowBlank: false}
                     ],
@@ -76,7 +76,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
                                     me = this,
                                     brand = this.up("form").down("combo"),
                                     brandVal = brand.getValue(),
-                                    val = this.getValue();
+                                    val = this.up("form").down("filefield").getValue();
                                 //console.log(brandVal);
                                 if(!form.isValid()){
                                     Ext.Msg.alert('系统提示', '品牌不能为空');
@@ -85,6 +85,7 @@ Ext.define('erp.view.module.goods.GoodsController', {
                                 form.submit({
                                     waitMsg: '正在导入商品信息...',
                                     success: function (form, action) {
+                                        console.log(action.result);
                                         me.up("form").up("window").destroy();
                                         Ext.Msg.alert('系统提示', "导入成功");
                                         import_btn.up("grid").getStore().load();
