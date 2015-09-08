@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="resources/font-awesome.min.css" type="text/css"/>
     <link rel="stylesheet" href="resources/module.css" type="text/css"/>
     <!-- The line below must be kept intact for Sencha Cmd to build your application -->
+    <script type="text/javascript" src="resources/js/jquery-1.9.0.js"></script>
+    <script type="text/javascript" src="resources/js/jquery-barcode.js"></script>
     <script id="microloader" type="text/javascript" src="bootstrap.js"></script>
 </head>
 <body>
@@ -19,13 +21,13 @@
 //        var apiBaseUrl = 'http://test.cosciachina.com:8800';
     var apiBaseUrl = 'http://192.168.16.22/coscia';
     //web
-    var version = 'web';
+//    var version = 'web';
 
     //destop
-//    var version = 'desktop';
-//    var ipc = require('ipc');
-//    ipc.on("save-file-return",function(res){
-//        Ext.toast(res,"系统提示");
-//    });
+    var version = 'desktop';
+    var ipc = require('ipc');
+    ipc.on("save-file-return",function(res){
+        Ext.toast(res,"系统提示");
+    });
 </script>
 </html>

@@ -32,7 +32,7 @@ Ext.define('erp.view.main.region.Bottom', {
                     text: '蔻莎国际品牌管理有限公司 @版权所有'
                 }, '',
                 {
-                    text: 'version 0.7.5'
+                    text: 'version 0.7.6'
         }, '->'
             ]
         });

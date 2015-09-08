@@ -192,36 +192,98 @@ Ext.define('erp.view.module.goods.GoodsList', {
                             Ext.Msg.alert('系统提示', '请选择要打印的商品');
                             return;
                         }
-                        var area = "";
+                        var area = "",time=0;
                         Ext.each(sel, function (record) {
                             var info = record.getData();
-                            var tpl = new Ext.XTemplate(
-                                '<div class="width:200px;clear:both;">',
-                                '<div style="width:200px;font-family: Arial;font-weight: 900;text-align: center;font-size: large;">{brand}</div>',
-                                '<div class="row" style="font-size: small;">',
-                                '<div class="col-md-12">国际款号: {supply_style_no}</div>',
-                                '<div class="col-md-12">系统款号:{system_style_no}</div>',
-                                '<div class="col-md-6">品名: {name_zh}</div>',
-                                '<div class="col-md-6">等级: {level}</div>',
-                                '<div class="col-md-12">型号规格: {shape}</div>',
-                                '<div class="col-md-12">颜色: {color}</div>',
-                                '<div class="col-md-12">面料成份: {material_1}</div>',
-                                '<div>安全技术类别: {safety_level}</div>',
-                                '<div>产品执行标准: {execute_standard}</div>',
-                                '<div>洗涤方法: <img src="/resources/images/wash_type/01.jpg" width="100" height="10" /></div>',
-                                '<div>检验员: {brand}</div>',
-                                '<div>原产地: {original}</div>',
-                                '<div>价格: RMB {retail_price}</div>',
-                                '</div>',
-                                '<div>条形码</div>',
-                                '</div>'
-                            );
-                            area += tpl.apply(info);
+                            //console.log(info);
+                            var img = new Image();
+                            img.src = "/resources/images/wash_type/01.jpg";
+                            if(img.complete){
+                                time++;
+                                info.img = '<img src="/resources/images/wash_type/01.jpg" width="100" height="10" /></div>';
+                                //console.log($(info.bar).barcode(info.no, "code128",{barWidth:1, barHeight:30,showHRI:true}));
+                                //$(info.bar).barcode(info.no, "code128",{barWidth:1, barHeight:30,showHRI:true});
+                                var tpl = new Ext.XTemplate(
+                                    '<div class="width:200px;clear:both;">',
+                                    '<div style="width:200px;font-family: Arial;font-weight: 900;text-align: center;font-size: large;">{brand}</div>',
+                                    '<div class="row" style="font-size: small;">',
+                                    '<div class="col-md-12">国际款号: {supply_style_no}</div>',
+                                    '<div class="col-md-12">系统款号: {system_style_no}</div>',
+                                    '<div class="col-md-6">品名: {name_zh}</div>',
+                                    '<div class="col-md-6">等级: {level}</div>',
+                                    '<div class="col-md-12">型号规格: {shape}</div>',
+                                    '<div class="col-md-12">颜色: {color}</div>',
+                                    '<div class="col-md-12">面料成份: {material_1}</div>',
+                                    '<div>安全技术类别: {safety_level}</div>',
+                                    '<div>产品执行标准: {execute_standard}</div>',
+                                    '<div>洗涤方法: {img}</div>',
+                                    '<div>检验员: {brand}</div>',
+                                    '<div>原产地: {original}</div>',
+                                    '<div>价格: RMB {retail_price}</div>',
+                                    '</div>',
+                                    '<div class="barcode" data="{no}"></div>',
+                                    '</div>'
+                                );
+                                area += tpl.apply(info);
+                                if(time == sel.length){
+                                    var iframe = document.getElementById("printList");
+                                    iframe.contentWindow.document.body.innerHTML = area;
+                                    var barcodes = $(iframe.contentWindow.document).find(".barcode"),len = barcodes.length;
+                                    for(var i=0;i<len;i++){
+                                        //console.log($(barcodes[i]));
+                                        var no = $(barcodes[i]).attr("data");
+                                        $(barcodes[i]).barcode(no, "code128",{barWidth:1, barHeight:30,showHRI:true})
+                                    }
+                                    iframe.contentWindow.focus();//IE will print parent window without this statement.
+                                    iframe.contentWindow.print();
+                                }
+                            }else{
+                                img.onload = function(){
+                                    img.onload = null;
+                                    time++;
+                                    info.img = '<img src="/resources/images/wash_type/01.jpg" width="100" height="10" /></div>';
+                                    var tpl = new Ext.XTemplate(
+                                        '<div class="width:200px;clear:both;">',
+                                        '<div style="width:200px;font-family: Arial;font-weight: 900;text-align: center;font-size: large;">{brand}</div>',
+                                        '<div class="row" style="font-size: small;">',
+                                        '<div class="col-md-12">国际款号: {supply_style_no}</div>',
+                                        '<div class="col-md-12">系统款号: {system_style_no}</div>',
+                                        '<div class="col-md-6">品名: {name_zh}</div>',
+                                        '<div class="col-md-6">等级: {level}</div>',
+                                        '<div class="col-md-12">号型规格: {shape}</div>',
+                                        '<div class="col-md-12">颜色: {color}</div>',
+                                        '<div class="col-md-12">面料成份: {material_1}</div>',
+                                        '<div>安全技术类别: {safety_level}</div>',
+                                        '<div>产品执行标准: {execute_standard}</div>',
+                                        '<div>洗涤方式: {img}</div>',
+                                        '<div>检验员: {brand}</div>',
+                                        '<div>原产地: {original}</div>',
+                                        '<div>价格: RMB {retail_price}</div>',
+                                        '</div>',
+                                        '<div class="barcode" data="{no}"></div>',
+                                        '</div>'
+                                    );
+                                    area += tpl.apply(info);
+                                    if(time == sel.length){
+                                        var iframe = document.getElementById("printList");
+                                        iframe.contentWindow.document.body.innerHTML = area;
+                                        var barcodes = $(iframe.contentWindow.document).find(".barcode"),len = barcodes.length;
+                                        for(var i=0;i<len;i++){
+                                            //console.log($(barcodes[i]));
+                                            var no = $(barcodes[i]).attr("data");
+                                            $(barcodes[i]).barcode(no, "code128",{barWidth:1, barHeight:30,showHRI:true})
+                                        }
+                                        iframe.contentWindow.focus();//IE will print parent window without this statement.
+                                        iframe.contentWindow.print();
+                                    }
+                                }
+                            }
+
                         });
-                        var iframe = document.getElementById("printList");
-                        iframe.contentWindow.document.body.innerHTML = area;
-                        iframe.contentWindow.focus();//IE will print parent window without this statement.
-                        iframe.contentWindow.print();
+                        //var iframe = document.getElementById("printList");
+                        //iframe.contentWindow.document.body.innerHTML = area;
+                        //iframe.contentWindow.focus();//IE will print parent window without this statement.
+                        //iframe.contentWindow.print();
                     }
                 },
                 '->',
@@ -294,7 +356,7 @@ Ext.define('erp.view.module.goods.GoodsList', {
                 {text: '单价', dataIndex: 'retail_price', width: 70},
                 {
                     text: '商品状态', dataIndex: 'status', width: 70, renderer: function (val) {
-                    if (0 == val) return '<b class="text-danger">未入库</b>';
+                    if (0 == val || null == val) return '<b class="text-danger">未入库</b>';
                     if (1 == val) return '<b class="text-success">已入库</b>';
                     if (2 == val) return '<b class="text-info">已上架</b>';
                     if (3 == val) return '<b class="text-warning">已下架</b>';

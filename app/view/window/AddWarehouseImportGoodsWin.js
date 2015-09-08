@@ -42,8 +42,20 @@ Ext.define('erp.view.window.AddWarehouseImportGoodsWin',{
                     items: [
                         {fieldLabel: '制单日期', name: 'date', xtype: 'datefield', editable: false, format: 'Y-m-d', value: new Date()},
                         //{fieldLabel:'供应商单号', xtype:'combo', valueField:'batch_no', editable: false, displayField:'batch_no', name:'batch_no', disabled:true},
-                        {fieldLabel:'商品导入单号',name:'no',xtype:'combo',valueField:'id',displayField:'no',editable:false,disabled:true},
-                        {fieldLabel:'渠道',name:'channel'},
+                        {fieldLabel:'商品导入单号',name:'no',xtype:'combo',valueField:'id',displayField:'no',editable:false,disabled:true,listeners:{
+                            change:function(obj,newValue){
+                                var items = obj.getStore().getData().items,len = items.length;
+                                for(var i=0;i<len;i++){
+                                    var item = items[i];
+                                    if(item.get("id") != newValue) continue;
+                                    var brand = item.get("brand");
+                                    obj.up("form").down("textfield[name=brand]").setValue(Ext.util.Format.htmlDecode(brand));
+                                    break;
+                                }
+                            }
+                        }},
+                        {fieldLabel:'品牌',name:'brand'},
+                        {fieldLabel:'渠道',name:'channel',allowBlank:true},
                         //{fieldLabel: '品牌', name: 'brand_id', xtype: 'combo', editable: false, displayField: 'name_en', valueField: 'id'},
                         {fieldLabel: '仓库', name: 'warehouse_id', xtype: 'combo', editable: false, displayField: 'storage_name', valueField: 'id', disabled:true},
                         {fieldLabel:'摘要', xtype:'textarea', name:'warehouse_location_id', columnWidth:1, allowBlank:true}

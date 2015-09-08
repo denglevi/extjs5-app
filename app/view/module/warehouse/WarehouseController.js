@@ -59,14 +59,14 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             import_warehouse_id = record.get("import_warehouse_id"),
             me = this,
             is_check = record.get("is_check") == 1 ? true : false,
-            batch_no = record.get("order_no"),
+            import_list_id = record.get("import_id"),
             warehouseimportgoods = gp.up("warehouseimportgoods"),
             panel = warehouseimportgoods.down("panel[name=info]"),
             model = warehouseimportgoods.getViewModel();
         model.set("import_goods_id", id);
         model.set("is_check", is_check);
         model.set("import_warehouse_id", import_warehouse_id);
-        this.getImportGoodsData(id, batch_no, model);
+        this.getImportGoodsData(id, import_list_id, model);
 
         if (panel.items.items.length > 0) {
             var grid = panel.down("#import_info_grid"),
@@ -77,7 +77,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             return;
         }
 
-        var items = this.getDetailItems(id, batch_no, model);
+        var items = this.getDetailItems(id, import_list_id, model);
         panel.add(items);
     },
     onWarehouseExhibitListGridDblClick: function (gp, record) {
@@ -115,12 +115,14 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             console.log('=====res data====>',res.data);
             var id = res.data.id,
                 import_warehouse_id = res.data.import_warehouse_id,
-                batch_no = res.data.batch_no,
+                //batch_no = res.data.batch_no,
+                //商品目录导入列表ID
+                import_list_id = res.data.import_list_id,
                 panel = warehouseimportgoods.down("panel[name=info]"),
                 model = warehouseimportgoods.getViewModel();
             model.set("import_warehouse_id", import_warehouse_id);
             model.set("import_goods_id", id);
-            me.getImportGoodsData(id, batch_no, model);
+            me.getImportGoodsData(id, import_list_id, model);
 
             if (panel.items.items.length > 0) {
                 var grid = panel.down("#import_info_grid"),
@@ -130,7 +132,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 return;
             }
 
-            var items = me.getDetailItems(id, batch_no, model);
+            var items = me.getDetailItems(id, import_list_id, model);
             panel.add(items);
         });
         win.show();
@@ -191,15 +193,15 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             }
         });
     },
-    getImportGoodsData: function (id, batch_no, model) {
-        var model = this.getViewModel();
+    getImportGoodsData: function (id, import_list_id, model) {
+        var model = this.getViewModel(),res;
         Ext.Ajax.request({
             async: false,
             method: 'POST',
             url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/getWarhouseImportInfo',
             params: {
                 id: id,
-                batch_no: batch_no
+                import_list_id: import_list_id
             },
             success: function (response) {
                 res = Ext.decode(response.responseText);
@@ -246,7 +248,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         model.set("goods_info_diff", goods_info_diff);
         model.set("goods_info_log", goods_info_log);
     },
-    getDetailItems: function (id, batch_no, model) {
+    getDetailItems: function (id, import_list_id, model) {
         var nos = [], me = this;
         return [{
             xtype: 'panel',
@@ -260,13 +262,13 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 '<div class="col-md-12">',
                 '<div class="col-md-4">进货单号：{notice_no}</div>',
                 '<div class="col-md-4">日期：{date}</div>',
-                '<div class="col-md-4">供应商：{supplier}</div>',
+                '<div class="col-md-4">商品导入单号：{no}</div>',
                 '</div>',
                 '<div class="col-md-12">',
+                '<div class="col-md-4">品牌：{brand}</div>',
                 '<div class="col-md-4">渠道：{channel}</div>',
                 '<div class="col-md-4">仓库：{storage_name}</div>',
-                //'<div class="col-md-4">品牌：{name_en}</div>',
-                '<div class="col-md-4">供应商单号：{order_no}</div>',
+                //'<div class="col-md-4">供应商单号：{order_no}</div>',
                 '</div>',
                 '<div class="col-md-12">',
                 '<div class="col-md-4">差异数：{variance}</div>',
@@ -287,7 +289,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                     },
                     //glyph: 0xf067,
                     handler: function () {
-                        var import_info = model.get("import_info"),batch_no = import_info.order_no;
+                        var import_info = model.get("import_info"),import_list_id = import_info.import_id;
+                        console.log(import_info);
                         var win = Ext.create('Ext.window.Window', {
                             title: '扫货',
                             width: 500,
@@ -328,7 +331,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                         url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/scanGoods',
                                                         params: {
                                                             no: no,
-                                                            batch_no:batch_no,
+                                                            import_list_id:import_list_id,
                                                             delete:1,
                                                             id: model.get("import_goods_id")
                                                         },
@@ -352,7 +355,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                                     url: apiBaseUrl + '/index.php/Warehouse/ImportGoods/scanGoods',
                                                     params: {
                                                         no: no,
-                                                        batch_no:batch_no,
+                                                        import_list_id:import_list_id,
                                                         delete:0
                                                     },
                                                     success: function (response) {
@@ -391,7 +394,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                     iconCls: 'saveIcon',
                     handler: function () {
                         if(nos.length == 0) return;
-                        var import_info =  model.get("import_info");
+                        var import_info =  model.get("import_info"),
+                            import_list_id = import_info.import_id;
                         var num = parseInt(import_info.variance) + parseInt(nos.length);
                         if(num < 0){
                             Ext.Msg.show({
@@ -419,7 +423,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                             }
                                             nos = [];
                                             var id = model.get("import_goods_id");
-                                            me.getImportGoodsData(id, batch_no, model);
+                                            me.getImportGoodsData(id, import_list_id, model);
                                             Ext.toast("进货单保存成功", "系统提示");
                                         }
                                     });
@@ -442,7 +446,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                     }
                                     nos = [];
                                     var id = model.get("import_goods_id");
-                                    me.getImportGoodsData(id, batch_no, model);
+                                    me.getImportGoodsData(id, import_list_id, model);
                                     Ext.toast("进货单保存成功", "系统提示");
                                 }
                             });
@@ -455,7 +459,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                         hidden: '{is_check}'
                     },
                     handler: function () {
-                        var import_info =  model.get("import_info");
+                        var import_info =  model.get("import_info"),
+                            import_list_id = import_info.import_id;
                         var num = parseInt(import_info.variance) + parseInt(nos.length);
                         if(num >= 0){
                             Ext.Ajax.request({
@@ -476,7 +481,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                     nos = [];
                                     model.set("is_check", true);
                                     var id = model.get("import_goods_id");
-                                    me.getImportGoodsData(id, batch_no, model);
+                                    me.getImportGoodsData(id, import_list_id, model);
                                     var store = Ext.StoreManager.lookup("importGoodsStore");
                                     if (null != store) {
                                         store.load();
@@ -514,7 +519,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                             nos = [];
                                             model.set("is_check", true);
                                             var id = model.get("import_goods_id");
-                                            me.getImportGoodsData(id, batch_no, model);
+                                            me.getImportGoodsData(id, import_list_id, model);
                                             var store = Ext.StoreManager.lookup("importGoodsStore");
                                             if (null != store) {
                                                 store.load();

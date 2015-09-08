@@ -55,7 +55,8 @@ Ext.define("erp.view.module.warehouse.WarehouseDeliveryOrder",{
             columns: [
                 {text: '配货单号', dataIndex: 'noder_no', width:130},
                 {text: '状态', dataIndex: 'status',flex:1, renderer:function(val){
-                    if(0 == val) return '<b>未发</b>';
+                    console.log(val);
+                    if(0 == val||val == null) return '<b>未发</b>';
                     if(1 == val) return '<b class="text-info">已发</b>';
                     if(2 == val) return '<b class="text-danger">终止</b>';
                 }}
