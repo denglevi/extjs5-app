@@ -59,6 +59,7 @@ Ext.define("erp.view.module.warehouse.WarehouseDeliveryOrder",{
                     if(0 == val||val == null) return '<b>未发</b>';
                     if(1 == val) return '<b class="text-info">已发</b>';
                     if(2 == val) return '<b class="text-danger">终止</b>';
+                    if(3 == val) return '<b class="text-danger">已收货</b>';
                 }}
             ],
             store: 'WarehouseDeliveryOrderStore',

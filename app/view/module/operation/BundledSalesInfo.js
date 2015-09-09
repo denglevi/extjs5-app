@@ -28,6 +28,7 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
             bbar = this.getBbar(),
             barContainer = this.getBarContainer(),
             infoConainer = this.getInfoContainer();
+
         Ext.apply(me, {
             items: [
                 {
@@ -68,15 +69,11 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                         {fieldLabel: '起始时段', value: record.get("statr_time")},
                         {fieldLabel: '截止时段', value: record.get("end_time")},
                         {fieldLabel: '与整单促销方案叠加', value: record.get("whole_all") == 0 ? '否' : '是'},
-                        //{fieldLabel: '调价品参与促销', value: record.get("tjpcy") == 0 ? '否' : '是'},
                         {fieldLabel: 'vip积分倍率继承', value: record.get("vipintegral") == 0 ? '否' : '是'},
                         {fieldLabel: '允许使用折扣券', value: record.get("allowed_coupon") == 0 ? '否' : '是'},
                         {fieldLabel: '允许按sku设置促销品', value: record.get("sku_setupt") == 0 ? '否' : '是'},
-                        //{fieldLabel: '限额卡不参与促销', value: record.get("limitcard_no") == 0 ? '否' : '是'},
                         {fieldLabel: '允许退换货', value: record.get("allowed_alteration") == 0 ? '否' : '是'},
                         {fieldLabel: '结算方式限制', value: record.get("pocler_limit") == 0 ? '否' : '是'},
-                        //{fieldLabel: '买高赠低', value: record.get("buy_height_with_low") == 0 ? '否' : '是'},
-                        //{fieldLabel: '设置低价品折扣', value: record.get("set_low_price_discount")},
                         {fieldLabel: '促销日有效', value: record.get("promoday") == 0 ? '否' : '是'},
                         {
                             fieldLabel: '促销日', value: record.get("day_list"), renderer: function (val) {
@@ -117,6 +114,8 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
     },
     getBbar: function () {
         var bar = ['->'],me = this;;
+
+
         if (this.record.get("status") == 0) {
             return bar.concat({text: '审核',val:this.record.get("id"), itemId:'start', handler: me.handlerSalesPromotionStatus}
             );
@@ -346,18 +345,19 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
         var status=me.record.get("status");
         var json = [];
         if (me.record.get("sku_setupt") == 1 && me.record.get("sele_type") != null) {
-            json.push({range: me.record.get("sele_type")});
-        } else if (me.record.get("sku_setupt") == 0) {
-
-            var data = me.gridsData.assist, len = data.length, str = "";
-
-            if (len > 0) {
-                var range = data[0];
-                str = "品牌:" + range.brand + "<br />大类:" + range.lei + "<br />年季:" + range.year + "<br />性别:" + range.sex + "<br />小类:" + range.centen;
-                json.push({range: str});
-            }
-            console.log(json);
+            json.push({range: me.record.get("sele_type"),id:me.record.get("id"),sku_setupt:me.record.get("sku_setupt")});
         }
+        else if (me.record.get("sku_setupt") == 0) {
+            var data = me.gridsData.assist, len = data.length, str = "";
+            if (data.type_dis_money) {
+                var range = data;
+                str = "品牌:" + range.brand + "<br />大类:" + range.lei + "<br />年季:" + range.year + "<br />性别:" + range.sex +
+                    "<br />小类:" + range.centen+"<br />活动价/活动折扣:"+range.type_dis_money;
+                json.push({range: str,id:me.record.get("id"),sku_setupt:me.record.get("sku_setupt")});
+            }
+
+        }
+
         /*VIP*/
         me.vip_store = Ext.create('Ext.data.Store', {
             fields: [], data: me.gridsData.vip
@@ -398,13 +398,12 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
             columns: [
                 {
                     text: '商品范围', dataIndex: 'range', flex: 1, renderer: function (value) {
-                    console.log(value);
                     if (value == 0) return '通用';
                     if (value == 1) return '按尺码';
                     if (value == 2) return '按颜色';
                     if (value == 3) return '按SKU';
                     return value;
-                },
+                }
                 },
                 {
                     text: '操作',
@@ -414,8 +413,9 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                         {
                             iconCls: 'delIcon',
                             tooltip: '删除',
-                            handler: me.editCloseDel,  //删除方法
-                            disabled:(status>0)?true:false
+                            scope:me,
+                            handler: me.editGoodMenuDel,  //删除方法
+                            disabled:(status>0)?true:false,
                         }
                     ]
                 }
@@ -427,9 +427,7 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
             dockedItems: [{
                 xtype: 'toolbar',
                 dock: 'top',
-                bind:{
-                    hidden:(status>0)?true:false,
-                },
+                hidden:(status>0)?true:false,
                 items: ['->', {
                     text: '新增促销商品范围',
                     handler: me.btnOnClick
@@ -441,7 +439,6 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
         var me = this;
         var btns =  me.up('bundledsalesinfo').down('segmentedbutton'),
             btn = btns.down("button[pressed=true]");
-
         if(btn.getText()=='促销商品范围') me.up('bundledsalesinfo').addGoodsRange();
         else if(btn.getText() == '促销商品信息') me.up('bundledsalesinfo').redemptionImportGoods();
         else if(btn.getText() == '换购商品') me.up('bundledsalesinfo').ImportRedemption();
@@ -598,7 +595,7 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                     fields: [], data: action.result.data
                 });
                 me.down("grid").setStore(me.multi_benefit_store);
-                win.destroy();
+                //   win.destroy();
             },
             failure: function () {
                 Ext.toast(action.result.msg,"系统提示");
@@ -664,7 +661,7 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                 regexText: '请输入正确的数据类型',
                 valueField: 'name_en',name: 'goods_num',editable: true},
             {xtype: 'textfield',fieldLabel: '折扣',displayField: 'name',
-                regex: /^$|^0.\d{2}/,
+                regex: /^0\.[1-9]\d*$/,
                 regexText: '请输入正确的数据类型',
                 valueField: 'no',name: 'goods_money',editable: true},
             {xtype: 'textareafield', fieldLabel: '备注', displayField: 'name',
@@ -685,26 +682,10 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                     fields: [], data: action.result.data
                 });
                 me.down("grid").setStore(me.multi_sales_store);
-                win.destroy();
+                //  win.destroy();
             },
             failure: function () {
                 Ext.toast(action.result.msg,"系统提示");
-            }
-        });
-    },
-    /*删除分级促销*/
-    editSalePromoDel:function(grid, rowIndex, colIndex, item, e, record, row){
-        var vip_id = record.get("id");
-        Ext.Ajax.request({
-            async: true,
-            url: apiBaseUrl + '/index.php/Operations/Promotion/delSalePromo',
-            method: 'POST',
-            params: {id: vip_id},
-            success: function (res) {
-                //等待写刷新
-            },
-            failure: function () {
-
             }
         });
     },
@@ -994,14 +975,11 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
     },
 
     /*新增促销商品范围*/
-    /*新增促销商品范围*/
     addRange:function(){
-        //var promotion = me.promotion_item_store.getData(),/*促销商品*/
-        //    classification=me.Classification_store.getData(),/*分类类别*/
-        //    items = data.items,len=0;
         var me = this;
         var data = me.promotion_item_store.getData(),
             items = data.items,len= 0;
+
         if(items != null ){
             len = items.length;
         }
@@ -1009,6 +987,7 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
             Ext.Msg.alert("系统提示","请先删除已有的商品范围");
             return;
         }
+
         var win = Ext.create("Ext.window.Window",{
             title:'新增促销商品范围',
             width:400,
@@ -1123,7 +1102,13 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                     }
                 },
                 {xtype: 'tagfield',fieldLabel: '小类',displayField: 'name',valueField: 'name',name: 'small_class',allowBlank:true},
-                {xtype: 'tagfield', fieldLabel: '性别', displayField: 'name', valueField: 'name', name: 'sex'}
+                {xtype: 'tagfield', fieldLabel: '性别', displayField: 'name', valueField: 'name', name: 'sex'},
+                {
+                    xtype: 'textfield',
+                    fieldLabel: type_name,
+                    name: 'type_dis',
+                    regex:numType
+                }
             ]);
             Ext.Ajax.request({
                 aysnc: true,
@@ -1259,6 +1244,7 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
         var me = this;
         var data = me.assist_store.getData(),
             items = data.items,len=0;
+
         if(items != null){
             len = items.length;
         }
@@ -1285,7 +1271,8 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                             this.up("form").getForm().reset();
                         }},
                         {text:'提交',formBind:true,disabled:true,handler:function(){
-                            var form = this.up("form").getForm();
+                            var form = this.up("form").getForm();var vals = form.getValues();
+                            console.log(vals);
                             if(form.isValid()){
                                 form.submit({
                                     url: apiBaseUrl + '/index.php/Operations/Promotion/addPromotionGoodsRange',
@@ -1294,9 +1281,34 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                                         id:me.record.get("id")
                                     },
                                     waitMsg:'正在提交...',
-                                    success:function(form,action){
+                                    success:function(form, action){
+
+                                        if (!action.result.success) {
+                                            Ext.toast(action.result.msg, "系统提示");
+                                            return;
+                                        }
+                                        var  data=action.result.data
+                                        var json = [];
+                                        if (me.record.get("sku_setupt") == 1 ) {
+                                            json.push({range: data.sele_type,id:data.id,sku_setupt:data.sku_setupt});
+                                        }
+                                        else if (me.record.get("sku_setupt") == 0) {
+                                            var  len = data.length, str = "";
+                                            if (data.type_dis_money) {
+                                                var range = data;
+                                                str = "品牌:" + range.brand + "<br />大类:" + range.lei + "<br />年季:" + range.year + "<br />性别:" + range.sex +
+                                                    "<br />小类:" + range.centen+"<br />活动价/活动折扣:"+range.type_dis_money;
+                                                json.push({range: str,id:me.record.get("id"),sku_setupt:me.record.get("sku_setupt")});
+                                            }
+
+                                        }
+                                        /*范围*/
+                                        me.assist_store=Ext.create('Ext.data.Store', {
+                                            fields: [], data: json
+                                        });
+                                        me.down("grid").setStore(me.assist_store);
+                                        Ext.toast("保存成功!", "系统提示");
                                         win.destroy();
-                                        Ext.toast("导入成功!", "系统提示");
                                     },
                                     failur: function (form, action) {
                                         if (action.result.msg) {
@@ -1336,10 +1348,17 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
             ]);
         }
         if(me.record.get("sku_setupt") == 0){
+            var type= me.record.get("promotion_type");
+            var type_name='';
+            var numType='';
+
+            if(type==1){ type_name='折扣';numType=/^$|^0.\d{2}/;}
+            if(type==2) {type_name='优惠价';numType=/^\d+$/;}
+            if(type==3){ type_name='捆绑价';numType=/^\d+$/;}
             win.down("form").add([
-                {xtype: 'tagfield',itemId:'brand',fieldLabel: '品牌',displayField: 'name_en',valueField: 'id',name: 'brand[]',editable: true},
-                {xtype: 'tagfield',itemId:'yeary',fieldLabel: '年季',displayField: 'name',valueField: 'id',name: 'year_season[]',editable: true},
-                {xtype: 'tagfield',fieldLabel: '大类',displayField: 'name',valueField: 'base_data_id',itemId: 'large_class',name: 'large_class[]',
+                {xtype: 'tagfield',itemId:'brand',allowBlank:true,fieldLabel: '品牌',displayField: 'name_en',valueField: 'id',name: 'brand[]',editable: true},
+                {xtype: 'tagfield',itemId:'yeary',allowBlank:true,fieldLabel: '年季',displayField: 'name',valueField: 'id',name: 'year_season[]',editable: true},
+                {xtype: 'tagfield',fieldLabel: '大类',allowBlank:true,displayField: 'name',valueField: 'base_data_id',itemId: 'large_class',name: 'large_class[]',
                     listeners: {
                         change: function () {
                             var val = this.getValue();
@@ -1375,7 +1394,14 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                     }
                 },
                 {xtype: 'tagfield',itemId:'min_class',fieldLabel: '小类',displayField: 'name',valueField: 'id',name: 'small_class[]',allowBlank:true},
-                {xtype: 'tagfield', itemId:'sex',fieldLabel: '性别', displayField: 'name', valueField: 'id', name: 'sex[]'}
+                {xtype: 'tagfield', itemId:'sex',allowBlank:true,fieldLabel: '性别', displayField: 'name', valueField: 'id', name: 'sex[]'},
+                {
+                    xtype: 'textfield',
+                    fieldLabel: type_name,
+                    name: 'type_dis',
+                    regex:numType,
+                    regexText: '请输入正确的数据类型',
+                }
             ]);
             Ext.Ajax.request({
                 aysnc: true,
@@ -1440,8 +1466,6 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
     handlerSalesPromotionStatus:function(){
         var me = this;
         var status =me.itemId,id=me.val;
-        //console.log(me.record);return;
-        //var status = me.record.get("status"),id=me.record.get("id");
         Ext.Ajax.request({
             async: false,
             method: 'POST',
@@ -1457,7 +1481,8 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
                     return;
                 }
                 me.destroy();
-                //me.down("grid").setStore(Ext.create('Ext.data.Store', {fields: [], data: []}));
+                /* //me.down("grid").setStore(Ext.create('Ext.data.Store', {fields: [], data: []}));*/
+                /*等待更新界面*/
             },
             failure: function (res) {
 
@@ -1465,20 +1490,24 @@ Ext.define('erp.view.module.operation.BundledSalesInfo', {
         });
     },
     /*删除商品范围*/
-    editGoodMenuDel:function(){
+    editGoodMenuDel:function(grid, rowIndex, colIndex, item, e, record, row){
+        var me=this;
         var closing_id = record.get("id");
-        var sku_set=record.get("sele_type");
-
+        var sku_set=record.get("sku_setupt");
         Ext.Ajax.request({
             async: true,
             url: apiBaseUrl + '/index.php/Operations/Promotion/editGoodMenuDel',
             method: 'POST',
             params: {id: closing_id,sku_set:sku_set},
             success: function (res) {
-                //等待写刷新
-            },
-            failure: function () {
-
+                var json = Ext.decode(res.responseText);
+                if (!json.success) {
+                    Ext.toast(json.msg, "系统提示");
+                    return;
+                }
+                me.assist_store=null;
+                me.down("grid").setStore(Ext.create('Ext.data.Store', {fields: [], data: []}));
+                Ext.toast('删除成功', "系统提示");
             }
         });
     }

@@ -321,7 +321,8 @@ Ext.define('erp.view.module.goods.GoodsList', {
                             {"status": "2", "name": "已上架"},
                             {"status": "3", "name": "已下架"},
                             {"status": "4", "name": "已出库"},
-                            {"status": "5", "name": "待移库"}
+                            {"status": "5", "name": "待移库"},
+                            {"status": "6", "name": "待收货"}
                         ]
                     }),
                     queryMode: 'local',
@@ -355,17 +356,27 @@ Ext.define('erp.view.module.goods.GoodsList', {
                 {text: '尺码', dataIndex: 'size', width: 70},
                 {text: '单价', dataIndex: 'retail_price', width: 70},
                 {
-                    text: '商品状态', dataIndex: 'status', width: 70, renderer: function (val) {
+                    text: '商品状态', dataIndex: 'status',itemId:'status', width: 70, renderer: function (val) {
                     if (0 == val || null == val) return '<b class="text-danger">未入库</b>';
                     if (1 == val) return '<b class="text-success">已入库</b>';
                     if (2 == val) return '<b class="text-info">已上架</b>';
                     if (3 == val) return '<b class="text-warning">已下架</b>';
                     if (4 == val) return '<b class="text-primary">已出库</b>';
                     if (5 == val) return '<b class="text-primary">待移库</b>';
+                    if (6 == val) return '<b class="text-primary">待收货</b>';
+                    if (7 == val) return '<b class="text-primary">已售出</b>';
                 }
                 },
-                {text: '所在仓库', dataIndex: 'warehouse_no', width: 70},
-                {text: '所在库位', dataIndex: 'location_no', width: 70},
+                {text: '所在仓库', dataIndex: 'warehouse_no', width: 70,itemId:'warehouse'},
+                {text: '所在库位', dataIndex: 'location_no', width: 70,itemId:'location'},
+                {text:'所在大店',dataIndex:'shops_name',itemId:'max_shops_id',width:70,
+                    renderer:function(record,val,data){
+                        var status=data.get("status");
+                        if(status==7) return '<b>已出售</b>';
+                        if(status!=4&&status!=7) return '<b></b>';
+                        if(status==4) return '<b class="text-danger">'+data.get("shops_name")+'</b>';
+                    }
+                },
                 {
                     text: '操作',
                     xtype: 'actioncolumn',

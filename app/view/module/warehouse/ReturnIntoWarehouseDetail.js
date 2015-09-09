@@ -141,34 +141,67 @@ Ext.define('erp.view.module.warehouse.ReturnIntoWarehouseDetail', {
                 }
             }
         });
-        var diff=Ext.create('Ext.grid.Panel', {
-            sortableColumns: false,
-            enableColumnHide: false,
-            enableColumnResize: false,
-            columns: [
-                {text: '商品代码', flex: 1,dataIndex:'system_style_no'},
-                {text: '商品颜色', flex: 1,dataIndex:'color'},
-                {text: '商品尺码', flex: 1,dataIndex:'size'},
-                {text: '差异数', flex: 1,dataIndex:'num'},
-            ],
-            store: Ext.create('Ext.data.Store', {
-                fields: [],
-                autoLoad: false,
-                proxy: {
-                    type: 'ajax',
-                    url: apiBaseUrl + '/index.php/Warehouse/RefundInto/getRefundIntoGoodsDiff?id=' + me.record.get("id"),
-                    reader: {
-                        rootProperty: 'data',
-                        type: 'json'
+        if(me.record.get("select_type")==1){
+            var diff=Ext.create('Ext.grid.Panel', {
+                sortableColumns: false,
+                enableColumnHide: false,
+                enableColumnResize: false,
+                columns: [
+                    {text: '唯一码', flex: 1,dataIndex:'goods_no'},
+                    {text: '商品代码', flex: 1,dataIndex:'system_style_no'},
+                    {text: '商品颜色', flex: 1,dataIndex:'color'},
+                    {text: '商品尺码', flex: 1,dataIndex:'size'},
+                ],
+                store: Ext.create('Ext.data.Store', {
+                    fields: [],
+                    autoLoad: false,
+                    proxy: {
+                        type: 'ajax',
+                        url: apiBaseUrl + '/index.php/Warehouse/RefundInto/getRefundIntoGoodsDiff?id=' + me.record.get("id"),
+                        reader: {
+                            rootProperty: 'data',
+                            type: 'json'
+                        }
+                    }
+                }),
+                listeners: {
+                    afterrender: function () {
+                        this.getStore().load();
                     }
                 }
-            }),
-            listeners: {
-                afterrender: function () {
-                    this.getStore().load();
+            });
+        }
+        else{
+            var diff=Ext.create('Ext.grid.Panel', {
+                sortableColumns: false,
+                enableColumnHide: false,
+                enableColumnResize: false,
+                columns: [
+                    {text: '商品代码', flex: 1,dataIndex:'system_style_no'},
+                    {text: '商品颜色', flex: 1,dataIndex:'color'},
+                    {text: '商品尺码', flex: 1,dataIndex:'size'},
+                    {text: '差异数', flex: 1,dataIndex:'num'},
+                ],
+                store: Ext.create('Ext.data.Store', {
+                    fields: [],
+                    autoLoad: false,
+                    proxy: {
+                        type: 'ajax',
+                        url: apiBaseUrl + '/index.php/Warehouse/RefundInto/getRefundIntoGoodsDiff?id=' + me.record.get("id"),
+                        reader: {
+                            rootProperty: 'data',
+                            type: 'json'
+                        }
+                    }
+                }),
+                listeners: {
+                    afterrender: function () {
+                        this.getStore().load();
+                    }
                 }
-            }
-        });
+            });
+        }
+
         var tab = Ext.create('Ext.tab.Panel', {
             flex: 1,
             items: [
@@ -241,7 +274,7 @@ Ext.define('erp.view.module.warehouse.ReturnIntoWarehouseDetail', {
                                             return
                                         }
                                         obj.setValue("");
-                                       var res = store.findRecord("no",no);
+                                        var res = store.findRecord("no",no);
                                         if(res !== null){
                                             Ext.toast("此商品已在扫描", "系统提示");
                                             return;
@@ -346,7 +379,7 @@ Ext.define('erp.view.module.warehouse.ReturnIntoWarehouseDetail', {
                 me.down('#save').setHidden(true);
                 me.down('#sampled').setHidden(true);
                 if(status==1)
-                me.down('#status_yes').setHidden(false);
+                    me.down('#status_yes').setHidden(false);
                 if(status==2) me.down('#status_yes').setHidden(true);
                 Ext.StoreManager.lookup("WarehouseCheckTaskOrderStore").load();
             },

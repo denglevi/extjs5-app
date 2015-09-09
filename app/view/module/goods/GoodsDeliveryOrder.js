@@ -58,7 +58,23 @@ Ext.define('erp.view.module.goods.GoodsDeliveryOrder', {
                 {text: '删除', iconCls: 'delIcon',handler:"delGoodsDeliveryNotice"}
             ],
             selModel: 'checkboxmodel',
-            columns: [{text: '通知单号', dataIndex: 'notice_no', flex: 1}],
+            columns: [
+                {
+                    text: '通知单号',
+                    dataIndex: 'notice_no',
+                    flex: 1
+                },
+                {
+                    text: '状态',
+                    dataIndex: 'status',
+                    flex: 1, renderer: function (val) {
+                    if(0 == val) return '<b>未审批</b>';
+                    if(1 == val) return '<b class="text-info">已审批</b>';
+                    if(2 == val) return '<b class="text-danger">已发出</b>';
+                    if(3 == val) return '<b class="text-danger">已终止</b>';
+                }
+                }
+            ],
             store: 'GoodsDeliveryNoticeStore'
         });
 

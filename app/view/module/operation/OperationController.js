@@ -342,7 +342,7 @@ Ext.define('erp.view.module.operation.OperationController', {
         });
     },
     addSeller: function (btn) {
-        var form = {
+        var form =  Ext.create('Ext.form.Panel', {
             xtype: 'form',
             layout: 'column',
             defaults: {
@@ -355,8 +355,36 @@ Ext.define('erp.view.module.operation.OperationController', {
             },
             items: [
                 {fieldLabel: '姓名', name: 'username'},
-                {fieldLabel: '工号', name: 'job_no'},
-                {fieldLabel: '职位', name: 'job_pos', xtype: 'combo', editable: false},
+                {fieldLabel: '工号', name: 'job_no',
+                    listeners:{
+                        blur:function(val){
+                            var box = this;
+                            var job_no=box.getValue();
+                            Ext.Ajax.request({
+                                aysnc: true,
+                                method: 'POST',
+                                url: apiBaseUrl + '/index.php/Operations/Saleder/verificationId',
+                                params: {
+                                    job_no:job_no
+                                },
+                                success: function (res) {
+                                    var json = Ext.decode(res.responseText);
+                                    if (!json.success) {
+                                        Ext.toast(json.msg, "系统提示");
+                                        box.setValue("");
+                                        return;
+                                    }
+
+                                }
+                            })
+
+                        }
+                    }
+                },
+                {fieldLabel: '职位', name: 'job_post', xtype: 'combo', editable: false,
+                    valueField: 'id',
+                    displayField: 'operations_post',
+                },
                 {fieldLabel: '性别', name: 'sex', xtype: 'combo',displayField:'val',valueField:'val',editable: false,store:Ext.create("Ext.data.Store",{
                     fields:[],
                     data:[
@@ -364,22 +392,99 @@ Ext.define('erp.view.module.operation.OperationController', {
                         {val:'女'}
                     ]
                 })},
-                {fieldLabel: '电话', name: 'phone'},
-                {fieldLabel: '地址', name: 'address'},
-                {fieldLabel: '生日', name: 'birthday'},
-                {fieldLabel: '所属大店', name: 'shop_id_1', xtype: 'combo', editable: false},
-                {fieldLabel: '所属小店', name: 'shop_id', xtype: 'combo', editable: false},
-                {fieldLabel: '是否启用签名码', name: 'is_signature',xtype:'checkbox'},
-                {fieldLabel: '签名码', name: 'signature', columnWidth: 1,disabled:true},
-                {fieldLabel: '备注', name: 'notes', columnWidth: 1,xtype:'textarea'}
-            ]
-        };
+                {fieldLabel: '电话', name: 'phone',allowBlank:true},
+                {fieldLabel: '地址', name: 'address',allowBlank:true},
+                {fieldLabel: '生日', name: 'birthday',allowBlank:true},
+                {fieldLabel: '所属大店',
+                    name: 'shop_id_1',
+                    xtype: 'combo',
+                    editable: false,
+                    valueField: 'id',
+                    displayField: 'shops_name',
+                    listeners:{
+                        change:function(val){
+                            var box = this;
+                            var max_shops=box.getValue();
+                            var sub = box.up("form").down("combo[name=shop_id]");
+                            Ext.Ajax.request({
+                                aysnc: true,
+                                method: 'POST',
+                                url: apiBaseUrl + '/index.php/Commodity/Distribution/getMinStore',
+                                params: {
+                                    max_shops:max_shops
+                                },
+                                success: function (res) {
+                                    var json = Ext.decode(res.responseText);
+                                    if (!json.success) {
+                                        Ext.toast(json.msg, "系统提示");
+                                        return;
+                                    }
+
+                                    sub.clearValue();
+                                    sub.setStore(Ext.create('Ext.data.Store', {
+                                        fields: ['id', 'name'],
+                                        data: json.data
+                                    }));
+                                    sub.setDisabled(false);
+                                }
+                            })
+
+                        }
+                    }
+                },
+                {fieldLabel: '所属小店',
+                    name: 'shop_id',
+                    xtype: 'combo',
+                    editable: false,
+                    valueField: 'id',
+                    displayField: 'shops_name',
+                    itemId:'min_shops',allowBlank:true},
+                {fieldLabel: '是否启用签名码', name: 'is_signaturex',xtype:'checkbox',
+                    listeners:{
+                        change:function(){
+                            var box = this;
+                            if(box.getValue())form.down("textfield[name=signature]").setDisabled(false);
+                            else{
+                                form.down("textfield[name=signature]").setValue("");
+                                form.down("textfield[name=signature]").setDisabled(true);
+                            }
+                        }
+                    }
+                },
+                {fieldLabel: '签名码', name: 'signature', inputType: 'password',columnWidth: 1,disabled:true},
+                {fieldLabel: '备注', name: 'notes', columnWidth: 1,xtype:'textarea',allowBlank:true}
+            ],
+
+        });
         Ext.Ajax.request({
-           async:true,
-            url: apiBaseUrl + '/index.php/Operations/Saleder/getSellerData',
+            async:true,
+            url: apiBaseUrl + '/index.php/Operations/Saleder/getBaseData',
             method:'POST',
+            params: {
+                shop: 1,
+                post: 1,
+                max_shop:1,
+            },
             success:function(res){
-                console.log(Ext.decode(res.responseText));
+                var json = Ext.decode(res.responseText), data = json.data;
+                if (data.shop === undefined || data.post === undefined || data.max_shop === undefined) {
+                    Ext.toast("数据获取错误,请重试!", "系统提示");
+                    return;
+                }
+                var form = win.down("form");
+                var shop = form.down("combo[name=shop_id_1]"),
+                    job_pos = form.down("combo[name=job_post]"),
+                    shop_store = Ext.create('Ext.data.Store', {
+                        fields: [],
+                        data: data.max_shop
+                    }),
+                    job_pos_store = Ext.create('Ext.data.Store', {
+                        fields: [],
+                        data: data.post
+                    });
+                shop.setStore(shop_store);
+                job_pos.setStore(job_pos_store);
+                console.log(job_pos_store);
             },
             failure:function(){
 
@@ -394,9 +499,36 @@ Ext.define('erp.view.module.operation.OperationController', {
             resizable:false,
             buttons: [
                 {
-                    text: '保存',
+                    text: '重置',
                     handler: function () {
-
+                        win.down("form").getForm().reset();
+                    }
+                },
+                {
+                    text: '提交',
+                    formBind: true,
+                    disabled: false,
+                    handler: function (btn) {
+                        var form =  win.down("form").getForm();
+                        var  is_signature=form.findField('is_signaturex').getValue()?1:0;
+                        if (form.isValid()) {
+                            form.submit({
+                                waitMsg: '正在提交...',
+                                url: apiBaseUrl + '/index.php/operations/Saleder/addOperationsSaleder',
+                                method: 'POST',
+                                params:{
+                                    is_signature:is_signature
+                                },
+                                success: function (form, action) {
+                                    win.destroy();
+                                    Ext.StoreManager.lookup("SellerListStore").load();
+                                },
+                                failure: function (form, action) {
+                                    console.log(action);
+                                    Ext.Msg.alert('失败','添加员工失败');
+                                }
+                            });
+                        }
                     }
                 }
             ]

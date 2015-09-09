@@ -1652,7 +1652,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                                     {text: '操作', dataIndex: 'orderinfo_name'},
                                     {text: '操作人', dataIndex: 'orderinfo_color'}
                                 ];
-                                console.log(store);
+                                //console.log(store);
                                 //store = model.get("goodsfo_log");
                             }
 
@@ -1709,7 +1709,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             },
             success: function (response) {
                 var text = Ext.decode(response.responseText);
-                console.log(text);
+                //console.log(text);
                 if (!text.success) {
                     Ext.toast(no + text.msg, "系统提示", 't');
                     return;
@@ -1729,20 +1729,9 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             order = gp.up("warehousedeliveryorder"),
             panel = order.down("#info_panel"),
             model = order.getViewModel();
+        var status=record.get("type_status");
         model.set("goods_delivery_order_id", id);
-        if(record.get("status") == 1){
-            model.set("status0",true);
-            model.set("status1",true);
-            model.set("status2",false);
-        }else if(record.get("status") == 2){
-            model.set("status0",true);
-            model.set("status1",true);
-            model.set("status2",true);
-        }else if(record.get("status") == 0){
-            model.set("status0",false);
-            model.set("status1",false);
-            model.set("status2",false);
-        }
+
         this.getWarehouseDeliverGoodsOrderData(model,id);
         model.set("order_info", {
             noder_no: record.get("noder_no"),
@@ -1752,13 +1741,33 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
             price_select: record.get("price_select"),
             discounts: record.get("discounts"),
             id_brand: record.get("brand_name"),
-            ditch: record.get("ditch")
+            ditch: record.get("ditch"),
+            minShops_name:record.get("minShops_name"),
+            type_status:record.get("type_status"),
+            count_num:record.get("count_num"),
+            sum_money:record.get("sum_money")
         });
 
         if (panel.items.items.length > 0) {
             var grid = panel.down("#delivery_info_grid"),store = model.get("order_goods_list_store"),
                 btn = panel.down("segmentedbutton").down("button");
             btn.setPressed(true);
+            if(status == 1){
+                order.down("#scanGood").setHidden(true);
+                order.down("#save").setHidden(true);
+                order.down("#give").setHidden(true);
+                order.down("#stop").setHidden(false);
+            }else if(status == 2||status == 3){
+                order.down("#scanGood").setHidden(true);
+                order.down("#save").setHidden(true);
+                order.down("#give").setHidden(true);
+                order.down("#stop").setHidden(true);
+            }else if(status == 0){
+                order.down("#scanGood").setHidden(false);
+                order.down("#save").setHidden(false);
+                order.down("#give").setHidden(false);
+                order.down("#stop").setHidden(false);
+            }
             //grid.setStore(store);
             return;
         }
@@ -1768,7 +1777,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
     },
     getWarehouseDeliverGoodsOrderData:function(model,id){
         var res;
-        console.log(id);
+        //console.log(id);
         model.set("warehouse_delivery_order_id",id);
         Ext.Ajax.request({
             async: false,
@@ -1802,8 +1811,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
         model.set("notice_goods_list_store",notice_goods_list_store);
     },
     getWarehouseDeliveryGoodsDetailItems: function (model,record) {
-        var me = this,
-            status = record.get("status");
+        var me = this,id=record.get("id"),
+            status = this.getViewModel().get("order_info").type_status;
         var nos=[];
         return [{
             xtype: 'panel',
@@ -1825,8 +1834,8 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 '<div class="col-md-4">折扣：{discounts}</div>',
                 '</div>',
                 '<div class="col-md-12">',
-                '<div class="col-md-4">品牌：{id_brand}</div>',
-                '<div class="col-md-4">渠道：{ditch}</div>',
+                '<div class="col-md-4">配货数量：{count_num}件</div>',
+                '<div class="col-md-4">配货金额：{sum_money}元</div>',
                 '</div>'
             ),
             bbar: ['->',{
@@ -1835,6 +1844,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 bind:{
                     hidden:'{status0}'
                 },
+                hidden:(status!=0)?true:false,
                 handler:function(){
                     var win = Ext.create('Ext.window.Window', {
                         title: '扫货',
@@ -1906,6 +1916,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 bind:{
                     hidden:'{status0}'
                 },
+                hidden:(status!=0)?true:false,
                 scope:me
             }, {
                 text: '发出',
@@ -1913,6 +1924,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 bind:{
                     hidden:'{status1}'
                 },
+                hidden:(status<1)?true:false,
                 scope:me
             }, {
                 text: '终止',
@@ -1920,6 +1932,7 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 bind:{
                     hidden:'{status2}'
                 },
+                hidden:(status<1)?true:false,
                 scope:me
             }]
         }, {
@@ -2206,21 +2219,23 @@ Ext.define('erp.view.module.warehouse.WarehouseController', {
                 nos:nos.join(',')
             },
             success:function(res){
-               var json = Ext.decode(res.responseText);
+                var json = Ext.decode(res.responseText);
                 if(!json.success){
                     Ext.toast(json.msg,"系统提示");
+                }else{
+                    Ext.toast(json.data, "系统提示");
+                    if(status == 1){
+                        model.set("status0",true);
+                        model.set("status1",true);
+                        model.set("status2",false);
+                    }
+                    if(status == 2){
+                        model.set("status0",true);
+                        model.set("status1",true);
+                        model.set("status2",true);
+                    }
+                    Ext.StoreManager.lookup("WarehouseDeliveryOrderStore").load();
                 }
-                if(status == 1){
-                    model.set("status0",true);
-                    model.set("status1",true);
-                }
-                if(status == 2){
-                    model.set("status0",true);
-                    model.set("status1",true);
-                    model.set("status2",true);
-                }
-                Ext.StoreManager.lookup("WarehouseDeliveryOrderStore").load();
-                console.log(json);
             },
             failure:function(res){
                 Ext.alert("系统提示","网络请求错误,请检查网络重试!");
